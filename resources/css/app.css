@@ -1,0 +1,12 @@
+/* =============================================================
+   app.css — Global Base Styles
+   Import semua modul CSS di sini.
+   ============================================================= */
+
+/* Import modul HARUS di atas @tailwind */
+@import './modules/base.css';
+@import './modules/components.css';
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

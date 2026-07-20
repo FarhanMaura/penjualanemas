@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Wireframe - Admin Dashboard</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  * { font-family: sans-serif; }
+  body { background: #f3f4f6; color: #111827; }
+  .box { background: #ffffff; border: 1px solid #d1d5db; box-shadow: none; }
+  .sidebar-link { color: #4b5563; transition: background 0.2s; }
+  .sidebar-link:hover { background: #e5e7eb; color: #111827; }
+  .sidebar-link.active { background: #e5e7eb; color: #111827; border-left: 4px solid #374151; font-weight: bold; }
+  .badge { background: #e5e7eb; color: #374151; border: 1px solid #d1d5db; }
+</style>
+</head>
+<body class="flex min-h-screen">
+
+<!-- SIDEBAR -->
+<aside class="w-64 bg-gray-50 border-r border-gray-300 flex flex-col fixed h-full z-20">
+  <div class="p-6 border-b border-gray-300 bg-white">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 bg-gray-300 rounded-md flex items-center justify-center font-bold text-gray-600 text-xs border border-gray-400">SB</div>
+      <div>
+        <p class="font-bold text-gray-800 text-sm leading-none">Sinar Baru II</p>
+        <p class="text-xs text-gray-500 mt-1">Panel Admin</p>
+      </div>
+    </div>
+  </div>
+  <nav class="flex-1 p-4 space-y-1 text-sm bg-gray-50 overflow-y-auto">
+    <a href="#" class="sidebar-link active flex items-center gap-3 px-4 py-2.5 rounded-r-lg">
+      <span class="w-5 h-5 bg-gray-300 rounded block text-center text-xs leading-5">[i]</span>
+      Dashboard
+    </a>
+    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg ml-1">
+      <span class="w-5 h-5 bg-gray-200 border border-gray-300 rounded block text-center text-xs leading-5 text-gray-500">[i]</span>
+      Produk
+    </a>
+    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg ml-1">
+      <span class="w-5 h-5 bg-gray-200 border border-gray-300 rounded block text-center text-xs leading-5 text-gray-500">[i]</span>
+      Harga Emas
+    </a>
+    <a href="#" class="sidebar-link flex items-center justify-between px-4 py-2.5 rounded-lg ml-1">
+      <div class="flex items-center gap-3">
+        <span class="w-5 h-5 bg-gray-200 border border-gray-300 rounded block text-center text-xs leading-5 text-gray-500">[i]</span>
+        Reservasi
+      </div>
+      <span class="bg-gray-400 text-white text-xs px-2 py-0.5 rounded-full">5</span>
+    </a>
+    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg ml-1">
+      <span class="w-5 h-5 bg-gray-200 border border-gray-300 rounded block text-center text-xs leading-5 text-gray-500">[i]</span>
+      Transaksi
+    </a>
+    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg ml-1">
+      <span class="w-5 h-5 bg-gray-200 border border-gray-300 rounded block text-center text-xs leading-5 text-gray-500">[i]</span>
+      Cicilan
+    </a>
+    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg ml-1">
+      <span class="w-5 h-5 bg-gray-200 border border-gray-300 rounded block text-center text-xs leading-5 text-gray-500">[i]</span>
+      Gadai
+    </a>
+    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg ml-1">
+      <span class="w-5 h-5 bg-gray-200 border border-gray-300 rounded block text-center text-xs leading-5 text-gray-500">[i]</span>
+      Pelanggan
+    </a>
+    <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg ml-1">
+      <span class="w-5 h-5 bg-gray-200 border border-gray-300 rounded block text-center text-xs leading-5 text-gray-500">[i]</span>
+      Laporan
+    </a>
+    <div class="pt-4 border-t border-gray-300 mt-4">
+      <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg ml-1">
+        <span class="w-5 h-5 bg-gray-200 border border-gray-300 rounded block text-center text-xs leading-5 text-gray-500">[i]</span>
+        Lihat Website
+      </a>
+      <a href="#" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg ml-1 font-bold">
+        <span class="w-5 h-5 bg-gray-200 border border-gray-300 rounded block text-center text-xs leading-5 text-gray-500">[i]</span>
+        Keluar
+      </a>
+    </div>
+  </nav>
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="ml-64 flex-1 p-8 bg-gray-100 min-h-screen">
+
+  <!-- Header -->
+  <div class="flex justify-between items-center mb-8">
+    <div>
+      <h1 class="text-2xl font-bold text-gray-900">Dashboard Admin</h1>
+      <p class="text-sm text-gray-500 mt-1">Minggu, 17 Mei 2026 • 17:45 WIB</p>
+    </div>
+    <div class="flex items-center gap-4">
+      <div class="relative">
+        <button class="box px-4 py-2 rounded-xl text-sm flex items-center gap-2 hover:bg-gray-50">
+          [ Ic ] <span class="font-bold text-xs bg-gray-200 border border-gray-300 text-gray-700 px-2 rounded-full">5</span>
+        </button>
+      </div>
+      <div class="flex items-center gap-3 box px-4 py-2 rounded-xl bg-white">
+        <div class="w-8 h-8 bg-gray-300 rounded-full flex items-center justify-center text-sm font-bold border border-gray-400">A</div>
+        <div>
+          <p class="text-sm font-bold text-gray-800">Admin Toko</p>
+          <p class="text-xs text-gray-500">Administrator</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-4 gap-6 mb-8">
+    <div class="box rounded-2xl p-5 bg-white border-gray-300">
+      <div class="flex justify-between items-start mb-3">
+        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Total Pelanggan</p>
+        <span class="text-xl text-gray-400">[Ic]</span>
+      </div>
+      <p class="text-3xl font-bold text-gray-900">2.541</p>
+      <p class="text-xs text-gray-600 mt-2 font-medium">▲ +12 minggu ini</p>
+    </div>
+    <div class="box rounded-2xl p-5 bg-white border-gray-300">
+      <div class="flex justify-between items-start mb-3">
+        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Reservasi Hari Ini</p>
+        <span class="text-xl text-gray-400">[Ic]</span>
+      </div>
+      <p class="text-3xl font-bold text-gray-800">5</p>
+      <p class="text-xs text-gray-500 mt-2 font-medium">⏳ 3 menunggu konfirmasi</p>
+    </div>
+    <div class="box rounded-2xl p-5 bg-white border-gray-300">
+      <div class="flex justify-between items-start mb-3">
+        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Transaksi Bulan Ini</p>
+        <span class="text-xl text-gray-400">[Ic]</span>
+      </div>
+      <p class="text-3xl font-bold text-gray-900">87</p>
+      <p class="text-xs text-gray-600 mt-2 font-medium">▲ +23% dari bulan lalu</p>
+    </div>
+    <div class="box rounded-2xl p-5 bg-white border-gray-300">
+      <div class="flex justify-between items-start mb-3">
+        <p class="text-xs text-gray-500 uppercase tracking-wider font-bold">Gadai Aktif</p>
+        <span class="text-xl text-gray-400">[Ic]</span>
+      </div>
+      <p class="text-3xl font-bold text-gray-700">14</p>
+      <p class="text-xs text-gray-600 mt-2 font-medium">⚠ 2 jatuh tempo minggu ini</p>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-3 gap-6 mb-8">
+    <!-- Panel 1 (Harga/Info Utama) -->
+    <div class="box rounded-2xl p-5">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="font-bold text-gray-800 text-sm">Harga Emas Aktif</h3>
+        <button class="text-xs bg-gray-200 border border-gray-300 text-gray-800 px-3 py-1 rounded-lg font-medium hover:bg-gray-300">Update</button>
+      </div>
+      <div class="grid grid-cols-2 gap-3">
+        <div class="bg-gray-50 rounded-xl p-3 border border-gray-200 text-center">
+          <p class="text-xs text-gray-600 mb-1 font-medium">24K — Harga Beli</p>
+          <p class="font-bold text-gray-900 text-base">Rp 1.580.000</p>
+          <p class="text-xs text-gray-500 mt-0.5">/gram</p>
+        </div>
+        <div class="bg-gray-100 rounded-xl p-3 border border-gray-300 text-center">
+          <p class="text-xs text-gray-600 mb-1 font-medium">24K — Harga Jual</p>
+          <p class="font-bold text-gray-900 text-base">Rp 1.620.000</p>
+          <p class="text-xs text-gray-500 mt-0.5">/gram</p>
+        </div>
+      </div>
+      <p class="text-xs text-gray-500 mt-3">Terakhir diupdate: 17 Mei 2026, 08:00</p>
+    </div>
+
+    <!-- Panel 2 (Daftar List Aktif) -->
+    <div class="box rounded-2xl p-5">
+      <h3 class="font-bold text-gray-800 text-sm mb-4">Pelanggan Reward Aktif</h3>
+      <div class="space-y-3">
+        <div class="flex items-center justify-between box bg-gray-50 border-gray-200 rounded-xl p-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-gray-300 border border-gray-400 rounded-full flex items-center justify-center text-xs font-bold text-gray-700">SR</div>
+            <div>
+              <p class="text-sm font-bold text-gray-900">Siti Rahayu</p>
+              <p class="text-xs text-gray-600 mt-0.5">Ke-10 transaksi!</p>
+            </div>
+          </div>
+          <button class="text-xs text-gray-700 bg-white border border-gray-400 px-2 py-1 rounded-lg font-medium">Tandai Dipakai</button>
+        </div>
+        <div class="flex items-center justify-between box bg-gray-50 border-gray-200 rounded-xl p-3">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 bg-gray-300 border border-gray-400 rounded-full flex items-center justify-center text-xs font-bold text-gray-700">BW</div>
+            <div>
+              <p class="text-sm font-bold text-gray-900">Budi Wijaya</p>
+              <p class="text-xs text-gray-600 mt-0.5">Ke-20 transaksi!</p>
+            </div>
+          </div>
+          <button class="text-xs text-gray-700 bg-white border border-gray-400 px-2 py-1 rounded-lg font-medium">Tandai Dipakai</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Panel 3 (Statistik Grafik Bar) -->
+    <div class="box rounded-2xl p-5">
+      <h3 class="font-bold text-gray-800 text-sm mb-4">Distribusi Tier CRM</h3>
+      <div class="space-y-3">
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-gray-600 font-medium">Bronze</span><span class="text-gray-800">1.820 pelanggan</span></div>
+          <div class="h-2 bg-gray-200 rounded-full border border-gray-300"><div class="h-1.5 bg-gray-800 rounded-full m-[1px]" style="width:72%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-gray-600 font-medium">Silver</span><span class="text-gray-800">520 pelanggan</span></div>
+          <div class="h-2 bg-gray-200 rounded-full border border-gray-300"><div class="h-1.5 bg-gray-500 rounded-full m-[1px]" style="width:20%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-gray-600 font-medium">Gold</span><span class="text-gray-800">172 pelanggan</span></div>
+          <div class="h-2 bg-gray-200 rounded-full border border-gray-300"><div class="h-1.5 bg-gray-400 rounded-full m-[1px]" style="width:7%"></div></div>
+        </div>
+        <div>
+          <div class="flex justify-between text-xs mb-1"><span class="text-gray-600 font-medium">Diamond</span><span class="text-gray-800">29 pelanggan</span></div>
+          <div class="h-2 bg-gray-200 rounded-full border border-gray-300"><div class="h-1.5 bg-gray-300 rounded-full m-[1px]" style="width:1%"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabel Data Utama -->
+  <div class="box rounded-2xl p-6">
+    <div class="flex justify-between items-center mb-5">
+      <h3 class="font-bold text-gray-900">Reservasi Terbaru — Perlu Dikonfirmasi</h3>
+      <a href="#" class="text-xs text-gray-700 border-b border-gray-500 pb-0.5 hover:text-gray-900 font-medium">Lihat Semua →</a>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="text-xs text-gray-500 uppercase border-b border-gray-300 bg-gray-50">
+            <th class="pb-3 pt-3 pl-3 text-left font-bold rounded-tl-lg">Pelanggan</th>
+            <th class="pb-3 pt-3 text-left font-bold">Jenis</th>
+            <th class="pb-3 pt-3 text-left font-bold">Detail</th>
+            <th class="pb-3 pt-3 text-left font-bold">Tgl Kunjungan</th>
+            <th class="pb-3 pt-3 text-left font-bold">Status</th>
+            <th class="pb-3 pt-3 text-left font-bold rounded-tr-lg">Aksi</th>
+          </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-200">
+          <tr class="hover:bg-gray-50 transition">
+            <td class="py-3 pl-3">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-xs font-bold text-gray-700">AN</div>
+                <span class="font-medium text-gray-900">Ani Kusuma</span>
+              </div>
+            </td>
+            <td><span class="bg-gray-200 border border-gray-300 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">Beli</span></td>
+            <td class="text-gray-600">Cincin 24K, 2.5g</td>
+            <td class="text-gray-600">18 Mei 2026</td>
+            <td><span class="bg-gray-100 border border-gray-400 text-gray-800 text-xs px-2 py-1 rounded-full font-bold">Pending</span></td>
+            <td class="flex gap-2 py-3">
+              <button class="text-xs bg-gray-700 text-white hover:bg-gray-800 px-3 py-1 rounded-lg transition font-medium">Konfirmasi</button>
+              <button class="text-xs bg-white border border-gray-400 hover:bg-gray-100 px-3 py-1 rounded-lg transition font-medium text-gray-700">Tolak</button>
+            </td>
+          </tr>
+          <tr class="hover:bg-gray-50 transition">
+            <td class="py-3 pl-3">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-xs font-bold text-gray-700">RH</div>
+                <span class="font-medium text-gray-900">Rudi Hartono</span>
+              </div>
+            </td>
+            <td><span class="bg-gray-200 border border-gray-300 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">Gadai</span></td>
+            <td class="text-gray-600">Kalung 24K, ~5g</td>
+            <td class="text-gray-600">19 Mei 2026</td>
+            <td><span class="bg-gray-100 border border-gray-400 text-gray-800 text-xs px-2 py-1 rounded-full font-bold">Pending</span></td>
+            <td class="flex gap-2 py-3">
+              <button class="text-xs bg-gray-700 text-white hover:bg-gray-800 px-3 py-1 rounded-lg transition font-medium">Konfirmasi</button>
+              <button class="text-xs bg-white border border-gray-400 hover:bg-gray-100 px-3 py-1 rounded-lg transition font-medium text-gray-700">Tolak</button>
+            </td>
+          </tr>
+          <tr class="hover:bg-gray-50 transition">
+            <td class="py-3 pl-3">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 bg-gray-300 rounded-full flex items-center justify-center text-xs font-bold text-gray-700">DL</div>
+                <span class="font-medium text-gray-900">Dewi Lestari</span>
+              </div>
+            </td>
+            <td><span class="bg-gray-200 border border-gray-300 text-gray-700 text-xs px-2 py-1 rounded-full font-medium">Jual</span></td>
+            <td class="text-gray-600">Emas batang 5g</td>
+            <td class="text-gray-600">20 Mei 2026</td>
+            <td><span class="bg-gray-300 border border-gray-500 text-gray-900 text-xs px-2 py-1 rounded-full font-bold">Dikonfirmasi</span></td>
+            <td class="flex gap-2 py-3">
+              <button class="text-xs bg-white border border-gray-400 hover:bg-gray-100 px-3 py-1 rounded-lg transition font-medium text-gray-800">Input Transaksi</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+</body>
+</html>

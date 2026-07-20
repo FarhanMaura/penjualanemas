@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Pelanggan — Sinar Baru II</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        gold: { 300:'#fcd34d', 400:'#fbbf24', 500:'#f59e0b', 600:'#d97706', 700:'#b45309', 900:'#78350f' },
+        dark: { 900:'#0f0e17', 800:'#1a1830', 700:'#252340', 600:'#2e2b55' }
+      },
+      fontFamily: { playfair:['Playfair Display','serif'], inter:['Inter','sans-serif'] }
+    }
+  }
+}
+</script>
+<style>
+body { font-family:'Inter',sans-serif; background:#0f0e17; }
+.gold-gradient { background:linear-gradient(135deg,#f59e0b,#d97706,#92400e); }
+.glass { background:rgba(255,255,255,0.04); backdrop-filter:blur(12px); border:1px solid rgba(245,158,11,0.15); }
+.glow { box-shadow:0 0 30px rgba(245,158,11,0.25); }
+.progress-bar { background:linear-gradient(90deg,#f59e0b,#d97706); }
+</style>
+</head>
+<body class="text-white">
+
+<!-- NAVBAR -->
+<nav class="glass border-b border-dark-600 sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="flex items-center gap-3">
+      <div class="w-9 h-9 gold-gradient rounded-full flex items-center justify-center font-bold text-sm">SB</div>
+      <p class="font-playfair font-bold text-gold-400">Sinar Baru II</p>
+    </div>
+    <div class="hidden md:flex items-center gap-6 text-sm text-gray-300">
+      <a href="landing.html" class="hover:text-gold-400 transition">Beranda</a>
+      <a href="#" class="hover:text-gold-400 transition">Katalog</a>
+      <a href="#" class="hover:text-gold-400 transition">Harga Emas</a>
+      <a href="#" class="hover:text-gold-400 transition">Layanan</a>
+    </div>
+    <div class="flex items-center gap-3">
+      <button class="glass px-3 py-2 rounded-xl text-sm hover:bg-white/10">🔔</button>
+      <div class="flex items-center gap-2 glass px-3 py-2 rounded-xl cursor-pointer hover:bg-white/10">
+        <div class="w-7 h-7 gold-gradient rounded-full flex items-center justify-center text-xs font-bold">SR</div>
+        <span class="text-sm">Siti Rahayu</span>
+        <span class="text-xs">▾</span>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<div class="max-w-7xl mx-auto px-6 py-8">
+
+  <!-- Welcome Banner -->
+  <div class="grid grid-cols-2 gap-6 mb-8">
+    <!-- Kartu Nama -->
+    <div class="glass rounded-3xl p-6 glow relative overflow-hidden">
+      <div class="absolute inset-0 bg-gradient-to-r from-gold-900/30 via-transparent to-transparent pointer-events-none"></div>
+      <div class="relative flex items-center gap-5">
+        <div class="w-16 h-16 gold-gradient rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg">SR</div>
+        <div>
+          <p class="text-sm text-gray-400">Selamat datang kembali,</p>
+          <h2 class="font-playfair text-2xl font-bold">Siti Rahayu</h2>
+          <p class="text-xs text-gray-500 mt-1">Member sejak Jan 2024</p>
+          <div class="mt-2 flex gap-2 text-xs text-gray-400">
+            <span>📱 +62 812-xxx-xxxx</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Kartu Status Loyalitas -->
+    <div class="glass rounded-3xl p-6">
+      <div class="flex items-center gap-4">
+        <div class="text-5xl">🥈</div>
+        <div class="flex-1">
+          <p class="text-xs text-gray-400 mb-0.5">Status Tier</p>
+          <p class="font-bold text-lg">Silver Member</p>
+          <p class="text-xs text-gray-400 mt-1">7 / 10 transaksi selesai</p>
+          <div class="mt-2 h-2 bg-dark-700 rounded-full overflow-hidden">
+            <div class="h-2 progress-bar rounded-full" style="width:70%"></div>
+          </div>
+          <div class="flex justify-between text-xs mt-1 text-gray-500">
+            <span>🥉 Bronze</span><span>🥈 Silver</span><span>🥇 Gold</span>
+          </div>
+        </div>
+        <div class="text-right">
+          <p class="text-4xl font-bold text-gold-400">7</p>
+          <p class="text-xs text-gray-400">transaksi</p>
+          <p class="text-xs text-gold-300 mt-1">🎯 3 lagi!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Reward Aktif (jika ada) — bisa disembunyikan kalau belum ke-10 -->
+  <!-- <div class="glass rounded-2xl p-5 mb-6 border border-gold-500 bg-gold-900/10 glow">...</div> -->
+
+  <div class="grid grid-cols-3 gap-6">
+
+    <!-- KOLOM KIRI (col-span-2) -->
+    <div class="col-span-2 space-y-6">
+
+      <!-- Harga Emas Hari Ini -->
+      <div class="glass rounded-2xl p-5">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-semibold text-gold-300">💰 Harga Emas Hari Ini</h3>
+          <span class="text-xs text-gray-400 glass px-3 py-1 rounded-full">17 Mei 2026</span>
+        </div>
+        <div class="grid grid-cols-2 gap-3">
+          <div class="bg-green-900/30 rounded-xl p-4 border border-green-700/30 text-center">
+            <p class="text-xs text-green-400 mb-1">Harga Beli (Toko Beli dari Anda)</p>
+            <p class="font-bold text-white text-xl">Rp 1.580.000</p>
+            <p class="text-xs text-gray-500">per gram • 24 Karat</p>
+          </div>
+          <div class="bg-dark-700 rounded-xl p-4 border border-gold-700/20 text-center">
+            <p class="text-xs text-gold-400 mb-1">Harga Jual (Toko Jual ke Anda)</p>
+            <p class="font-bold text-gold-400 text-xl">Rp 1.620.000</p>
+            <p class="text-xs text-gray-500">per gram • 24 Karat</p>
+          </div>
+        </div>
+      </div>
+
+      <!-- Aksi Cepat -->
+      <div class="glass rounded-2xl p-5">
+        <h3 class="font-semibold text-gold-300 mb-4">⚡ Buat Reservasi</h3>
+        <div class="grid grid-cols-4 gap-3">
+          <a href="#" class="flex flex-col items-center gap-2 glass rounded-xl p-4 hover:bg-white/10 hover:border-gold-500 transition cursor-pointer text-center group">
+            <span class="text-3xl group-hover:scale-110 transition-transform">🛒</span>
+            <span class="text-xs font-medium">Beli Emas</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-2 glass rounded-xl p-4 hover:bg-white/10 hover:border-gold-500 transition cursor-pointer text-center group">
+            <span class="text-3xl group-hover:scale-110 transition-transform">💰</span>
+            <span class="text-xs font-medium">Jual Emas</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-2 glass rounded-xl p-4 hover:bg-white/10 hover:border-gold-500 transition cursor-pointer text-center group">
+            <span class="text-3xl group-hover:scale-110 transition-transform">📅</span>
+            <span class="text-xs font-medium">Cicilan</span>
+          </a>
+          <a href="#" class="flex flex-col items-center gap-2 glass rounded-xl p-4 hover:bg-white/10 hover:border-gold-500 transition cursor-pointer text-center group">
+            <span class="text-3xl group-hover:scale-110 transition-transform">🏦</span>
+            <span class="text-xs font-medium">Gadai Emas</span>
+          </a>
+        </div>
+      </div>
+
+      <!-- Riwayat Reservasi -->
+      <div class="glass rounded-2xl p-5">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-semibold text-gold-300">📋 Reservasi Aktif</h3>
+          <a href="#" class="text-xs text-gold-400 hover:underline">Lihat Semua →</a>
+        </div>
+        <div class="space-y-3">
+          <div class="flex items-center justify-between glass rounded-xl p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-green-900/50 rounded-xl flex items-center justify-center">🛒</div>
+              <div>
+                <p class="text-sm font-medium">Reservasi Beli — Cincin 24K</p>
+                <p class="text-xs text-gray-400">Kunjungan: 18 Mei 2026 • Dibuat 16 Mei</p>
+              </div>
+            </div>
+            <span class="text-xs bg-green-900/50 text-green-400 px-3 py-1 rounded-full">Dikonfirmasi ✓</span>
+          </div>
+          <div class="flex items-center justify-between glass rounded-xl p-4">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 bg-yellow-900/50 rounded-xl flex items-center justify-center">📅</div>
+              <div>
+                <p class="text-sm font-medium">Simulasi Cicilan — Kalung 24K</p>
+                <p class="text-xs text-gray-400">Kunjungan: 22 Mei 2026 • Dibuat 17 Mei</p>
+              </div>
+            </div>
+            <span class="text-xs bg-yellow-900/50 text-yellow-400 px-3 py-1 rounded-full">Menunggu ⏳</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Riwayat Transaksi -->
+      <div class="glass rounded-2xl p-5">
+        <div class="flex justify-between items-center mb-4">
+          <h3 class="font-semibold text-gold-300">🧾 Riwayat Transaksi</h3>
+          <a href="#" class="text-xs text-gold-400 hover:underline">Lihat Semua →</a>
+        </div>
+        <div class="space-y-2">
+          <div class="flex items-center justify-between py-3 border-b border-dark-600">
+            <div class="flex items-center gap-3">
+              <span class="text-lg">🛒</span>
+              <div>
+                <p class="text-sm">Beli Cincin 24K (2.5g)</p>
+                <p class="text-xs text-gray-500">10 Apr 2026</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-bold text-red-400">- Rp 3.375.000</p>
+              <p class="text-xs text-gold-400">+1 poin ⭐</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between py-3 border-b border-dark-600">
+            <div class="flex items-center gap-3">
+              <span class="text-lg">💰</span>
+              <div>
+                <p class="text-sm">Jual Emas Batang 5g</p>
+                <p class="text-xs text-gray-500">22 Mar 2026</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-bold text-green-400">+ Rp 7.900.000</p>
+              <p class="text-xs text-gold-400">+1 poin ⭐</p>
+            </div>
+          </div>
+          <div class="flex items-center justify-between py-3">
+            <div class="flex items-center gap-3">
+              <span class="text-lg">📅</span>
+              <div>
+                <p class="text-sm">Cicilan Kalung 24K (bulan 3/12)</p>
+                <p class="text-xs text-gray-500">1 Mar 2026</p>
+              </div>
+            </div>
+            <div class="text-right">
+              <p class="text-sm font-bold text-orange-400">- Rp 680.000</p>
+              <p class="text-xs text-gray-500">angsuran</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- KOLOM KANAN -->
+    <div class="space-y-6">
+
+      <!-- Reward ke-10 Info -->
+      <div class="glass rounded-2xl p-5 border border-gold-700/30 bg-gold-900/10">
+        <h3 class="font-semibold text-gold-300 mb-3">🎁 Reward ke-10 Transaksi</h3>
+        <div class="space-y-2">
+          <div class="flex justify-between text-xs glass rounded-lg px-3 py-2">
+            <span class="text-gray-400">Transaksi saat ini</span>
+            <span class="text-gold-400 font-bold">7 transaksi</span>
+          </div>
+          <div class="flex justify-between text-xs glass rounded-lg px-3 py-2">
+            <span class="text-gray-400">Target Gold Reward</span>
+            <span class="text-gold-400 font-bold">10 transaksi</span>
+          </div>
+          <div class="flex justify-between text-xs glass rounded-lg px-3 py-2">
+            <span class="text-gray-400">Kurang</span>
+            <span class="text-white font-bold">3 lagi 🎯</span>
+          </div>
+        </div>
+        <div class="mt-3 p-3 rounded-xl bg-gold-900/20 border border-gold-700/30">
+          <p class="text-xs text-gold-300 font-semibold">Hadiah menanti:</p>
+          <p class="text-xs text-gray-400 mt-1">✂️ Diskon khusus + 🫧 Cuci emas GRATIS!</p>
+        </div>
+      </div>
+
+      <!-- Gadai Aktif -->
+      <div class="glass rounded-2xl p-5">
+        <h3 class="font-semibold text-gold-300 mb-4">🏦 Gadai Aktif</h3>
+        <div class="glass rounded-xl p-4">
+          <div class="flex justify-between items-start mb-2">
+            <p class="text-sm font-medium">Kalung Rantai 24K</p>
+            <span class="text-xs bg-green-900/50 text-green-400 px-2 py-0.5 rounded-full">Aktif</span>
+          </div>
+          <p class="text-xs text-gray-400">Nilai pinjaman:</p>
+          <p class="text-lg font-bold text-gold-400">Rp 4.200.000</p>
+          <div class="mt-3 pt-3 border-t border-dark-600">
+            <div class="flex justify-between text-xs">
+              <span class="text-gray-400">Jatuh tempo:</span>
+              <span class="text-red-400 font-medium">15 Jun 2026</span>
+            </div>
+            <div class="flex justify-between text-xs mt-1">
+              <span class="text-gray-400">Sisa hari:</span>
+              <span class="text-white">29 hari</span>
+            </div>
+          </div>
+          <button class="w-full mt-3 py-2 text-xs glass rounded-lg text-gold-400 hover:bg-gold-900/30 transition">Lihat Detail</button>
+        </div>
+        <p class="text-xs text-gray-500 text-center mt-2">Tidak ada gadai lain aktif</p>
+      </div>
+
+      <!-- Cicilan Berjalan -->
+      <div class="glass rounded-2xl p-5">
+        <h3 class="font-semibold text-gold-300 mb-4">📅 Cicilan Berjalan</h3>
+        <div class="glass rounded-xl p-4">
+          <p class="text-sm font-medium">Kalung 24K, 5g</p>
+          <p class="text-xs text-gray-400 mt-1">Tenor 12 bulan</p>
+          <div class="mt-3">
+            <div class="flex justify-between text-xs mb-1">
+              <span class="text-gray-400">Progress</span>
+              <span class="text-gold-400">3 / 12 bulan</span>
+            </div>
+            <div class="h-2 bg-dark-700 rounded-full">
+              <div class="h-2 progress-bar rounded-full" style="width:25%"></div>
+            </div>
+          </div>
+          <div class="mt-3 flex justify-between text-xs">
+            <span class="text-gray-400">Angsuran/bulan</span>
+            <span class="font-bold text-white">Rp 680.000</span>
+          </div>
+          <div class="flex justify-between text-xs mt-1">
+            <span class="text-gray-400">Sisa bayar</span>
+            <span class="font-bold text-orange-400">Rp 6.120.000</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- FOOTER -->
+<footer class="mt-12 border-t border-dark-700 py-6 text-center text-xs text-gray-600">
+  © 2026 Toko Emas Sinar Baru II — <a href="landing.html" class="text-gold-600 hover:underline">Kembali ke Beranda</a>
+</footer>
+
+</body>
+</html>

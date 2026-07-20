@@ -1,0 +1,51 @@
+/* =============================================================
+   base.css — Reset, Typography, Global Variables
+   ============================================================= */
+
+:root {
+    /* Color Palette */
+    --color-bg-dark:    #0f0e17;
+    --color-bg-sidebar: #1a1830;
+    --color-gold-400:   #fbbf24;
+    --color-gold-500:   #f59e0b;
+    --color-gold-600:   #d97706;
+    --color-orange-500: #f97316;
+    --color-orange-600: #ea580c;
+
+    /* Typography */
+    --font-base:     'Inter', sans-serif;
+    --font-display:  'Playfair Display', serif;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+body {
+    font-family: var(--font-base);
+    background-color: var(--color-bg-dark);
+    color: #ffffff;
+    color-scheme: dark;
+}
+
+h1, h2, h3, .font-display {
+    font-family: var(--font-display);
+}
+
+/* Scrollbar custom */
+::-webkit-scrollbar {
+    width: 5px;
+    height: 5px;
+}
+::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.03);
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(245, 158, 11, 0.3);
+    border-radius: 999px;
+}
+::-webkit-scrollbar-thumb:hover {
+    background: rgba(245, 158, 11, 0.5);
+}
