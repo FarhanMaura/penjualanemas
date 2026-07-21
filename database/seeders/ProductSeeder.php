@@ -10,162 +10,115 @@ use Illuminate\Support\Str;
 class ProductSeeder extends Seeder
 {
     /**
-     * Produk toko ini hanya jual emas 24K dalam 5 ukuran:
-     *  - 1 Gram
-     *  - Setengah Gram (0.5g)
-     *  - 1 Suku (0.25g)
-     *  - 2 Suku (0.5g) — sama berat dengan setengah gram tapi beda format
-     *  - 3 Suku (0.75g)
-     *
-     * Harga base dihitung dari harga jual seeder ~Rp 1.620.000/gram
+     * Data Real Produk Emas Toko Sinar Baru II:
+     * 
+     * Spesifikasi Berat:
+     *  - 0,5 gram   : Setengah Gram (0.500g)
+     *  - 1,0 gram   : 1 Gram (1.000g)
+     *  - 1,65 gram  : 1/4 Suku (1.650g)
+     *  - 3,4 gram   : Setengah Suku (3.400g)
+     *  - 6,7 gram   : 1 Suku (6.700g)
+     *  - 13,4 gram  : 2 Suku (13.400g)
+     *  - 20,1 gram  : 3 Suku (20.100g)
+     *  - 33,5 gram  : 5 Suku (33.500g)
      */
     public function run(): void
     {
-        $catId = fn(string $slug) => Category::where('slug', $slug)->value('id');        $products = [
-            [
-                'category_slug' => 'cincin-emas',
-                'sku'           => 'JW-CIN-24K-01',
-                'name'          => 'Cincin Solitaire Emas Putih',
-                'description'   => 'Cincin solitaire emas putih 24 karat (kadar 999) dengan berlian mikro pilihan. Sangat elegan untuk acara formal maupun pertunangan.',
-                'purity'        => '24K',
-                'weight'        => 2.500,
-                'base_price'    => 2250000,
-                'stock'         => 12,
-                'sort_order'    => 1,
-                'images'        => ['/images/products/cincin.png'],
+        $catId = fn(string $slug) => Category::where('slug', $slug)->value('id');
+
+        // Definisi varian berat
+        $weightSpecs = [
+            '0.5'  => ['gram' => 0.500, 'label' => 'Setengah Gram', 'tag' => '0,5g',  'code' => '05G'],
+            '1.0'  => ['gram' => 1.000, 'label' => '1 Gram',        'tag' => '1,0g',  'code' => '10G'],
+            '1.65' => ['gram' => 1.650, 'label' => '1/4 Suku',      'tag' => '1,65g', 'code' => '14S'],
+            '3.4'  => ['gram' => 3.400, 'label' => 'Setengah Suku', 'tag' => '3,4g',  'code' => '12S'],
+            '6.7'  => ['gram' => 6.700, 'label' => '1 Suku',        'tag' => '6,7g',  'code' => '1S'],
+            '13.4' => ['gram' => 13.400, 'label' => '2 Suku',       'tag' => '13,4g', 'code' => '2S'],
+            '20.1' => ['gram' => 20.100, 'label' => '3 Suku',       'tag' => '20,1g', 'code' => '3S'],
+            '33.5' => ['gram' => 33.500, 'label' => '5 Suku',       'tag' => '33,5g', 'code' => '5S'],
+        ];
+
+        // Definisi kategori & model serta varian berat yang dijual
+        $categoriesData = [
+            'cincin-emas' => [
+                'prefix'  => 'JW-CIN',
+                'title'   => 'Cincin',
+                'image'   => '/images/products/cincin.png',
+                'models'  => ['Bangkok', 'Asahan', 'Borobudur', 'Chanel', 'Sultan'],
+                'weights' => ['0.5', '1.0', '1.65', '3.4', '6.7'],
             ],
-            [
-                'category_slug' => 'cincin-emas',
-                'sku'           => 'JW-CIN-24K-02',
-                'name'          => 'Cincin Kawin Klasik',
-                'description'   => 'Cincin kawin polos klasik dari emas kuning 24 karat (kadar 999). Memiliki kilau hangat tradisional yang abadi dan nyaman digunakan sehari-hari.',
-                'purity'        => '24K',
-                'weight'        => 4.000,
-                'base_price'    => 3920000,
-                'stock'         => 8,
-                'sort_order'    => 2,
-                'images'        => ['/images/products/cincin.png'],
+            'kalung-emas' => [
+                'prefix'  => 'JW-KAL',
+                'title'   => 'Kalung',
+                'image'   => '/images/products/kalung.png',
+                'models'  => ['Padi', 'Medan'],
+                'weights' => ['1.0', '1.65', '3.4', '6.7', '13.4', '20.1', '33.5'],
             ],
-            [
-                'category_slug' => 'kalung-emas',
-                'sku'           => 'JW-KAL-24K-01',
-                'name'          => 'Kalung Rantai Rolo',
-                'description'   => 'Kalung model rantai rolo ramping dari emas murni 24 karat (kadar 999). Fleksibel dan cocok dipadukan dengan liontin favorit Anda.',
-                'purity'        => '24K',
-                'weight'        => 5.000,
-                'base_price'    => 4450000,
-                'stock'         => 7,
-                'sort_order'    => 3,
-                'images'        => ['/images/products/kalung.png'],
+            'gelang-emas' => [
+                'prefix'  => 'JW-GEL',
+                'title'   => 'Gelang',
+                'image'   => '/images/products/gelang.png',
+                'models'  => ['Padi', 'Medan'],
+                'weights' => ['1.0', '1.65', '3.4', '6.7', '13.4', '20.1', '33.5'],
             ],
-            [
-                'category_slug' => 'kalung-emas',
-                'sku'           => 'JW-KAL-24K-02',
-                'name'          => 'Kalung Emas Murni Liontin',
-                'description'   => 'Kalung emas murni berkadar 24 karat (kadar 999) dilengkapi liontin berbentuk hati. Pilihan ekonomis dengan penampilan mewah.',
-                'purity'        => '24K',
-                'weight'        => 3.500,
-                'base_price'    => 2800000,
-                'stock'         => 15,
-                'sort_order'    => 4,
-                'images'        => ['/images/products/kalung.png'],
-            ],
-            [
-                'category_slug' => 'gelang-emas',
-                'sku'           => 'JW-GEL-24K-01',
-                'name'          => 'Gelang Bangle Kaku',
-                'description'   => 'Gelang kaku (bangle) ukir motif tradisional dari emas kuning 24 karat (kadar 999). Kuat, elegan, dan bernilai tinggi.',
-                'purity'        => '24K',
-                'weight'        => 8.000,
-                'base_price'    => 7840000,
-                'stock'         => 5,
-                'sort_order'    => 5,
-                'images'        => ['/images/products/gelang.png'],
-            ],
-            [
-                'category_slug' => 'gelang-emas',
-                'sku'           => 'JW-GEL-24K-02',
-                'name'          => 'Gelang Rantai Plat',
-                'description'   => 'Gelang rantai model plat dari emas murni 24 karat (kadar 999). Cocok untuk pria maupun wanita dengan gaya modern.',
-                'purity'        => '24K',
-                'weight'        => 6.000,
-                'base_price'    => 5340000,
-                'stock'         => 10,
-                'sort_order'    => 6,
-                'images'        => ['/images/products/gelang.png'],
-            ],
-            [
-                'category_slug' => 'anting-emas',
-                'sku'           => 'JW-ANT-24K-01',
-                'name'          => 'Anting Giwang Bulat',
-                'description'   => 'Anting giwang (stud) bulat simpel dari emas murni 24 karat (kadar 999). Nyaman digunakan sehari-hari tanpa mengganggu aktivitas.',
-                'purity'        => '24K',
-                'weight'        => 1.500,
-                'base_price'    => 1350000,
-                'stock'         => 20,
-                'sort_order'    => 7,
-                'images'        => ['/images/products/anting.png'],
-            ],
-            [
-                'category_slug' => 'anting-emas',
-                'sku'           => 'JW-ANT-24K-02',
-                'name'          => 'Anting Gantung Rumbai',
-                'description'   => 'Anting gantung dengan rumbai cantik emas 24 karat (kadar 999). Memberikan kesan mewah, dinamis, dan anggun saat dipakai.',
-                'purity'        => '24K',
-                'weight'        => 3.000,
-                'base_price'    => 2940000,
-                'stock'         => 9,
-                'sort_order'    => 8,
-                'images'        => ['/images/products/anting.png'],
-            ],
-            [
-                'category_slug' => 'cincin-emas',
-                'sku'           => 'JW-CIN-24K-03',
-                'name'          => 'Cincin Emas Murni Anak',
-                'description'   => 'Cincin emas murni berkadar 24 karat (kadar 999) untuk anak-anak dengan hiasan karakter lucu. Aman bagi kulit sensitif balita.',
-                'purity'        => '24K',
-                'weight'        => 1.000,
-                'base_price'    => 550000,
-                'stock'         => 25,
-                'sort_order'    => 9,
-                'images'        => ['/images/products/cincin.png'],
-            ],
-            [
-                'category_slug' => 'gelang-emas',
-                'sku'           => 'JW-GEL-24K-03',
-                'name'          => 'Gelang Murni Anak Kerincing',
-                'description'   => 'Gelang emas murni berkadar 24 karat (kadar 999) model rantai kerincing untuk balita. Dilengkapi krincing kecil berbunyi halus.',
-                'purity'        => '24K',
-                'weight'        => 2.000,
-                'base_price'    => 1100000,
-                'stock'         => 15,
-                'sort_order'    => 10,
-                'images'        => ['/images/products/gelang.png'],
+            'anting-emas' => [
+                'prefix'  => 'JW-ANT',
+                'title'   => 'Anting',
+                'image'   => '/images/products/anting.png',
+                'models'  => ['Rantai Bintang', 'Micimouse', 'Patam'],
+                'weights' => ['0.5', '1.0', '1.65'],
             ],
         ];
 
-        foreach ($products as $p) {
-            $categoryId = $catId($p['category_slug']);
+        $estimatedPricePerGram = 1620000;
+        $sortOrder = 1;
+
+        foreach ($categoriesData as $catSlug => $config) {
+            $categoryId = $catId($catSlug);
             if (! $categoryId) continue;
 
-            Product::updateOrCreate(
-                ['sku' => $p['sku']],
-                [
-                    'category_id'    => $categoryId,
-                    'name'           => $p['name'],
-                    'slug'           => Str::slug($p['name']),
-                    'description'    => $p['description'],
-                    'gold_purity'    => $p['purity'],
-                    'weight_gram'    => $p['weight'],
-                    'base_price'     => $p['base_price'],
-                    'buy_back_price' => round($p['base_price'] * 0.97, 2),
-                    'stock'          => $p['stock'],
-                    'images'         => $p['images'],
-                    'is_available'   => $p['stock'] > 0,
-                    'is_reservable'  => $p['stock'] > 0,
-                    'sort_order'     => $p['sort_order'],
-                ]
-            );
+            foreach ($config['models'] as $modelName) {
+                foreach ($config['weights'] as $wKey) {
+                    $wInfo = $weightSpecs[$wKey];
+                    
+                    // Format Nama Produk
+                    if ($wKey === '1.0') {
+                        $productName = "{$config['title']} {$modelName} 1 Gram";
+                    } else {
+                        $productName = "{$config['title']} {$modelName} ({$wInfo['label']} - {$wInfo['tag']})";
+                    }
+
+                    // SKU unik
+                    $modelSlug = strtoupper(Str::slug($modelName, ''));
+                    $sku = "{$config['prefix']}-{$modelSlug}-{$wInfo['code']}";
+
+                    // Deskripsi Produk
+                    $desc = "{$config['title']} murni model {$modelName} berkadar 24 karat (999) dengan ukuran berat {$wInfo['label']} ({$wInfo['gram']} gram). Memiliki kilau mewah, garansi keaslian, dan cocok untuk pemakaian maupun investasi.";
+
+                    // Base price
+                    $basePrice = round($estimatedPricePerGram * $wInfo['gram'], -3);
+                    $stock = rand(8, 25);
+
+                    Product::updateOrCreate(
+                        ['sku' => $sku],
+                        [
+                            'category_id'    => $categoryId,
+                            'name'           => $productName,
+                            'slug'           => Str::slug($productName),
+                            'description'    => $desc,
+                            'gold_purity'    => '24K',
+                            'weight_gram'    => $wInfo['gram'],
+                            'base_price'     => $basePrice,
+                            'buy_back_price' => round($basePrice * 0.97, -3),
+                            'stock'          => $stock,
+                            'images'         => [$config['image']],
+                            'is_available'   => true,
+                            'is_reservable'  => true,
+                            'sort_order'     => $sortOrder++,
+                        ]
+                    );
+                }
+            }
         }
     }
 }

@@ -16,12 +16,14 @@ class TransactionAndCertificateSeeder extends Seeder
     {
         $customer = User::where('role', 'customer')->first();
         $admin = User::where('role', 'admin')->first();
-        $product = Product::where('sku', 'JW-CIN-24K-01')->first(); // Cincin Solitaire
+        $product = Product::first();
         $goldPrice = GoldPrice::latest('price_date')->first();
 
         if (!$customer || !$admin || !$product) {
             return;
         }
+
+        $notesText = 'Pembelian lunas ' . $product->name;
 
         // Create completed transaction
         $transaction = Transaction::create([
@@ -37,7 +39,7 @@ class TransactionAndCertificateSeeder extends Seeder
             'payment_method'   => 'transfer',
             'payment_date'     => today(),
             'processed_by'     => $admin->id,
-            'notes'            => 'Pembelian lunas Cincin Solitaire Emas Putih',
+            'notes'            => $notesText,
         ]);
 
         // Create transaction item

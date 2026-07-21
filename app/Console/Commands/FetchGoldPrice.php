@@ -30,16 +30,22 @@ class FetchGoldPrice extends Command
 
         $admin = User::where('role', 'admin')->first();
 
-        GoldPrice::updateOrCreate(
-            ['price_date' => today()->toDateString()],
-            [
-                'buy_price_per_gram'  => $data['buy'],
-                'sell_price_per_gram' => $data['sell'],
-                'source'              => $data['source'],
-                'recorded_by'         => $admin?->id ?? 1,
-                'notes'               => 'Auto-fetch via scheduled command.',
-            ]
-        );
+        $dateStr = today()->toDateString();
+        $record  = GoldPrice::whereDate('price_date', $dateStr)->first();
+
+        $attributes = [
+            'buy_price_per_gram'  => $data['buy'],
+            'sell_price_per_gram' => $data['sell'],
+            'source'              => $data['source'],
+            'recorded_by'         => $admin?->id ?? 1,
+            'notes'               => 'Auto-fetch via scheduled command.',
+        ];
+
+        if ($record) {
+            $record->update($attributes);
+        } else {
+            GoldPrice::create(array_merge(['price_date' => $dateStr], $attributes));
+        }
 
         $this->service->clearCache();
 
