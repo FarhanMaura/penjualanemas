@@ -110,9 +110,7 @@
                 <div>
                     <label class="input-label">Kadar Emas *</label>
                     <select name="pawn_gold_purity" id="pawn_gold_purity" class="input-field">
-                        @foreach(['24K','22K','18K','14K','9K'] as $pur)
-                        <option value="{{ $pur }}" {{ old('pawn_gold_purity', $selectedReservation?->pawn_gold_purity) == $pur ? 'selected' : '' }}>{{ $pur }}</option>
-                        @endforeach
+                        <option value="24K" selected>24K</option>
                     </select>
                 </div>
                 <div>

@@ -16,7 +16,7 @@ class TransactionAndCertificateSeeder extends Seeder
     {
         $customer = User::where('role', 'customer')->first();
         $admin = User::where('role', 'admin')->first();
-        $product = Product::where('sku', 'JW-CIN-18K-01')->first(); // Cincin Solitaire
+        $product = Product::where('sku', 'JW-CIN-24K-01')->first(); // Cincin Solitaire
         $goldPrice = GoldPrice::latest('price_date')->first();
 
         if (!$customer || !$admin || !$product) {

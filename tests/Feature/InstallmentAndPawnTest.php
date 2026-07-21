@@ -158,7 +158,7 @@ class InstallmentAndPawnTest extends TestCase
             'payment_method' => 'cash',
             'payment_date' => today()->toDateString(),
             'pawn_gold_description' => 'Kalung emas',
-            'pawn_gold_purity' => '18K',
+            'pawn_gold_purity' => '24K',
             'pawn_weight_gram' => 10.5,
             'pawn_appraised_value' => 8000000,
             'pawn_loan_amount' => 5000000,

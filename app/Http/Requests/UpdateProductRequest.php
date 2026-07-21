@@ -18,7 +18,7 @@ class UpdateProductRequest extends FormRequest
             'sku'           => ['required','string','max:50', Rule::unique('products','sku')->ignore($productId)],
             'name'          => ['required','string','max:200'],
             'description'   => ['nullable','string'],
-            'gold_purity'   => ['required','in:24K,22K,18K,14K,9K'],
+            'gold_purity'   => ['required','in:24K'],
             'weight_gram'   => ['required','numeric','min:0.001','max:9999'],
             'base_price'    => ['required','numeric','min:1'],
             'buy_back_price'=> ['nullable','numeric','min:0'],

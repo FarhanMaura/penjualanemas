@@ -33,7 +33,7 @@ class StoreTransactionRequest extends FormRequest
 
             // Gadai fields
             'pawn_gold_description' => ['required_if:type,pawn', 'nullable', 'string', 'max:1000'],
-            'pawn_gold_purity'      => ['required_if:type,pawn', 'nullable', 'string', 'max:20'],
+            'pawn_gold_purity'      => ['required_if:type,pawn', 'nullable', 'in:24K'],
             'pawn_weight_gram'      => ['required_if:type,pawn', 'nullable', 'numeric', 'min:0.01'],
             'pawn_appraised_value'  => ['required_if:type,pawn', 'nullable', 'numeric', 'min:0'],
             'pawn_loan_amount'      => ['required_if:type,pawn', 'nullable', 'numeric', 'min:0'],

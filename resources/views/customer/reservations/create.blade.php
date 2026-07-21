@@ -113,9 +113,7 @@
                                 <label class="block text-sm font-medium text-gray-300 mb-2">Kadar Emas (Karat)</label>
                                 <select name="pawn_gold_purity" class="w-full rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2"
                                         style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); --tw-ring-color:#f59e0b;">
-                                    @foreach(['24K','22K','18K','14K','9K'] as $pur)
-                                        <option value="{{ $pur }}" {{ old('pawn_gold_purity') == $pur ? 'selected' : '' }} class="text-gray-900">{{ $pur }}</option>
-                                    @endforeach
+                                    <option value="24K" selected class="text-gray-900">24K</option>
                                 </select>
                             </div>
                             <div>

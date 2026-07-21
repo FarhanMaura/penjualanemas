@@ -19,7 +19,7 @@ class ProductFactory extends Factory
     public function definition(): array
     {
         $types = ['Cincin', 'Gelang', 'Kalung', 'Anting', 'Liontin'];
-        $purities = ['18K', '22K', '24K'];
+        $purities = ['24K'];
         $type = $this->faker->randomElement($types);
         $name = $type . ' Emas ' . $this->faker->word();
         

@@ -141,12 +141,12 @@
                      data-stock="{{ $product->stock }} pcs"
                      data-desc="{{ $product->description }}"
                      data-slug="{{ $product->slug }}"
-                     data-image="{{ $product->thumbnail ? asset($product->thumbnail) : '' }}"
+                     data-image="{{ $product->thumbnail_url ?? '' }}"
                      class="glass rounded-2xl overflow-hidden hover:scale-105 hover:border-primary-500 transition-all cursor-pointer group"
                      style="transition: all 0.3s ease;">
                     <div class="h-36 flex items-center justify-center flex-col gap-2" style="background: linear-gradient(135deg, rgba(124,45,18,0.5), rgba(194,65,12,0.2));">
-                        @if($product->thumbnail)
-                        <img src="{{ asset($product->thumbnail) }}" class="h-28 w-28 object-contain group-hover:scale-110 transition-transform duration-300">
+                        @if($product->thumbnail_url)
+                        <img src="{{ $product->thumbnail_url }}" class="h-28 w-28 object-contain group-hover:scale-110 transition-transform duration-300">
                         @else
                         <span class="text-4xl group-hover:scale-110" style="transition: transform 0.2s;">{{ $icon }}</span>
                         @endif
@@ -177,11 +177,12 @@
     {{-- MODAL PRODUK --}}
     <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center modal-bg" onclick="closeModal(event)">
         <div class="glass rounded-3xl p-0 max-w-md w-full mx-4 overflow-hidden glow" onclick="event.stopPropagation()">
-            <div id="modal-header" class="h-48 flex items-center justify-center text-7xl relative"
+            <div id="modal-header" class="h-48 flex items-center justify-center relative overflow-hidden"
                  style="background: linear-gradient(135deg, rgba(124,45,18,0.6), #1c1008);">
-                <span id="modal-icon">🪙</span>
+                <span id="modal-icon" class="text-7xl">🪙</span>
+                <img id="modal-img" src="" class="hidden h-36 w-36 object-contain" />
                 <button onclick="closeModal()"
-                    class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl bg-dark-800 w-8 h-8 rounded-full flex items-center justify-center"
+                    class="absolute top-4 right-4 text-gray-400 hover:text-white text-2xl bg-dark-800 w-8 h-8 rounded-full flex items-center justify-center z-10"
                     style="background:rgba(28,16,8,0.8);">×</button>
             </div>
             <div class="p-6">

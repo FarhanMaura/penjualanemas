@@ -39,9 +39,7 @@
                 <div>
                     <label class="input-label">Kadar Emas *</label>
                     <select name="gold_purity" class="input-field" required>
-                        @foreach(['24K','22K','18K','14K','9K'] as $k)
-                        <option value="{{ $k }}" {{ old('gold_purity',$product->gold_purity) == $k ? 'selected':'' }}>{{ $k }}</option>
-                        @endforeach
+                        <option value="24K" selected>24K</option>
                     </select>
                 </div>
                 <div>
@@ -70,8 +68,8 @@
                 </div>
                 <div class="col-span-2">
                     <label class="input-label">Ganti Foto Produk</label>
-                    @if($product->thumbnail)
-                    <img src="{{ Storage::url($product->thumbnail) }}" class="w-32 h-32 rounded-xl object-cover mb-3">
+                    @if($product->thumbnail_url)
+                    <img src="{{ $product->thumbnail_url }}" class="w-32 h-32 rounded-xl object-cover mb-3">
                     @endif
                     <input id="product-image-input" type="file" name="image" accept="image/*" class="input-field">
                     <img id="product-image-preview" src="" class="hidden mt-3 w-32 h-32 rounded-xl object-cover">

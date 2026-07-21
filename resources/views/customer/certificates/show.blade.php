@@ -48,7 +48,7 @@
                     </div>
                     <div class="flex justify-between border-b border-white/5 py-2">
                         <span class="text-gray-400">Kadar Emas (Karat)</span>
-                        <span class="text-yellow-400 font-bold">{{ $item->product->gold_purity ?? '18K' }}</span>
+                        <span class="text-yellow-400 font-bold">{{ $item->product->gold_purity ?? '24K' }}</span>
                     </div>
                     <div class="flex justify-between border-b border-white/5 py-2">
                         <span class="text-gray-400">Berat Bersih (Gram)</span>

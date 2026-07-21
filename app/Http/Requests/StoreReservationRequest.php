@@ -19,7 +19,7 @@ class StoreReservationRequest extends FormRequest
             'payment_method'           => ['required_if:type,purchase,installment', 'nullable', 'in:cash,transfer,debit,credit'],
             'notes'                    => ['nullable','string','max:500'],
             'pawn_gold_description'    => ['required_if:type,pawn', 'nullable', 'string', 'max:500'],
-            'pawn_gold_purity'         => ['required_if:type,pawn', 'nullable', 'string', 'max:20'],
+            'pawn_gold_purity'         => ['required_if:type,pawn', 'nullable', 'in:24K'],
             'pawn_weight_gram'         => ['required_if:type,pawn', 'nullable', 'numeric', 'min:0.01'],
             'pawn_amount_requested'    => ['required_if:type,pawn', 'nullable', 'numeric', 'min:1000'],
             'installment_tenure'       => ['required_if:type,installment', 'nullable', 'integer', 'in:3,6,12'],

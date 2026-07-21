@@ -93,8 +93,8 @@
                     @foreach($products as $p)
                     <tr style="border-bottom:1px solid rgba(255,255,255,0.04);" class="hover:bg-white/5 transition">
                         <td class="py-3 px-4">
-                            @if($p->thumbnail)
-                            <img src="{{ Storage::url($p->thumbnail) }}" class="w-10 h-10 rounded-lg object-cover">
+                            @if($p->thumbnail_url)
+                            <img src="{{ $p->thumbnail_url }}" class="w-10 h-10 rounded-lg object-cover">
                             @else
                             <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl"
                                  style="background:rgba(245,158,11,0.1); border:1px solid rgba(245,158,11,0.2);">

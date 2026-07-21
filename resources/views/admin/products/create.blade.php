@@ -47,9 +47,7 @@
                 <div>
                     <label class="input-label">Kadar Emas *</label>
                     <select name="gold_purity" class="input-field" required>
-                        @foreach(['24K','22K','18K','14K','9K'] as $k)
-                        <option value="{{ $k }}" {{ old('gold_purity','24K') == $k ? 'selected':'' }}>{{ $k }}</option>
-                        @endforeach
+                        <option value="24K" selected>24K</option>
                     </select>
                 </div>
 

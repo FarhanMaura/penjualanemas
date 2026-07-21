@@ -53,6 +53,25 @@ class Product extends Model
         return (is_array($images) && count($images) > 0) ? $images[0] : null;
     }
 
+    /**
+     * Ambil URL gambar thumbnail secara dinamis.
+     */
+    public function getThumbnailUrlAttribute(): ?string
+    {
+        $thumbnail = $this->thumbnail;
+        if (! $thumbnail) {
+            return null;
+        }
+
+        // Jika path berupa URL luar atau file statis dari public/images
+        if (str_starts_with($thumbnail, 'http') || str_starts_with($thumbnail, '/images')) {
+            return $thumbnail;
+        }
+
+        // Jika gambar di-upload dan disimpan di storage/app/public/products
+        return \Illuminate\Support\Facades\Storage::url($thumbnail);
+    }
+
     // ─── Relationships ────────────────────────────────────────────────────────
 
     public function category(): BelongsTo

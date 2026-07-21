@@ -58,8 +58,8 @@
              style="transition: all 0.3s ease;">
             <div class="h-36 flex items-center justify-center flex-col gap-2"
                  style="background:linear-gradient(135deg, rgba(124,45,18,0.5), rgba(194,65,12,0.2));">
-                @if($product->thumbnail)
-                <img src="{{ asset($product->thumbnail) }}" class="h-28 w-28 object-contain group-hover:scale-110 transition-transform duration-300">
+                @if($product->thumbnail_url)
+                <img src="{{ $product->thumbnail_url }}" class="h-28 w-28 object-contain group-hover:scale-110 transition-transform duration-300">
                 @else
                 <span class="text-4xl group-hover:scale-110 transition-transform">{{ $icon }}</span>
                 @endif
