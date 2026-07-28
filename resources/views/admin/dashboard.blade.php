@@ -10,7 +10,7 @@
 @endif
 
 {{-- KPI Cards --}}
-<div class="grid grid-cols-4 gap-6 mb-8">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6 mb-8">
     <div class="kpi-card">
         <div class="flex justify-between items-start mb-3">
             <p class="kpi-label">Total Pelanggan</p>
@@ -45,7 +45,7 @@
     </div>
 </div>
 
-<div class="grid grid-cols-3 gap-6 mb-8">
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4 lg:gap-6 mb-8">
     {{-- Harga Emas Hari Ini --}}
     <div class="glass rounded-2xl p-5">
         <div class="flex justify-between items-center mb-4">
@@ -53,7 +53,7 @@
             <a href="{{ route('admin.gold-prices.index') }}" class="btn-gold text-xs">Update</a>
         </div>
         @if($goldPrice)
-        <div class="grid grid-cols-2 gap-3">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
             <div class="rounded-xl p-3 text-center" style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2);">
                 <p class="text-xs text-green-400 mb-1">24K — Harga Beli</p>
                 <p class="font-bold text-white text-base">Rp {{ number_format($goldPrice->buy_price_per_gram,0,',','.') }}</p>

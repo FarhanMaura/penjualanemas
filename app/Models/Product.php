@@ -26,18 +26,20 @@ class Product extends Model
         'images',
         'is_available',
         'is_reservable',
+        'is_basic',
         'sort_order',
     ];
 
     protected function casts(): array
     {
         return [
-            'images'       => 'array',
-            'weight_gram'  => 'decimal:3',
-            'base_price'   => 'decimal:2',
+            'images'        => 'array',
+            'weight_gram'   => 'decimal:3',
+            'base_price'    => 'decimal:2',
             'buy_back_price' => 'decimal:2',
-            'is_available' => 'boolean',
+            'is_available'  => 'boolean',
             'is_reservable' => 'boolean',
+            'is_basic'      => 'boolean',
         ];
     }
 

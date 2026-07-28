@@ -27,7 +27,7 @@
 </div>
 
 {{-- Tier Stats --}}
-<div class="grid grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     @foreach([
         ['tier'=>'🥉 Bronze','count'=>'0','range'=>'0–4 transaksi','color'=>'#b45309'],
         ['tier'=>'🥈 Silver','count'=>'0','range'=>'5–9 transaksi','color'=>'#9ca3af'],
@@ -49,7 +49,7 @@
         <span class="text-xs text-gray-500">0 pelanggan terdaftar</span>
     </div>
     <div class="overflow-x-auto">
-        <table class="w-full text-sm">
+        <table class="w-full text-sm min-w-[700px]">
             <thead>
                 <tr class="text-xs text-gray-400 uppercase" style="border-bottom:1px solid rgba(255,255,255,0.05); background:rgba(255,255,255,0.02);">
                     <th class="text-left px-6 py-3">Pelanggan</th>

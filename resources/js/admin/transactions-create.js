@@ -6,6 +6,79 @@ document.addEventListener('DOMContentLoaded', () => {
     const productMap = {};
     PRODUCTS.forEach(p => productMap[p.id] = p);
 
+    const RESERVATIONS = window.RESERVATIONS_DATA || [];
+    const reservationMap = {};
+    RESERVATIONS.forEach(r => reservationMap[r.id] = r);
+
+    const reservationSelect = document.getElementById('reservation_select');
+    if (reservationSelect) {
+        reservationSelect.addEventListener('change', () => {
+            const resId = reservationSelect.value;
+            if (!resId || !reservationMap[resId]) return;
+            const res = reservationMap[resId];
+
+            // Auto-fill customer
+            const userSelect = document.querySelector('[name=user_id]');
+            if (userSelect && res.user_id) userSelect.value = res.user_id;
+
+            // Auto-fill type
+            const typeSel = document.getElementById('transaction_type');
+            if (typeSel && res.type) {
+                typeSel.value = res.type;
+                toggleFields();
+            }
+
+            // Auto-fill payment method
+            const paySelect = document.getElementById('transaction_payment_method');
+            if (paySelect && res.payment_method) paySelect.value = res.payment_method;
+
+            // Auto-fill notes
+            const notesEl = document.querySelector('[name=notes]');
+            if (notesEl && res.notes) notesEl.value = res.notes;
+
+            // Auto-fill item product, qty & unit_price
+            if (res.product_id) {
+                const prodSelect = document.querySelector('.item-product');
+                if (prodSelect) prodSelect.value = res.product_id;
+
+                const qtyInput = document.querySelector('.item-qty');
+                if (qtyInput) qtyInput.value = res.quantity || 1;
+
+                const priceInput = document.querySelector('.item-price');
+                if (priceInput && res.unit_price) priceInput.value = res.unit_price;
+            }
+
+            // Auto-fill installment
+            if (res.type === 'installment') {
+                const tenureEl = document.getElementById('installment_tenure');
+                if (tenureEl && res.installment_tenure) tenureEl.value = res.installment_tenure;
+
+                const dpEl = document.getElementById('installment_down_payment');
+                if (dpEl && res.installment_down_payment !== null) dpEl.value = res.installment_down_payment;
+            }
+
+            // Auto-fill pawn
+            if (res.type === 'pawn') {
+                const descEl = document.getElementById('pawn_gold_description');
+                if (descEl && res.pawn_gold_description) descEl.value = res.pawn_gold_description;
+
+                const purityEl = document.getElementById('pawn_gold_purity');
+                if (purityEl && res.pawn_gold_purity) purityEl.value = res.pawn_gold_purity;
+
+                const weightEl = document.getElementById('pawn_weight_gram');
+                if (weightEl && res.pawn_weight_gram) weightEl.value = res.pawn_weight_gram;
+
+                const loanEl = document.getElementById('pawn_loan_amount');
+                if (loanEl && res.pawn_amount_requested) loanEl.value = res.pawn_amount_requested;
+
+                const appraisedEl = document.getElementById('pawn_appraised_value');
+                if (appraisedEl && res.pawn_amount_requested) appraisedEl.value = res.pawn_amount_requested;
+            }
+
+            recalculate();
+        });
+    }
+
     let itemIdx = 1;
 
     function getSelectHtml(idx) {

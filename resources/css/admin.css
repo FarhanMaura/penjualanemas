@@ -102,12 +102,24 @@
 
 /* ── Main Content Area ──────────────────────────────────────── */
 .admin-main {
-    margin-left: 256px;
+    margin-left: 0;
     flex:        1;
-    padding:     2rem;
+    padding:     1rem;
     min-height:  100vh;
     display:     flex;
     flex-direction: column;
+}
+@media (min-width: 1024px) {
+    .admin-main {
+        margin-left: 256px;
+        padding: 2rem;
+    }
+}
+
+/* ── Data Table ────────────────────────────────────────────── */
+.data-table {
+    width: 100%;
+    min-width: 700px;
 }
 
 .admin-topbar {

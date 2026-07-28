@@ -81,9 +81,14 @@
                         <span class="text-sm text-gray-300">Tampilkan di Katalog</span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="is_reservable" value="1" {{ $product->is_reservable ? 'checked':'' }}
+                        <input type="checkbox" name="is_reservable" value="1" {{ old('is_reservable', $product->is_reservable) ? 'checked':'' }}
                                class="w-4 h-4 rounded" style="accent-color:#f59e0b;">
                         <span class="text-sm text-gray-300">Bisa Direservasi</span>
+                    </label>
+                    <label class="flex items-center gap-2 cursor-pointer">
+                        <input type="checkbox" name="is_basic" value="1" {{ old('is_basic', $product->is_basic) ? 'checked':'' }}
+                               class="w-4 h-4 rounded" style="accent-color:#f59e0b;">
+                        <span class="text-sm text-gray-300">Produk Ori/Basic (Default Halaman Utama)</span>
                     </label>
                 </div>
             </div>
@@ -96,5 +101,7 @@
     </form>
 </div>
 
-@vite('resources/js/admin/products.js')
+<x-slot name="scripts">
+    @vite('resources/js/admin/products.js')
+</x-slot>
 </x-admin-app>

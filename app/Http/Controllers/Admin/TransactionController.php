@@ -54,13 +54,13 @@ class TransactionController extends Controller
         $customers    = User::where('role', 'customer')->orderBy('name')->get();
         $goldPrices   = GoldPrice::latest('price_date')->take(7)->get();
         $reservations = Reservation::where('status', 'confirmed')
-            ->with(['user','product'])->latest()->get();
+            ->with(['user','product','priceNegotiation'])->latest()->get();
         $products     = \App\Models\Product::where('is_available', true)
             ->orderBy('name')->get();
 
         $selectedReservation = null;
         if ($request->filled('reservation_id')) {
-            $selectedReservation = Reservation::with(['user','product'])->find($request->reservation_id);
+            $selectedReservation = Reservation::with(['user','product','priceNegotiation'])->find($request->reservation_id);
         }
 
         return view('admin.transactions.create', compact(

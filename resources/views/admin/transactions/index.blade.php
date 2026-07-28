@@ -27,7 +27,7 @@
     <a href="{{ route('admin.transactions.create') }}" class="btn-orange">+ Catat Transaksi</a>
 </div>
 
-<div class="grid grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
     <div class="kpi-card"><p class="kpi-label">Total Transaksi</p><p class="kpi-value text-white">{{ $stats['total'] }}</p></div>
     <div class="kpi-card"><p class="kpi-label">Pembelian</p><p class="kpi-value text-yellow-400">{{ $stats['purchase'] }}</p></div>
     <div class="kpi-card"><p class="kpi-label">Cicilan Aktif</p><p class="kpi-value text-blue-400">{{ $stats['installment'] }}</p></div>

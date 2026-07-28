@@ -14,7 +14,7 @@
     </div>
 
     {{-- KPI Cards --}}
-    <div class="grid grid-cols-4 gap-5 mb-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-8">
         <div class="glass rounded-2xl p-5" style="background:rgba(245,158,11,0.08);">
             <div class="flex justify-between items-start mb-3">
                 <p class="text-xs text-gray-400 uppercase tracking-wider">Total Omset</p>

@@ -6,7 +6,8 @@
 document.addEventListener('DOMContentLoaded', () => {
     // Buka modal detail produk
     document.querySelectorAll('[data-open-product]').forEach(card => {
-        card.addEventListener('click', () => {
+        card.addEventListener('click', (e) => {
+            if (e.target.closest('a, button, input, select')) return;
             const modal = document.getElementById('product-modal');
             if (!modal) return;
 

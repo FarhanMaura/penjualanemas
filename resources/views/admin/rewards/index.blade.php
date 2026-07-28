@@ -3,7 +3,7 @@
     <x-slot name="breadcrumb">Monitor program loyalitas dan tier pelanggan</x-slot>
 
     {{-- Statistik Utama --}}
-    <div class="grid grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6 mb-8">
         <div class="glass rounded-2xl p-5">
             <div class="flex justify-between items-start mb-3">
                 <p class="text-xs text-gray-400 uppercase tracking-wider">Total Poin Beredar</p>

@@ -10,7 +10,7 @@ class ReservationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Reservation::with(['user', 'product.category'])
+        $query = Reservation::with(['user', 'product.category', 'priceNegotiation'])
             ->latest();
 
         if ($request->filled('status')) {
@@ -41,11 +41,12 @@ class ReservationController extends Controller
 
     public function show(Reservation $reservation)
     {
-        $reservation->load(['user.profile', 'product.category', 'transaction']);
+        $reservation->load(['user.profile', 'product.category', 'priceNegotiation', 'transaction']);
+
         return view('admin.reservations.show', compact('reservation'));
     }
 
-    public function confirm(Reservation $reservation)
+    public function confirm(Reservation $reservation, Request $request)
     {
         if ($reservation->status !== 'pending') {
             return back()->with('error', 'Reservasi tidak dalam status pending.');
@@ -56,6 +57,11 @@ class ReservationController extends Controller
             'confirmed_by' => auth()->id(),
             'confirmed_at' => now(),
         ]);
+
+        if ($request->boolean('process_transaction') || $request->has('process_transaction')) {
+            return redirect()->route('admin.transactions.create', ['reservation_id' => $reservation->id])
+                ->with('success', "Reservasi #{$reservation->reservation_code} dikonfirmasi. Form transaksi telah otomatis terisi.");
+        }
 
         return back()->with('success', "Reservasi #{$reservation->reservation_code} dikonfirmasi.");
     }

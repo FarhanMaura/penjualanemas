@@ -29,7 +29,7 @@
                 <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }} class="text-gray-900">Dibatalkan</option>
             </select>
         </form>
-        <a href="{{ route('customer.reservations.create') }}" class="px-5 py-2 rounded-xl text-sm font-semibold text-white shadow-lg transition hover:scale-105"
+        <a href="{{ route('customer.reservations.create') }}" class="px-5 py-2 rounded-xl text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
            style="background:linear-gradient(135deg,#f59e0b,#d97706);">
             + Buat Reservasi Baru
         </a>
@@ -89,6 +89,17 @@
                 <div class="flex justify-between text-sm">
                     <span class="text-gray-500">Jumlah</span>
                     <span class="text-white font-medium">{{ $r->quantity }} item</span>
+                </div>
+                <div class="flex justify-between items-center text-sm pt-1 border-t border-white/5">
+                    <span class="text-gray-400">Total Harga</span>
+                    @if($r->agreed_price || $r->priceNegotiation)
+                    <div class="text-right">
+                        <span class="text-amber-400 font-extrabold text-base">Rp {{ number_format($r->agreed_price ?? $r->priceNegotiation->agreed_price, 0, ',', '.') }}</span>
+                        <span class="block text-[10px] text-amber-300 font-semibold bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 mt-0.5">🤝 Tawar Harga ACC</span>
+                    </div>
+                    @elseif($r->product)
+                    <span class="text-yellow-400 font-bold">Rp {{ number_format($r->product->base_price * $r->quantity, 0, ',', '.') }}</span>
+                    @endif
                 </div>
                 @if($r->payment_method)
                 <div class="flex justify-between text-sm">

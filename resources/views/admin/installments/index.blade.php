@@ -3,7 +3,7 @@
     <x-slot name="breadcrumb">Kelola dan monitor semua cicilan emas pelanggan</x-slot>
 
     {{-- Stats --}}
-    <div class="grid grid-cols-4 gap-5 mb-8">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-5 mb-8">
         @foreach([
             ['Aktif', $stats['active'], '📅', 'text-blue-400', 'rgba(59,130,246,0.1)', 'rgba(59,130,246,0.2)'],
             ['Lunas', $stats['completed'], '✅', 'text-green-400', 'rgba(16,185,129,0.1)', 'rgba(16,185,129,0.2)'],

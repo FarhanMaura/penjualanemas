@@ -45,7 +45,7 @@
     </div>
 
     {{-- KPI Cards --}}
-    <div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         @foreach([
             ['Total Produk', $stats['total'], 'text-white'],
             ['Kategori Aktif', $stats['categories'], 'text-yellow-400'],
@@ -145,5 +145,7 @@
         @endif
     </div>
 
-    @vite('resources/js/admin/products.js')
+    <x-slot name="scripts">
+        @vite('resources/js/admin/products.js')
+    </x-slot>
 </x-admin-app>

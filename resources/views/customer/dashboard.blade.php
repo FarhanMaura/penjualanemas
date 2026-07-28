@@ -16,7 +16,7 @@
     @endif
 
     {{-- Welcome Banner --}}
-    <div class="grid grid-cols-2 gap-6 mb-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 lg:gap-6 mb-8">
         {{-- Kartu Nama --}}
         <div class="glass rounded-3xl p-6 relative overflow-hidden" style="box-shadow:0 0 30px rgba(245,158,11,0.15);">
             <div class="absolute inset-0 pointer-events-none" style="background:linear-gradient(135deg, rgba(180,83,9,0.15) 0%, transparent 60%);"></div>
@@ -73,10 +73,10 @@
         </div>
     </div>
 
-    <div class="grid grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-6">
 
         {{-- KOLOM KIRI (col-span-2) --}}
-        <div class="col-span-2 space-y-6">
+        <div class="col-span-1 lg:col-span-2 space-y-6">
 
             {{-- Harga Emas Hari Ini --}}
             <div class="glass rounded-2xl p-5">
@@ -85,7 +85,7 @@
                     <span class="text-xs text-gray-400 glass px-3 py-1 rounded-full">{{ now()->isoFormat('D MMM Y') }}</span>
                 </div>
                 @if($goldPrice)
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div class="rounded-xl p-4 text-center" style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.2);">
                         <p class="text-xs text-green-400 mb-1">Harga Beli (Toko Beli dari Anda)</p>
                         <p class="font-bold text-white text-xl">Rp {{ number_format($goldPrice->buy_price_per_gram, 0, ',', '.') }}</p>
@@ -108,7 +108,7 @@
             {{-- Buat Reservasi --}}
             <div class="glass rounded-2xl p-5">
                 <h3 class="font-semibold text-yellow-400 mb-4">⚡ Buat Reservasi</h3>
-                <div class="grid grid-cols-4 gap-3">
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-3">
                     @foreach([
                         ['🛒','Beli Emas','beli'],
                         ['💰','Jual Emas','jual'],

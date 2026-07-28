@@ -77,7 +77,7 @@ class ProductSeeder extends Seeder
             $categoryId = $catId($catSlug);
             if (! $categoryId) continue;
 
-            foreach ($config['models'] as $modelName) {
+            foreach ($config['models'] as $mIdx => $modelName) {
                 foreach ($config['weights'] as $wKey) {
                     $wInfo = $weightSpecs[$wKey];
                     
@@ -99,6 +99,9 @@ class ProductSeeder extends Seeder
                     $basePrice = round($estimatedPricePerGram * $wInfo['gram'], -3);
                     $stock = rand(8, 25);
 
+                    // Tandai produk dasar/ori (model pertama & ukuran berat standar)
+                    $isBasic = ($mIdx === 0 && ($wKey === '1.0' || ($wKey === '0.5' && $config['title'] === 'Anting')));
+
                     Product::updateOrCreate(
                         ['sku' => $sku],
                         [
@@ -114,6 +117,7 @@ class ProductSeeder extends Seeder
                             'images'         => [$config['image']],
                             'is_available'   => true,
                             'is_reservable'  => true,
+                            'is_basic'       => $isBasic,
                             'sort_order'     => $sortOrder++,
                         ]
                     );

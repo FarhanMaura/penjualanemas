@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Customer;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreReservationRequest;
+use App\Models\PriceNegotiation;
 use App\Models\Product;
 use App\Models\Reservation;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class ReservationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Reservation::with(['product.category'])
+        $query = Reservation::with(['product.category', 'priceNegotiation'])
             ->where('user_id', auth()->id())
             ->latest();
 
@@ -29,7 +30,20 @@ class ReservationController extends Controller
     public function create(Request $request)
     {
         $product = null;
-        if ($request->filled('product_id')) {
+        $negotiation = null;
+
+        if ($request->filled('negotiation_id')) {
+            $negotiation = PriceNegotiation::where('user_id', auth()->id())
+                ->whereIn('status', ['approved', 'used'])
+                ->with('product')
+                ->find($request->negotiation_id);
+
+            if ($negotiation) {
+                $product = $negotiation->product;
+            }
+        }
+
+        if (! $product && $request->filled('product_id')) {
             $product = Product::where('is_reservable', true)->find($request->product_id);
         }
 
@@ -39,7 +53,7 @@ class ReservationController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('customer.reservations.create', compact('products', 'product'));
+        return view('customer.reservations.create', compact('products', 'product', 'negotiation'));
     }
 
     public function store(StoreReservationRequest $request)
@@ -62,12 +76,31 @@ class ReservationController extends Controller
             }
         }
 
+        $negotiationId = null;
+        $agreedPrice   = null;
+
+        if ($request->filled('price_negotiation_id')) {
+            $negotiation = PriceNegotiation::where('user_id', auth()->id())
+                ->whereIn('status', ['approved', 'used'])
+                ->find($request->price_negotiation_id);
+
+            if ($negotiation) {
+                $negotiationId = $negotiation->id;
+                $agreedPrice   = $negotiation->agreed_price; // Always use agreed_price from negotiation record
+
+                // Mark negotiation as used
+                $negotiation->update(['status' => 'used']);
+            }
+        }
+
         $reservation = Reservation::create([
             'reservation_code'          => 'RSV-' . date('Ymd') . '-' . strtoupper(Str::random(4)),
             'user_id'                   => auth()->id(),
             'type'                      => $request->type,
             'product_id'                => $request->product_id,
+            'price_negotiation_id'     => $negotiationId,
             'quantity'                  => $request->quantity,
+            'agreed_price'              => $agreedPrice,
             'preferred_date'            => $request->preferred_date,
             'preferred_time'            => $request->preferred_time,
             'payment_method'            => $request->payment_method,
@@ -83,7 +116,7 @@ class ReservationController extends Controller
         ]);
 
         return redirect()->route('customer.reservations.index')
-            ->with('success', "Reservasi {$reservation->reservation_code} berhasil dibuat! Tunggu konfirmasi dari toko.");
+            ->with('success', "Reservasi {$reservation->reservation_code} berhasil dibuat dengan harga kesepakatan Rp " . number_format($agreedPrice ?? 0, 0, ',', '.') . "! Tunggu konfirmasi dari toko.");
     }
 
     public function cancel(Reservation $reservation)

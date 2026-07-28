@@ -69,6 +69,7 @@ class ProductController extends Controller
         $data['images']        = $images ?: null;
         $data['is_available']  = $request->boolean('is_available', true);
         $data['is_reservable'] = $request->boolean('is_reservable', true);
+        $data['is_basic']      = $request->boolean('is_basic', false);
 
         Product::create($data);
 
@@ -101,6 +102,7 @@ class ProductController extends Controller
 
         $data['is_available']  = $request->boolean('is_available');
         $data['is_reservable'] = $request->boolean('is_reservable');
+        $data['is_basic']      = $request->boolean('is_basic');
 
         $product->update($data);
 

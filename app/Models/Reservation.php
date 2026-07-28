@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Reservation extends Model
 {
@@ -12,7 +11,9 @@ class Reservation extends Model
         'reservation_code',
         'user_id',
         'product_id',
+        'price_negotiation_id',
         'quantity',
+        'agreed_price',
         'preferred_date',
         'preferred_time',
         'payment_method',
@@ -35,6 +36,7 @@ class Reservation extends Model
     protected function casts(): array
     {
         return [
+            'agreed_price'   => 'decimal:2',
             'preferred_date' => 'date',
             'confirmed_at'   => 'datetime',
             'expired_at'     => 'datetime',
@@ -63,6 +65,11 @@ class Reservation extends Model
     public function product(): BelongsTo
     {
         return $this->belongsTo(Product::class);
+    }
+
+    public function priceNegotiation(): BelongsTo
+    {
+        return $this->belongsTo(PriceNegotiation::class);
     }
 
     /** Admin yang mengkonfirmasi reservasi */

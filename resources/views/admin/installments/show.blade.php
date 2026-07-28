@@ -54,7 +54,7 @@
                 </div>
 
                 {{-- Detail Keuangan --}}
-                <div class="grid grid-cols-3 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                     @foreach([
                         ['Down Payment', 'Rp '.number_format($installmentPlan->down_payment, 0, ',', '.')],
                         ['Angsuran/Bulan', 'Rp '.number_format($installmentPlan->monthly_amount, 0, ',', '.')],

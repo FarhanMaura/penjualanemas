@@ -14,7 +14,7 @@
     @endif
 
     {{-- KPI Stats --}}
-    <div class="grid grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
         @foreach([
             ['Hari Ini', $stats['today'], 'text-white'],
             ['Menunggu', $stats['pending'], 'text-yellow-400'],
@@ -116,8 +116,13 @@
                                 }
                             }}
                         </td>
-                        <td class="py-3 px-4 text-gray-300 max-w-[150px]">
-                            <p class="truncate">{{ $r->product->name ?? ($r->pawn_gold_description ?? 'Gadai Emas') }}</p>
+                        <td class="py-3 px-4 text-gray-300 max-w-[200px]">
+                            <p class="truncate font-semibold text-white">{{ $r->product->name ?? ($r->pawn_gold_description ?? 'Gadai Emas') }}</p>
+                            @if($r->agreed_price || $r->priceNegotiation)
+                                <p class="text-xs text-amber-400 font-bold mt-0.5">
+                                    🤝 ACC Tawar: Rp {{ number_format($r->agreed_price ?? $r->priceNegotiation->agreed_price, 0, ',', '.') }}
+                                </p>
+                            @endif
                         </td>
                         <td class="py-3 px-4 text-gray-500 font-mono text-xs whitespace-nowrap">{{ $r->reservation_code }}</td>
                         <td class="py-3 px-4 text-gray-300 whitespace-nowrap">
@@ -131,11 +136,16 @@
                         <td class="py-3 px-4">
                             <div class="flex items-center justify-center gap-1.5 whitespace-nowrap">
                                 @if($r->status === 'pending')
+                                <form method="POST" action="{{ route('admin.reservations.confirm', $r) }}?process_transaction=1">
+                                    @csrf
+                                    <button type="submit"
+                                            class="px-2.5 py-1 rounded-lg text-xs font-bold text-gray-950 bg-amber-400 hover:bg-amber-300 transition shadow">⚡ Transaksi →</button>
+                                </form>
                                 <form method="POST" action="{{ route('admin.reservations.confirm', $r) }}">
                                     @csrf
                                     <button type="submit"
                                             class="px-2.5 py-1 rounded-lg text-xs font-medium"
-                                            style="background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.3);">✓ Konfirmasi</button>
+                                            style="background:rgba(34,197,94,0.15); color:#4ade80; border:1px solid rgba(34,197,94,0.3);">✓ ACC</button>
                                 </form>
                                 <form method="POST" action="{{ route('admin.reservations.reject', $r) }}"
                                       onsubmit="return confirm('Tolak reservasi {{ $r->user->name }}?')">

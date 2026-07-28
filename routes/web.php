@@ -2,17 +2,27 @@
 
 use App\Http\Controllers\Admin;
 use App\Http\Controllers\Customer;
+use App\Models\Category;
 use App\Models\Product;
 use App\Services\GoldPriceService;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', function (GoldPriceService $goldPriceService) {
-    $goldPrice = $goldPriceService->getTodayPrice();
-    $products  = Product::where('is_available', true)
+    $goldPrice  = $goldPriceService->getTodayPrice();
+    $categories = Category::where('is_active', true)->orderBy('sort_order')->get();
+
+    $representativeIds = Product::where('is_available', true)
+        ->whereNotNull('category_id')
+        ->selectRaw('MIN(id) as id')
+        ->groupBy('category_id')
+        ->pluck('id');
+
+    $products = Product::with('category')
+        ->whereIn('id', $representativeIds)
         ->orderBy('sort_order')
         ->get();
 
-    return view('welcome', compact('goldPrice', 'products'));
+    return view('welcome', compact('goldPrice', 'categories', 'products'));
 })->name('home');
 
 // ─── Authenticated Routes ──────────────────────────────────────────────────
@@ -74,6 +84,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pawns/{pawn}',             [Admin\PawnController::class, 'show'])->name('pawns.show');
         Route::post('/pawns/{pawn}/redeem',     [Admin\PawnController::class, 'redeem'])->name('pawns.redeem');
 
+        // Price Negotiations
+        Route::get('/negotiations',             [Admin\PriceNegotiationController::class, 'index'])->name('negotiations.index');
+        Route::get('/negotiations/{negotiation}',[Admin\PriceNegotiationController::class,'show'])->name('negotiations.show');
+        Route::post('/negotiations/{negotiation}/approve', [Admin\PriceNegotiationController::class, 'approve'])->name('negotiations.approve');
+        Route::post('/negotiations/{negotiation}/reject',  [Admin\PriceNegotiationController::class, 'reject'])->name('negotiations.reject');
+
         // Reports
         Route::get('/reports',                  [Admin\ReportController::class, 'index'])->name('reports.index');
     });
@@ -86,6 +102,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Catalog
         Route::get('/catalog',                  [Customer\CatalogController::class, 'index'])->name('catalog.index');
+
+        // Price Negotiations
+        Route::get('/negotiations',             [Customer\PriceNegotiationController::class, 'index'])->name('negotiations.index');
+        Route::get('/negotiations/create',      [Customer\PriceNegotiationController::class, 'create'])->name('negotiations.create');
+        Route::post('/negotiations',            [Customer\PriceNegotiationController::class, 'store'])->name('negotiations.store');
 
         // Gold Prices
         Route::get('/gold-prices',              [Customer\GoldPriceController::class, 'index'])->name('gold-prices.index');

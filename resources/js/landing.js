@@ -3,7 +3,8 @@
  * Manages the product modal pop-ups.
  */
 
-function openProductModal(productId) {
+function openProductModal(productId, e) {
+    if (e && e.target && e.target.closest('a, button, input, select')) return;
     const card = document.querySelector(`[data-product-id="${productId}"]`);
     if (!card) return;
 
@@ -72,6 +73,61 @@ document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeModal();
 });
 
+/**
+ * Filter product grid by category or basic status.
+ */
+function filterCategory(categorySlug, btnEl) {
+    const buttons = document.querySelectorAll('.category-filter-btn');
+    buttons.forEach(b => {
+        b.classList.remove('bg-amber-500', 'text-gray-950', 'font-bold', 'shadow-lg');
+        b.classList.add('glass', 'text-gray-300', 'hover:bg-white/10');
+    });
+
+    if (btnEl) {
+        btnEl.classList.remove('glass', 'text-gray-300', 'hover:bg-white/10');
+        btnEl.classList.add('bg-amber-500', 'text-gray-950', 'font-bold', 'shadow-lg');
+    }
+
+    const cards = document.querySelectorAll('#product-grid > [data-product-id]');
+    let visibleCount = 0;
+
+    cards.forEach(card => {
+        const catSlug = card.dataset.categorySlug;
+
+        let show = false;
+        if (categorySlug === 'all' || !categorySlug) {
+            show = true;
+        } else {
+            show = (catSlug === categorySlug);
+        }
+
+        if (show) {
+            card.classList.remove('hidden');
+            visibleCount++;
+        } else {
+            card.classList.add('hidden');
+        }
+    });
+
+    const emptyState = document.getElementById('product-empty-state');
+    if (emptyState) {
+        if (visibleCount === 0) {
+            emptyState.classList.remove('hidden');
+        } else {
+            emptyState.classList.add('hidden');
+        }
+    }
+}
+
+// Auto filter to all on DOM ready if product grid exists
+document.addEventListener('DOMContentLoaded', () => {
+    const defaultBtn = document.querySelector('.category-filter-btn[data-default="true"]');
+    if (defaultBtn) {
+        filterCategory('all', defaultBtn);
+    }
+});
+
 // Expose functions to window scope for onclick handlers
 window.openProductModal = openProductModal;
 window.closeModal = closeModal;
+window.filterCategory = filterCategory;

@@ -8,7 +8,7 @@
 <div class="flash-error" data-flash>❌ {{ session('error') }}</div>
 @endif
 
-<div class="grid grid-cols-3 gap-6 mb-6">
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 lg:gap-6 mb-6">
     {{-- Form input harga --}}
     <div class="col-span-1">
         <div class="glass rounded-2xl p-5">
@@ -49,7 +49,7 @@
     </div>
 
     {{-- Tabel riwayat --}}
-    <div class="col-span-2">
+    <div class="col-span-1 md:col-span-2">
         <div class="glass rounded-2xl overflow-hidden">
             <div class="px-6 py-4" style="border-bottom:1px solid rgba(245,158,11,0.1);">
                 <h3 class="font-semibold text-yellow-400">📊 Riwayat Harga Emas</h3>

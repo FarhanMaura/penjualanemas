@@ -13,7 +13,9 @@ class StoreReservationRequest extends FormRequest
         return [
             'type'                     => ['required', 'in:purchase,installment,pawn'],
             'product_id'               => ['required_if:type,purchase,installment', 'nullable', 'exists:products,id'],
-            'quantity'                 => ['required_if:type,purchase,installment', 'nullable', 'integer', 'min:1', 'max:10'],
+            'price_negotiation_id'     => ['nullable', 'exists:price_negotiations,id'],
+            'agreed_price'             => ['nullable', 'numeric', 'min:0'],
+            'quantity'                 => ['required_if:type,purchase,installment', 'nullable', 'integer', 'min:1', 'max:100'],
             'preferred_date'           => ['required','date','after_or_equal:today'],
             'preferred_time'           => ['nullable','date_format:H:i'],
             'payment_method'           => ['required_if:type,purchase,installment', 'nullable', 'in:cash,transfer,debit,credit'],
