@@ -185,11 +185,15 @@ class TransactionController extends Controller
                     ->update(['status' => 'completed']);
             }
 
-            // Award reward point
-            $customer = User::find($transaction->user_id);
-            $this->rewardService->awardPoint($customer, $transaction);
+            // Award reward point — hanya untuk transaksi purchase yang langsung completed
+            if ($transaction->status === 'completed' && $transaction->type === 'purchase') {
+                $customer = User::find($transaction->user_id);
+                if ($customer) {
+                    $this->rewardService->awardPoint($customer, $transaction);
+                }
+            }
 
-            // Generate digital certificate for completed transactions
+            // Generate digital certificate for completed purchase/installment transactions
             $this->certificateService->generateForTransaction($transaction);
 
             DB::commit();

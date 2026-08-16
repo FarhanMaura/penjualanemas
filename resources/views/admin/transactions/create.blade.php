@@ -45,7 +45,7 @@
     </div>
     @endif
 
-    <form method="POST" action="{{ route('admin.transactions.store') }}" id="trx-form" class="w-full">
+    <form method="POST" action="{{ route('admin.transactions.store') }}" id="trx-form" onsubmit="if(this.dataset.submitted) return false; this.dataset.submitted = true;" class="w-full">
         @csrf
         <div class="space-y-6">
 

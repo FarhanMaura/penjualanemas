@@ -58,7 +58,7 @@
                             <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Informasi Pelanggan</h4>
                             <p class="text-sm font-semibold text-white">{{ $negotiation->user->name ?? 'Unknown' }}</p>
                             <p class="text-xs text-gray-400">{{ $negotiation->user->email ?? '' }}</p>
-                            <p class="text-xs text-gray-400">No. HP: {{ $negotiation->user->profile->phone_number ?? '-' }}</p>
+                            <p class="text-xs text-gray-400">No. HP: {{ $negotiation->user->profile?->phone ?? '-' }}</p>
                         </div>
                         <div class="space-y-2">
                             <h4 class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Detail Produk</h4>

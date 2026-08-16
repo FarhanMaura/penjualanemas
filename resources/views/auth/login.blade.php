@@ -5,41 +5,66 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Masuk — Toko Emas Sinar Baru II</title>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
-        body { font-family:'Inter',sans-serif; background:#0f0e17; }
-        .gold-gradient { background:linear-gradient(135deg,#f59e0b,#d97706,#92400e); }
-        .glass { background:rgba(255,255,255,0.04); backdrop-filter:blur(12px); border:1px solid rgba(245,158,11,0.15); }
-        .input-field {
-            width:100%; background:rgba(255,255,255,0.05); border:1px solid rgba(245,158,11,0.2);
-            border-radius:0.75rem; padding:0.75rem 1rem; color:#fff; font-size:0.875rem;
-            outline:none; transition:border-color 0.2s;
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #F4EDD9;
+            color: #1A2E2B;
+            min-height: 100vh;
+            overflow-x: hidden;
+            position: relative;
         }
-        .input-field:focus { border-color:rgba(245,158,11,0.6); background:rgba(255,255,255,0.07); }
-        .input-field::placeholder { color:#6b7280; }
+        .gold-gradient {
+            background: linear-gradient(138.58deg, #E3D193 3.56%, #C6A443 91.71%);
+            color: #042623 !important;
+            font-weight: 700;
+        }
+        .card-auth {
+            background: #ffffff;
+            border: 1px solid #e8e3d5;
+            box-shadow: 0 15px 35px -5px rgba(8, 92, 84, 0.08), 0 2px 10px rgba(0, 0, 0, 0.04);
+        }
+        .input-field {
+            width: 100%;
+            background: #ffffff;
+            border: 1px solid #d5cebe;
+            border-radius: 0.75rem;
+            padding: 0.75rem 1rem;
+            color: #1A2E2B;
+            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .input-field:focus {
+            border-color: #085C54;
+            background: #ffffff;
+            box-shadow: 0 0 0 3px rgba(8, 92, 84, 0.15);
+        }
+        .input-field::placeholder { color: #94a3b8; }
     </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-4" style="background:radial-gradient(ellipse at top,#2d1a0a 0%,#0f0e17 60%);">
+<body class="min-h-screen flex items-center justify-center p-4">
 
-    <div class="w-full max-w-md">
+    <div class="w-full max-w-md relative z-10">
         {{-- Brand --}}
         <div class="text-center mb-8">
-            <a href="{{ route('home') }}" class="inline-flex flex-col items-center gap-2">
-                <div class="w-14 h-14 gold-gradient rounded-2xl flex items-center justify-center font-bold text-xl shadow-lg" style="box-shadow:0 0 30px rgba(245,158,11,0.4);">SB</div>
-                <p class="font-bold text-yellow-400 text-lg" style="font-family:'Playfair Display',serif;">Sinar Baru II</p>
-                <p class="text-xs text-gray-500">Toko Emas Terpercaya</p>
+            <a href="{{ route('home') }}" class="inline-flex flex-col items-center gap-2 group">
+                <div class="w-14 h-14 gold-gradient rounded-2xl flex items-center justify-center font-bold text-xl shadow-lg border border-[#C6A443] transition-transform group-hover:scale-105">SB</div>
+                <p class="font-bold text-[#042623] text-2xl drop-shadow-sm font-playfair">Sinar Baru II</p>
+                <p class="text-xs text-[#085C54] font-semibold">Toko Emas Terpercaya Sejak 1995</p>
             </a>
         </div>
 
         {{-- Card --}}
-        <div class="glass rounded-3xl p-8">
-            <h1 class="text-xl font-bold text-white mb-1" style="font-family:'Playfair Display',serif;">Selamat Datang Kembali</h1>
-            <p class="text-sm text-gray-400 mb-6">Masuk ke akun member Anda</p>
+        <div class="card-auth rounded-3xl p-8">
+            <h1 class="text-2xl font-bold text-[#042623] mb-1.5 font-playfair">Selamat Datang Kembali</h1>
+            <p class="text-xs text-slate-500 mb-6 font-normal">Masuk ke akun member Anda untuk akses layanan & reward</p>
 
             {{-- Session Status --}}
             @if(session('status'))
-            <div class="mb-4 p-3 rounded-xl text-sm text-green-400" style="background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);">
+            <div class="mb-4 p-3 rounded-xl text-sm text-emerald-800 bg-emerald-50 border border-emerald-300">
                 {{ session('status') }}
             </div>
             @endif
@@ -49,54 +74,59 @@
 
                 {{-- Email --}}
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1.5 font-medium">Email</label>
+                    <label class="block text-xs text-[#042623] mb-1.5 font-bold">Email</label>
                     <input id="email" type="email" name="email" value="{{ old('email') }}"
                            class="input-field" placeholder="email@contoh.com" required autofocus autocomplete="username">
                     @error('email')
-                    <p class="text-xs text-red-400 mt-1.5">{{ $message }}</p>
+                    <p class="text-xs text-red-600 mt-1.5 font-medium">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Password --}}
                 <div>
-                    <label class="block text-xs text-gray-400 mb-1.5 font-medium">Password</label>
+                    <label class="block text-xs text-[#042623] mb-1.5 font-bold">Password</label>
                     <input id="password" type="password" name="password"
                            class="input-field" placeholder="••••••••" required autocomplete="current-password">
                     @error('password')
-                    <p class="text-xs text-red-400 mt-1.5">{{ $message }}</p>
+                    <p class="text-xs text-red-600 mt-1.5 font-medium">{{ $message }}</p>
                     @enderror
                 </div>
 
                 {{-- Remember + Forgot --}}
                 <div class="flex items-center justify-between">
                     <label class="flex items-center gap-2 cursor-pointer">
-                        <input type="checkbox" name="remember" class="w-4 h-4 rounded" style="accent-color:#f59e0b;">
-                        <span class="text-xs text-gray-400">Ingat saya</span>
+                        <input type="checkbox" name="remember" class="w-4 h-4 rounded border-slate-300" style="accent-color:#085C54;">
+                        <span class="text-xs text-slate-600 font-medium">Ingat saya</span>
                     </label>
-                    @if(Route::has('password.request'))
-                    <a href="{{ route('password.request') }}" class="text-xs text-yellow-400 hover:underline">Lupa password?</a>
+                    @if (Route::has('password.request'))
+                    <a href="{{ route('password.request') }}" class="text-xs text-[#085C54] font-bold hover:text-[#C6A443] transition">
+                        Lupa password?
+                    </a>
                     @endif
                 </div>
 
-                {{-- Submit --}}
-                <button type="submit" class="w-full py-3 rounded-xl font-semibold text-sm text-white transition hover:opacity-90 mt-2"
-                        style="background:linear-gradient(135deg,#f59e0b,#d97706);box-shadow:0 0 20px rgba(245,158,11,0.3);">
+                {{-- Submit Button --}}
+                <button type="submit" class="w-full py-3.5 bg-[#085C54] text-white hover:text-[#E3D193] rounded-xl font-bold text-sm shadow-lg hover:bg-[#063e39] transition hover:scale-[1.01] mt-2 border border-[#063e39]">
                     Masuk ke Akun
                 </button>
             </form>
 
-            {{-- Register Link --}}
-            @if(Route::has('register'))
-            <p class="text-center text-xs text-gray-500 mt-6">
-                Belum punya akun?
-                <a href="{{ route('register') }}" class="text-yellow-400 hover:underline font-medium">Daftar sekarang</a>
-            </p>
-            @endif
+            <div class="mt-6 pt-6 border-t border-slate-200 text-center">
+                <p class="text-xs text-slate-500 font-normal">
+                    Belum punya akun?
+                    <a href="{{ route('register') }}" class="text-[#085C54] font-bold hover:text-[#C6A443] ml-1">
+                        Daftar sekarang
+                    </a>
+                </p>
+            </div>
         </div>
 
-        <p class="text-center text-xs text-gray-700 mt-6">
-            <a href="{{ route('home') }}" class="hover:text-gray-500 transition">← Kembali ke Beranda</a>
-        </p>
+        {{-- Back to Home --}}
+        <div class="text-center mt-6">
+            <a href="{{ route('home') }}" class="text-xs text-slate-600 font-semibold hover:text-[#085C54] transition inline-flex items-center gap-1.5">
+                ← Kembali ke Beranda
+            </a>
+        </div>
     </div>
 
 </body>

@@ -47,7 +47,7 @@
             </div>
             @endif
 
-            <form action="{{ route('customer.reservations.store') }}" method="POST">
+            <form action="{{ route('customer.reservations.store') }}" method="POST" onsubmit="if(this.dataset.submitted) return false; this.dataset.submitted = true;">
                 @csrf
                 
                 @if(isset($negotiation) && $negotiation)
@@ -72,7 +72,7 @@
                     <div id="product_fields" class="space-y-5">
                         <div>
                             <label class="block text-sm font-medium text-gray-300 mb-2">Pilih Produk Emas *</label>
-                            <select {{ isset($negotiation) && $negotiation ? 'disabled' : 'name=product_id' }} id="product_id" class="w-full rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2"
+                            <select {{ isset($negotiation) && $negotiation ? 'disabled' : 'name="product_id"' }} id="product_id" class="w-full rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2"
                                     style="background:rgba(255,255,255,0.05); border:1px solid rgba(245,158,11,0.2);">
                                 <option value="" class="text-gray-900">-- Pilih Produk Emas --</option>
                                 @foreach($products as $p)

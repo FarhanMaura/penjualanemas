@@ -8,6 +8,15 @@ class StoreReservationRequest extends FormRequest
 {
     public function authorize(): bool { return auth()->check(); }
 
+    protected function prepareForValidation(): void
+    {
+        if ($this->preferred_time) {
+            $this->merge([
+                'preferred_time' => substr($this->preferred_time, 0, 5),
+            ]);
+        }
+    }
+
     public function rules(): array
     {
         return [

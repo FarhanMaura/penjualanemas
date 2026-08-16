@@ -17,7 +17,7 @@
         </div>
         @endif
 
-        <form method="POST" action="{{ route('customer.negotiations.store') }}" class="glass rounded-2xl p-6 sm:p-8 space-y-6">
+        <form method="POST" action="{{ route('customer.negotiations.store') }}" onsubmit="if(this.dataset.submitted) return false; this.dataset.submitted = true;" class="glass rounded-2xl p-6 sm:p-8 space-y-6">
             @csrf
 
             <h3 class="text-lg font-bold text-white flex items-center gap-2 pb-4 border-b border-white/10">

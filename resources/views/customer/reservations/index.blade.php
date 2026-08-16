@@ -53,6 +53,7 @@
                 'confirmed' => ['bg'=>'rgba(59,130,246,0.1)','border'=>'rgba(59,130,246,0.3)','text'=>'#60a5fa','label'=>'Dikonfirmasi ✓'],
                 'completed' => ['bg'=>'rgba(16,185,129,0.1)','border'=>'rgba(16,185,129,0.3)','text'=>'#34d399','label'=>'Selesai 🏁'],
                 'cancelled' => ['bg'=>'rgba(239,68,68,0.1)','border'=>'rgba(239,68,68,0.3)','text'=>'#f87171','label'=>'Batal ❌'],
+                'expired'   => ['bg'=>'rgba(156,163,175,0.1)','border'=>'rgba(156,163,175,0.3)','text'=>'#9ca3af','label'=>'Kedaluwarsa ⌛'],
             ];
             $style = $statusStyles[$r->status] ?? $statusStyles['pending'];
         @endphp

@@ -47,7 +47,7 @@
                class="flex-1 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 outline-none"
                style="background:rgba(255,255,255,0.04); border:1px solid rgba(245,158,11,0.15);">
         <button type="submit" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
-                style="background:linear-gradient(135deg,#f59e0b,#d97706,#92400e);">
+                style="background:linear-gradient(135deg,#f59e0b,#ee950a,#d97706);box-shadow:0 2px 10px rgba(238,149,10,0.3);">
             🔍 Cari
         </button>
         @if(request('search') || (request('category') && request('category') !== 'all'))

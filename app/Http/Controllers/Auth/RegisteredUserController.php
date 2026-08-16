@@ -37,9 +37,16 @@ class RegisteredUserController extends Controller
         ]);
 
         $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
+            'name'     => $request->name,
+            'email'    => $request->email,
             'password' => Hash::make($request->password),
+            'role'     => 'customer', // BUG FIX: pastikan role selalu diset ke customer
+        ]);
+
+        // BUG FIX: auto-create CustomerProfile agar halaman profile tidak null pointer
+        $user->profile()->create([
+            'customer_since' => now(),
+            'segment'        => 'new',
         ]);
 
         event(new Registered($user));

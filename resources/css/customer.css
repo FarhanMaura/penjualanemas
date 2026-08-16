@@ -1,13 +1,13 @@
 /* =============================================================
-   customer.css — Customer Member Area Specific Styles
+   customer.css — Customer Member Area Specific Styles (EmasKITA Theme)
    ============================================================= */
 
-/* ── Sidebar (same base as admin, different accent) ─────────── */
+/* ── Sidebar ────────────────────────────────────────────────── */
 .customer-sidebar {
     width:        256px;
     flex-shrink:  0;
-    background:   #1a1830;
-    border-right: 1px solid rgba(245, 158, 11, 0.1);
+    background:   #ffffff;
+    border-right: 1px solid #e8e3d5;
     position:     fixed;
     top:          0;
     bottom:       0;
@@ -15,9 +15,8 @@
     flex-direction: column;
     overflow:     hidden;
     z-index:      30;
+    box-shadow:   4px 0 20px rgba(8, 92, 84, 0.04);
 }
-
-/* Re-use sidebar-* classes from admin.css — same for customer. */
 
 /* ── Main Content Area ──────────────────────────────────────── */
 .customer-main {
@@ -25,62 +24,65 @@
     flex:        1;
     padding:     2rem;
     min-height:  100vh;
+    background:  #F4EDD9;
 }
 
 /* ── Member Card ────────────────────────────────────────────── */
 .member-card {
-    background:   rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
-    border:       1px solid rgba(245, 158, 11, 0.15);
+    background:   #ffffff;
+    border:       1px solid #e8e3d5;
     border-radius: 1.5rem;
     padding:      1.5rem;
     position:     relative;
     overflow:     hidden;
-    box-shadow:   0 0 30px rgba(245, 158, 11, 0.1);
+    box-shadow:   0 10px 30px -5px rgba(8, 92, 84, 0.06);
+    color:        #0F172A;
 }
 
 .member-card::before {
     content:    '';
     position:   absolute;
     inset:      0;
-    background: linear-gradient(135deg, rgba(180, 83, 9, 0.15) 0%, transparent 60%);
+    background: linear-gradient(135deg, rgba(227, 209, 147, 0.2) 0%, transparent 60%);
     pointer-events: none;
 }
 
 /* ── Tier Badge ─────────────────────────────────────────────── */
-.tier-bronze  { color: #b45309; }
-.tier-silver  { color: #9ca3af; }
-.tier-gold    { color: #f59e0b; }
-.tier-diamond { color: #60a5fa; }
+.tier-bronze  { color: #085C54; font-weight: 700; }
+.tier-silver  { color: #334155; font-weight: 700; }
+.tier-gold    { color: #C6A443; font-weight: 700; }
+.tier-diamond { color: #0284c7; font-weight: 700; }
 
 /* ── Progress Bar ───────────────────────────────────────────── */
 .progress-track {
     height:       0.5rem;
     border-radius: 999px;
-    background:   rgba(255, 255, 255, 0.05);
+    background:   #e2f2f0;
     overflow:     hidden;
     margin-top:   0.5rem;
 }
 .progress-fill {
     height:       100%;
     border-radius: 999px;
-    background:   linear-gradient(90deg, #f59e0b, #d97706);
+    background:   linear-gradient(90deg, #E3D193, #C6A443, #085C54);
     transition:   width 0.6s ease;
 }
 
 /* ── Product Grid Card ──────────────────────────────────────── */
 .product-card {
-    background:   rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
-    border:       1px solid rgba(245, 158, 11, 0.15);
-    border-radius: 1rem;
+    background:   #ffffff;
+    border:       1px solid #e8e3d5;
+    border-radius: 1.25rem;
     overflow:     hidden;
     cursor:       pointer;
-    transition:   transform 0.25s, border-color 0.25s;
+    box-shadow:   0 6px 20px -4px rgba(8, 92, 84, 0.05);
+    transition:   transform 0.25s, border-color 0.25s, box-shadow 0.25s;
+    color:        #0F172A;
 }
 .product-card:hover {
-    transform:    translateY(-4px) scale(1.02);
-    border-color: rgba(245, 158, 11, 0.4);
+    transform:    translateY(-4px);
+    border-color: #C6A443;
+    box-shadow:   0 16px 36px -6px rgba(8, 92, 84, 0.12), 0 0 20px rgba(198, 164, 67, 0.2);
 }
 
 .product-card-thumb {
@@ -89,35 +91,41 @@
     align-items:     center;
     justify-content: center;
     font-size:       3.5rem;
-    transition:      transform 0.2s;
+    transition:      transform 0.3s;
+    background:      #F4EDD9;
 }
 .product-card:hover .product-card-thumb {
-    transform: scale(1.1);
+    transform: scale(1.08);
 }
 
 .product-card-body {
-    padding: 1rem;
+    padding: 1.25rem;
 }
 
 /* ── Reservation / Transaction Item ─────────────────────────── */
 .activity-item {
-    background:   rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
-    border:       1px solid rgba(245, 158, 11, 0.12);
+    background:   #ffffff;
+    border:       1px solid #e8e3d5;
     border-radius: 1rem;
     padding:      1.25rem;
     display:      flex;
     align-items:  center;
     justify-content: space-between;
-    transition:   background 0.2s;
+    box-shadow:   0 4px 15px rgba(8, 92, 84, 0.04);
+    transition:   background 0.2s, border-color 0.2s;
+    color:        #0F172A;
 }
-.activity-item:hover { background: rgba(255, 255, 255, 0.06); }
+.activity-item:hover {
+    background:   #F4EDD9;
+    border-color: #085C54;
+}
 
 .activity-icon {
     width:           3rem;
     height:          3rem;
     border-radius:   0.75rem;
-    background:      rgba(245, 158, 11, 0.1);
+    background:      #e2f2f0;
+    border:          1px solid #085C54/20;
     display:         flex;
     align-items:     center;
     justify-content: center;
@@ -126,7 +134,9 @@
 }
 
 /* Base and Utility Styles */
-body { font-family: 'Inter', sans-serif; background: #0f0e17; }
-.gold-gradient { background: linear-gradient(135deg, #f59e0b, #d97706, #92400e); }
-.progress-bar { background: linear-gradient(90deg, #f59e0b, #d97706); }
-.glass { background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); border: 1px solid rgba(245,158,11,0.15); }
+.glass {
+    background: #ffffff;
+    border: 1px solid #e8e3d5;
+    box-shadow: 0 10px 30px -5px rgba(8, 92, 84, 0.06);
+    color: #0F172A;
+}

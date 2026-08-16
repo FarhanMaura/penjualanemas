@@ -184,12 +184,14 @@ document.addEventListener('DOMContentLoaded', () => {
             if (instTenure) instTenure.setAttribute('required', 'required');
             if (instDp) instDp.setAttribute('required', 'required');
             setPawnRequired(false);
+            setItemRequired(true);
         } else if (type === 'pawn') {
             if (installmentSection) installmentSection.style.display = 'none';
             if (pawnSection) pawnSection.style.display = 'grid';
             if (itemsSection) itemsSection.style.display = 'none';
 
             setPawnRequired(true);
+            setItemRequired(false);
             const instTenure = document.getElementById('installment_tenure');
             const instDp = document.getElementById('installment_down_payment');
             if (instTenure) instTenure.removeAttribute('required');
@@ -204,8 +206,16 @@ document.addEventListener('DOMContentLoaded', () => {
             if (instTenure) instTenure.removeAttribute('required');
             if (instDp) instDp.removeAttribute('required');
             setPawnRequired(false);
+            setItemRequired(true);
         }
         recalculate();
+    }
+
+    function setItemRequired(val) {
+        document.querySelectorAll('.item-row select, .item-row input').forEach(el => {
+            if (val) el.setAttribute('required', 'required');
+            else el.removeAttribute('required');
+        });
     }
 
     function setPawnRequired(val) {

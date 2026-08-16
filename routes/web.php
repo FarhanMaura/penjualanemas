@@ -119,7 +119,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/reservations',             [Customer\ReservationController::class, 'index'])->name('reservations.index');
         Route::get('/reservations/create',      [Customer\ReservationController::class, 'create'])->name('reservations.create');
         Route::post('/reservations',            [Customer\ReservationController::class, 'store'])->name('reservations.store');
-        Route::post('/reservations/{reservation}/cancel', [Customer\ReservationController::class, 'cancel'])->name('reservations.cancel');
+        Route::match(['post', 'patch'], '/reservations/{reservation}/cancel', [Customer\ReservationController::class, 'cancel'])->name('reservations.cancel');
 
         // Transactions
         Route::get('/transactions',             [Customer\TransactionController::class, 'index'])->name('transactions.index');

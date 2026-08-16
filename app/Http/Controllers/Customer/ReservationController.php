@@ -14,6 +14,11 @@ class ReservationController extends Controller
 {
     public function index(Request $request)
     {
+        // Auto-expire pending reservations past expired_at
+        Reservation::where('status', 'pending')
+            ->where('expired_at', '<', now())
+            ->update(['status' => 'expired']);
+
         $query = Reservation::with(['product.category', 'priceNegotiation'])
             ->where('user_id', auth()->id())
             ->latest();
@@ -59,7 +64,12 @@ class ReservationController extends Controller
     public function store(StoreReservationRequest $request)
     {
         if (in_array($request->type, ['purchase', 'installment'])) {
-            $product = Product::findOrFail($request->product_id);
+            // BUG FIX: gunakan find() + manual 404 agar tidak throw jika product_id null
+            $product = $request->product_id ? Product::find($request->product_id) : null;
+
+            if (! $product) {
+                return back()->withInput()->with('error', 'Produk tidak ditemukan. Silakan pilih produk yang valid.');
+            }
 
             if (! $product->is_reservable) {
                 return back()->with('error', 'Produk ini tidak bisa direservasi.');
@@ -115,8 +125,15 @@ class ReservationController extends Controller
             'expired_at'                => now()->addDays(3),
         ]);
 
+        // BUG FIX: pesan sukses disesuaikan — tidak tampilkan harga Rp 0 untuk reservasi biasa
+        $successMsg = "Reservasi {$reservation->reservation_code} berhasil dibuat!";
+        if ($agreedPrice && $agreedPrice > 0) {
+            $successMsg .= " Harga kesepakatan: Rp " . number_format($agreedPrice, 0, ',', '.') . ".";
+        }
+        $successMsg .= " Tunggu konfirmasi dari toko.";
+
         return redirect()->route('customer.reservations.index')
-            ->with('success', "Reservasi {$reservation->reservation_code} berhasil dibuat dengan harga kesepakatan Rp " . number_format($agreedPrice ?? 0, 0, ',', '.') . "! Tunggu konfirmasi dari toko.");
+            ->with('success', $successMsg);
     }
 
     public function cancel(Reservation $reservation)

@@ -10,6 +10,11 @@ class ReservationController extends Controller
 {
     public function index(Request $request)
     {
+        // Auto-expire pending reservations past expired_at
+        Reservation::where('status', 'pending')
+            ->where('expired_at', '<', now())
+            ->update(['status' => 'expired']);
+
         $query = Reservation::with(['user', 'product.category', 'priceNegotiation'])
             ->latest();
 

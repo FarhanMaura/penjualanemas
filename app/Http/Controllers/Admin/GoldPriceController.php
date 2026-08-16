@@ -29,7 +29,7 @@ class GoldPriceController extends Controller
         ]);
 
         GoldPrice::updateOrCreate(
-            ['price_date' => \Carbon\Carbon::parse($request->price_date)->startOfDay()],
+            ['price_date' => \Carbon\Carbon::parse($request->price_date)->toDateString()],
             [
                 'buy_price_per_gram'  => $request->buy_price_per_gram,
                 'sell_price_per_gram' => $request->sell_price_per_gram,
@@ -57,7 +57,7 @@ class GoldPriceController extends Controller
         }
 
         GoldPrice::updateOrCreate(
-            ['price_date' => today()],
+            ['price_date' => today()->toDateString()],
             [
                 'buy_price_per_gram'  => $data['buy'],
                 'sell_price_per_gram' => $data['sell'],

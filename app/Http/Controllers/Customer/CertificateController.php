@@ -10,7 +10,7 @@ class CertificateController extends Controller
 {
     public function index()
     {
-        $certificates = DigitalCertificate::with(['transaction.transactionItems.product'])
+        $certificates = DigitalCertificate::with(['transaction.items.product'])
             ->where('user_id', auth()->id())
             ->latest()
             ->paginate(10);
@@ -22,7 +22,7 @@ class CertificateController extends Controller
     {
         abort_if($certificate->user_id !== auth()->id(), 403);
 
-        $certificate->load(['transaction.transactionItems.product', 'user']);
+        $certificate->load(['transaction.items.product', 'user']);
 
         return view('customer.certificates.show', compact('certificate'));
     }

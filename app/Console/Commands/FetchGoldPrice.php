@@ -41,11 +41,10 @@ class FetchGoldPrice extends Command
             'notes'               => 'Auto-fetch via scheduled command.',
         ];
 
-        if ($record) {
-            $record->update($attributes);
-        } else {
-            GoldPrice::create(array_merge(['price_date' => $dateStr], $attributes));
-        }
+        GoldPrice::updateOrCreate(
+            ['price_date' => today()->toDateString()],
+            array_merge($attributes)
+        );
 
         $this->service->clearCache();
 

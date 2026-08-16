@@ -14,15 +14,25 @@
     @vite(['resources/css/app.css', 'resources/css/customer.css', 'resources/js/app.js'])
 
     <style>
-        body { font-family: 'Inter', sans-serif; background: #0f0e17; overflow-x: hidden; }
-        .gold-gradient { background: linear-gradient(135deg, #f59e0b, #d97706, #92400e); }
-        .progress-bar { background: linear-gradient(90deg, #f59e0b, #d97706); }
-        .glass { background: rgba(255,255,255,0.04); backdrop-filter: blur(12px); border: 1px solid rgba(245,158,11,0.15); }
-        .sidebar-link { transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease; color: #9ca3af; display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 1.25rem; }
-        .sidebar-link:hover { background: rgba(245,158,11,0.1); color: #fbbf24; }
-        .sidebar-link.active { background: rgba(245,158,11,0.15); color: #fbbf24; border-right: 3px solid #f59e0b; }
-        .sidebar-section { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: #374151; padding: 0 1.25rem; margin-top: 1rem; margin-bottom: 0.25rem; font-weight: 600; }
-        .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:25; pointer-events:none; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #F4EDD9;
+            color: #1A2E2B;
+            overflow-x: hidden;
+        }
+        .gold-gradient { background: linear-gradient(138.58deg, #E3D193 3.56%, #C6A443 91.71%); color: #042623; font-weight: 700; }
+        .progress-bar { background: linear-gradient(90deg, #E3D193, #C6A443, #085C54); }
+        .glass {
+            background: #ffffff;
+            border: 1px solid #e8e3d5;
+            box-shadow: 0 10px 30px -5px rgba(8, 92, 84, 0.06), 0 2px 8px rgba(0, 0, 0, 0.04);
+            color: #1A2E2B;
+        }
+        .sidebar-link { transition: color 0.15s ease, background-color 0.15s ease, border-color 0.15s ease; color: #475569; display: flex; align-items: center; gap: 0.75rem; padding: 0.625rem 1.25rem; font-weight: 600; }
+        .sidebar-link:hover { background: #e2f2f0; color: #085C54; }
+        .sidebar-link.active { background: #e2f2f0; color: #085C54; border-right: 3px solid #085C54; font-weight: 700; }
+        .sidebar-section { font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase; color: #334155; padding: 0 1.25rem; margin-top: 1rem; margin-bottom: 0.25rem; font-weight: 800; }
+        .sidebar-overlay { display:none; position:fixed; inset:0; background:rgba(4,38,35,0.4); backdrop-filter: blur(4px); z-index:25; pointer-events:none; }
         .sidebar-overlay.active { display:block; pointer-events:auto; }
         @media (max-width: 1023px) {
             .sidebar { transform: translateX(-100%); }
@@ -31,9 +41,8 @@
     </style>
 
     {{ $styles ?? '' }}
-    {{ $scripts ?? '' }}
 </head>
-<body class="text-white flex min-h-screen">
+<body class="text-slate-800 flex min-h-screen">
 
     <!-- ============================================================ -->
     <!-- SIDEBAR OVERLAY (Mobile) -->
@@ -44,18 +53,18 @@
     <!-- SIDEBAR (Customer) -->
     <!-- ============================================================ -->
     <aside id="sidebar" class="sidebar w-64 flex flex-col fixed z-30 transition-transform duration-300 lg:translate-x-0"
-           style="background:#1a1830; border-right:1px solid rgba(245,158,11,0.1); top:0; bottom:0; overflow:hidden;">
+           style="background:rgba(255,255,255,0.95); backdrop-filter:blur(16px); border-right:1px solid rgba(234,179,8,0.3); top:0; bottom:0; overflow:hidden;">
 
         <!-- Logo / Brand -->
-        <div class="p-5 flex items-center gap-3" style="border-bottom:1px solid rgba(245,158,11,0.1);">
-            <div class="w-10 h-10 gold-gradient rounded-xl flex items-center justify-center font-bold text-sm shadow-lg">SB</div>
+        <div class="p-5 flex items-center gap-3" style="border-bottom:1px solid rgba(234,179,8,0.2);">
+            <div class="w-10 h-10 gold-gradient rounded-xl flex items-center justify-center font-bold text-sm shadow-md">SB</div>
             <div>
-                <p class="font-bold text-yellow-400 text-sm leading-tight" style="font-family:'Playfair Display',serif;">Sinar Baru II</p>
-                <p class="text-[11px] text-amber-400/90 font-medium mt-0.5">Teluk Lubuk Muara Enim</p>
-                <p class="text-xs text-gray-500 mt-0.5">Member Area</p>
+                <p class="font-bold text-amber-900 text-sm leading-tight" style="font-family:'Playfair Display',serif;">Sinar Baru II</p>
+                <p class="text-[11px] text-amber-800 font-semibold mt-0.5">Teluk Lubuk Muara Enim</p>
+                <p class="text-xs text-slate-500 mt-0.5">Member Area</p>
             </div>
             <!-- Close button (mobile) -->
-            <button onclick="toggleSidebar()" class="ml-auto lg:hidden text-gray-400 hover:text-white text-xl">&times;</button>
+            <button onclick="toggleSidebar()" class="ml-auto lg:hidden text-slate-400 hover:text-slate-700 text-xl">&times;</button>
         </div>
 
         <!-- Navigation -->
@@ -91,26 +100,26 @@
             </a>
 
             <!-- Divider -->
-            <div style="border-top:1px solid rgba(245,158,11,0.1); margin:1rem 0;"></div>
+            <div style="border-top:1px solid rgba(234,179,8,0.2); margin:1rem 0;"></div>
 
             <!-- Logout -->
             <form method="POST" action="{{ route('logout') }}">
                 @csrf
-                <button type="submit" class="sidebar-link w-full text-red-400 hover:text-red-300 hover:bg-red-900/20">
+                <button type="submit" class="sidebar-link w-full text-red-600 hover:text-red-700 hover:bg-red-50">
                     <span class="text-base w-5 text-center">🚪</span> Keluar
                 </button>
             </form>
         </nav>
 
         <!-- User Info at Bottom -->
-        <div class="p-4" style="border-top:1px solid rgba(245,158,11,0.1);">
+        <div class="p-4" style="border-top:1px solid rgba(234,179,8,0.2);">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 gold-gradient rounded-full flex items-center justify-center text-sm font-bold shadow">
+                <div class="w-9 h-9 gold-gradient rounded-full flex items-center justify-center text-sm font-bold shadow-sm">
                     {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                 </div>
                 <div class="flex-1 min-w-0">
-                    <p class="text-sm font-medium text-white truncate">{{ auth()->user()->name }}</p>
-                    <p class="text-xs text-gray-500 truncate">{{ auth()->user()->email }}</p>
+                    <p class="text-sm font-semibold text-slate-800 truncate">{{ auth()->user()->name }}</p>
+                    <p class="text-xs text-slate-500 truncate">{{ auth()->user()->email }}</p>
                 </div>
             </div>
         </div>
@@ -123,34 +132,34 @@
 
         <!-- Top Bar -->
         <header class="sticky top-0 z-20 flex items-center justify-between px-4 lg:px-8 py-3 lg:py-4"
-                style="background:rgba(15,14,23,0.8); backdrop-filter:blur(12px); border-bottom:1px solid rgba(245,158,11,0.08);">
+                style="background:rgba(255,255,255,0.92); backdrop-filter:blur(16px); border-bottom:1px solid rgba(234,179,8,0.25); box-shadow:0 4px 20px rgba(161,98,7,0.06);">
             <div class="flex items-center gap-3">
                 <!-- Hamburger (mobile) -->
-                <button onclick="toggleSidebar()" class="lg:hidden text-gray-300 hover:text-white text-xl p-1">
+                <button onclick="toggleSidebar()" class="lg:hidden text-slate-600 hover:text-slate-900 text-xl p-1">
                     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
                 </button>
                 <div>
                     @isset($pageTitle)
-                        <h1 class="text-base lg:text-lg font-bold text-white" style="font-family:'Playfair Display',serif;">{{ $pageTitle }}</h1>
+                        <h1 class="text-base lg:text-lg font-bold text-slate-900" style="font-family:'Playfair Display',serif;">{{ $pageTitle }}</h1>
                     @endisset
                     @isset($breadcrumb)
-                        <p class="text-xs text-gray-500 mt-0.5 hidden sm:block">{{ $breadcrumb }}</p>
+                        <p class="text-xs text-slate-500 mt-0.5 hidden sm:block">{{ $breadcrumb }}</p>
                     @else
-                        <p class="text-xs text-gray-500 mt-0.5 hidden sm:block">{{ now()->isoFormat('dddd, D MMMM Y') }}</p>
+                        <p class="text-xs text-slate-500 mt-0.5 hidden sm:block">{{ now()->isoFormat('dddd, D MMMM Y') }}</p>
                     @endisset
                 </div>
             </div>
             <div class="flex items-center gap-2 lg:gap-3">
                 <!-- Notification Bell -->
-                <button class="glass w-9 h-9 flex items-center justify-center rounded-xl hover:bg-white/10 transition">
+                <button class="glass w-9 h-9 flex items-center justify-center rounded-xl hover:bg-amber-100 transition text-amber-800">
                     <span>🔔</span>
                 </button>
                 <!-- Profile -->
-                <div class="glass flex items-center gap-2 px-2 lg:px-3 py-1.5 rounded-xl">
+                <div class="glass flex items-center gap-2 px-2.5 lg:px-3 py-1.5 rounded-xl border border-amber-300">
                     <div class="w-7 h-7 gold-gradient rounded-full flex items-center justify-center text-xs font-bold">
                         {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
                     </div>
-                    <span class="text-sm text-gray-200 hidden sm:inline">{{ auth()->user()->name }}</span>
+                    <span class="text-sm font-semibold text-slate-800 hidden sm:inline">{{ auth()->user()->name }}</span>
                 </div>
             </div>
         </header>
@@ -161,10 +170,11 @@
         </main>
 
         <!-- Footer -->
-        <footer class="px-4 lg:px-8 py-4 text-xs text-gray-600 text-center" style="border-top:1px solid rgba(245,158,11,0.08);">
+        <footer class="px-4 lg:px-8 py-4 text-xs text-slate-600 text-center" style="border-top:1px solid rgba(234,179,8,0.2);">
             © {{ date('Y') }} Toko Emas Sinar Baru II
         </footer>
     </div>
+
 
     <script>
         function toggleSidebar() {
@@ -175,5 +185,6 @@
         }
     </script>
 
-</body>
+    {{-- Page-specific scripts (placed at end of body for DOM availability) --}}
+    {{ $scripts ?? '' }}
 </html>

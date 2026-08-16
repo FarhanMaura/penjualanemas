@@ -1,121 +1,162 @@
 /* =============================================================
-   landing.css — Public Landing Page Styles
+   landing.css — Public Landing Page Styles (EmasKITA Theme)
    ============================================================= */
 
 /* ── Hero Section ───────────────────────────────────────────── */
 .hero-bg {
-    background: radial-gradient(ellipse at top, #3d2412 0%, #1c1008 70%);
+    background:
+        radial-gradient(circle at 10% 20%, rgba(198, 164, 67, 0.15) 0%, transparent 40%),
+        radial-gradient(circle at 90% 80%, rgba(8, 92, 84, 0.08) 0%, transparent 40%),
+        #F4EDD9;
     min-height: 100vh;
-    display:    flex;
+    display: flex;
     align-items: center;
+    position: relative;
+    overflow: hidden;
 }
 
 /* ── Public Navbar ──────────────────────────────────────────── */
 .public-nav {
-    position:   fixed;
-    width:      100%;
-    z-index:    50;
-    background: rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
-    border-bottom: 1px solid rgba(245, 158, 11, 0.15);
+    position: fixed;
+    width: 100%;
+    z-index: 50;
+    background: rgba(8, 92, 84, 0.96);
+    backdrop-filter: blur(16px);
+    border-bottom: 1px solid rgba(198, 164, 67, 0.35);
+    box-shadow: 0 4px 20px rgba(4, 38, 35, 0.15);
 }
 
-/* ── Gold gradient text ─────────────────────────────────────── */
+/* ── EmasKITA Color Classes ─────────────────────────────────── */
+.color-solidgreen, .bg-solidgreen {
+    background-color: #085C54;
+}
+
+.text-solidgreen {
+    color: #085C54;
+}
+
 .text-gold {
-    background:  linear-gradient(135deg, #fbbf24, #f59e0b);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #C6A443;
 }
 
-/* ── Section backgrounds ────────────────────────────────────── */
-.section-dark   { background: #1c1008; }
-.section-darker { background: #2d1a0a; }
-.section-panel  { background: linear-gradient(135deg, #2d1a0a, #3d2412); }
+.text-gold-no-hover {
+    color: #C6A443;
+}
+
+.color-gradientgold, .bg-gradientgold, .gold-gradient {
+    background: linear-gradient(138.58deg, #E3D193 3.56%, #C6A443 91.71%);
+    color: #042623 !important;
+    font-weight: 700;
+}
+
+.bg-khaki {
+    background-color: #F4EDD9;
+}
+
+.border-gold {
+    border-color: #C6A443 !important;
+}
+
+.hr-goldline {
+    width: 60px;
+    height: 3px;
+    background: linear-gradient(90deg, #E3D193, #C6A443);
+    margin: 1rem auto;
+    border-radius: 999px;
+}
+
+/* ── Multi-Layer Sections ───────────────────────────────────── */
+.section-produk-bg {
+    background-color: #EDE4CB;
+    position: relative;
+    overflow: hidden;
+}
+
+.section-layanan-bg {
+    background-color: #F4EDD9;
+    position: relative;
+    overflow: hidden;
+}
+
+.section-loyalitas-bg {
+    background-color: #E8DEC5;
+    position: relative;
+    overflow: hidden;
+}
+
+.footer-bg {
+    background: linear-gradient(180deg, #063e39 0%, #042623 100%);
+    border-top: 2px solid #C6A443;
+}
 
 /* ── Harga Emas Widget ──────────────────────────────────────── */
 .price-widget {
-    background:   rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
-    border:       1px solid rgba(245, 158, 11, 0.15);
+    background: #ffffff;
+    border: 1px solid #e8e3d5;
     border-radius: 1.5rem;
-    padding:      1.5rem;
-    box-shadow:   0 0 35px rgba(249, 115, 22, 0.35);
+    padding: 1.5rem;
+    box-shadow: 0 15px 35px -5px rgba(8, 92, 84, 0.08), 0 0 20px rgba(198, 164, 67, 0.12);
 }
 
 .price-box-buy {
-    background:   rgba(16, 185, 129, 0.1);
-    border:       1px solid rgba(16, 185, 129, 0.25);
-    border-radius: 0.75rem;
-    padding:      1rem;
-    text-align:   center;
+    background: #f0fdf4;
+    border: 1px solid #bbf7d0;
+    border-radius: 0.85rem;
+    padding: 1rem;
+    text-align: center;
 }
 
 .price-box-sell {
-    background:   rgba(245, 158, 11, 0.08);
-    border:       1px solid rgba(245, 158, 11, 0.25);
-    border-radius: 0.75rem;
-    padding:      1rem;
-    text-align:   center;
+    background: #fefce8;
+    border: 1px solid #fef08a;
+    border-radius: 0.85rem;
+    padding: 1rem;
+    text-align: center;
 }
 
 /* ── Product Card (Landing) ─────────────────────────────────── */
 .landing-product-card {
-    background:   rgba(255, 255, 255, 0.04);
-    backdrop-filter: blur(12px);
-    border:       1px solid rgba(249, 115, 22, 0.25);
-    border-radius: 1rem;
-    overflow:     hidden;
-    cursor:       pointer;
-    transition:   transform 0.3s, border-color 0.3s;
+    background: #ffffff;
+    border: 1px solid #e8e3d5;
+    border-radius: 1.25rem;
+    overflow: hidden;
+    cursor: pointer;
+    box-shadow: 0 8px 24px -4px rgba(8, 92, 84, 0.06);
+    transition: transform 0.3s ease, border-color 0.3s, box-shadow 0.3s;
 }
 .landing-product-card:hover {
-    transform:    scale(1.05);
-    border-color: rgba(249, 115, 22, 0.5);
+    transform: translateY(-6px);
+    border-color: #C6A443;
+    box-shadow: 0 16px 36px -6px rgba(8, 92, 84, 0.14), 0 0 20px rgba(198, 164, 67, 0.2);
 }
 
 /* ── Tier card ──────────────────────────────────────────────── */
 .tier-card {
-    background:   rgba(255, 255, 255, 0.03);
-    border:       1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 0.75rem;
-    padding:      0.75rem 1rem;
-    display:      flex;
-    align-items:  center;
-    gap:          0.75rem;
+    background: #ffffff;
+    border: 1px solid #e8e3d5;
+    border-radius: 0.85rem;
+    padding: 0.85rem 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    box-shadow: 0 4px 15px rgba(8, 92, 84, 0.05);
 }
 
-/* Welcome Page Inline Styles */
+/* ── General Styles ─────────────────────────────────────────── */
 * { font-family: 'Inter', sans-serif; }
-body { background: #1c1008; color: #fff; }
-.orange-gradient { background: linear-gradient(135deg, #f97316, #ea580c, #c2410c); }
-.glass {
-    background: rgba(249, 115, 22, 0.07);
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(249, 115, 22, 0.25);
+body {
+    background: #F4EDD9;
+    color: #1A2E2B;
+    overflow-x: hidden;
 }
-.glow { box-shadow: 0 0 35px rgba(249, 115, 22, 0.35); }
-.modal-bg { background: rgba(0, 0, 0, 0.75); }
+
+.glass {
+    background: #ffffff;
+    border: 1px solid #e8e3d5;
+    box-shadow: 0 10px 30px -5px rgba(8, 92, 84, 0.06);
+}
+
+.modal-bg { background: rgba(4, 38, 35, 0.6); backdrop-filter: blur(8px); }
 .font-playfair { font-family: 'Playfair Display', serif; }
-.text-primary-300 { color: #fdba74; }
-.text-primary-400 { color: #fb923c; }
-.text-accent-300 { color: #fcd34d; }
-.text-accent-400 { color: #fbbf24; }
-.text-accent-500 { color: #f59e0b; }
-.border-accent-500 { border-color: #f59e0b; }
-.bg-dark-700 { background-color: #3d2412; }
-.bg-dark-800 { background-color: #2d1a0a; }
-.bg-dark-900 { background-color: #1c1008; }
-.border-dark-700 { border-color: #3d2412; }
-.bg-primary-900\/20 { background-color: rgba(124, 45, 18, 0.2); }
-.bg-primary-900\/30 { background-color: rgba(124, 45, 18, 0.3); }
-.bg-primary-900\/50 { background-color: rgba(124, 45, 18, 0.5); }
-.hover\:border-primary-500:hover { border-color: #f97316; }
-.hover\:bg-primary-900\/30:hover { background-color: rgba(124, 45, 18, 0.3); }
-.hover\:bg-primary-900\/40:hover { background-color: rgba(124, 45, 18, 0.4); }
-.border-primary-600 { border-color: #ea580c; }
-.bg-green-900\/30 { background-color: rgba(20, 83, 45, 0.3); }
-.border-green-700\/30 { border-color: rgba(21, 128, 61, 0.3); }
-.bg-orange-900\/30 { background-color: rgba(154, 52, 18, 0.3); }
-.border-orange-700\/30 { border-color: rgba(194, 65, 12, 0.3); }
-.bg-green-900\/50 { background-color: rgba(20, 83, 45, 0.5); }
+
+

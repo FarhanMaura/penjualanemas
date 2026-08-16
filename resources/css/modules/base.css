@@ -3,14 +3,25 @@
    ============================================================= */
 
 :root {
-    /* Color Palette */
-    --color-bg-dark:    #0f0e17;
-    --color-bg-sidebar: #1a1830;
-    --color-gold-400:   #fbbf24;
-    --color-gold-500:   #f59e0b;
-    --color-gold-600:   #d97706;
-    --color-orange-500: #f97316;
-    --color-orange-600: #ea580c;
+    /* EmasKITA Theme Palette (Emerald Forest Green & Champagne Gold) */
+    --color-emerald-950:   #042623;
+    --color-emerald-900:   #063e39;
+    --color-emerald-800:   #085C54; /* EmasKITA Signature Solid Green */
+    --color-emerald-700:   #0d7a6f;
+    --color-emerald-600:   #129a8d;
+    --color-emerald-100:   #e2f2f0;
+    --color-emerald-50:    #f0f8f7;
+
+    --color-gold-300:      #f0e4b8;
+    --color-gold-400:      #E3D193; /* EmasKITA Light Gold */
+    --color-gold-500:      #C6A443; /* EmasKITA Core Gold */
+    --color-gold-600:      #a88730;
+    --color-gold-700:      #866a20;
+
+    --color-khaki-bg:      #F4EDD9; /* EmasKITA Khaki */
+    --color-pearl-bg:      #F4EDD9; /* EmasKITA Khaki (was Pearl) */
+    --color-brand-main:    #085C54;
+    --color-brand-gold:    #C6A443;
 
     /* Typography */
     --font-base:     'Inter', sans-serif;
@@ -25,9 +36,9 @@
 
 body {
     font-family: var(--font-base);
-    background-color: var(--color-bg-dark);
-    color: #ffffff;
-    color-scheme: dark;
+    background: #F4EDD9;
+    color: #1A2E2B;
+    color-scheme: light;
 }
 
 h1, h2, h3, .font-display {
