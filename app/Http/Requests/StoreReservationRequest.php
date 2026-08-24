@@ -41,11 +41,19 @@ class StoreReservationRequest extends FormRequest
     public function messages(): array
     {
         return [
-            'preferred_date.after_or_equal' => 'Tanggal kunjungan tidak boleh di masa lalu.',
-            'preferred_time.date_format'     => 'Format waktu harus HH:MM (contoh: 09:30).',
+            'type.required'                     => 'Tipe pengajuan / reservasi wajib dipilih.',
+            'product_id.required_if'            => 'Silakan pilih produk emas pada menu dropdown "Pilih Produk Emas".',
+            'product_id.exists'                 => 'Produk emas yang dipilih tidak ditemukan dalam sistem.',
+            'quantity.required_if'              => 'Jumlah pembelian (Qty) wajib diisi minimal 1.',
+            'preferred_date.required'           => 'Rencana tanggal kunjungan wajib diisi.',
+            'preferred_date.after_or_equal'     => 'Tanggal kunjungan tidak boleh di masa lalu.',
+            'preferred_time.date_format'        => 'Format waktu harus HH:MM (contoh: 09:30).',
+            'payment_method.required_if'        => 'Metode pembayaran wajib dipilih.',
             'pawn_gold_description.required_if' => 'Deskripsi perhiasan emas wajib diisi.',
             'pawn_gold_purity.required_if'      => 'Kadar emas wajib dipilih.',
             'pawn_weight_gram.required_if'      => 'Berat emas dalam gram wajib diisi.',
+            'installment_tenure.required_if'    => 'Tenor cicilan wajib dipilih.',
+            'installment_down_payment.required_if' => 'Uang muka / DP cicilan wajib diisi.',
         ];
     }
 }

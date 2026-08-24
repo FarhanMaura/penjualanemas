@@ -47,7 +47,7 @@
             </div>
             @endif
 
-            <form action="{{ route('customer.reservations.store') }}" method="POST" onsubmit="if(this.dataset.submitted) return false; this.dataset.submitted = true;">
+            <form action="{{ route('customer.reservations.store') }}" method="POST">
                 @csrf
                 
                 @if(isset($negotiation) && $negotiation)
@@ -71,15 +71,21 @@
                     {{-- Product Selection & Qty (untuk Beli & Cicilan) --}}
                     <div id="product_fields" class="space-y-5">
                         <div>
-                            <label class="input-label">Pilih Produk Emas *</label>
-                            <select {{ isset($negotiation) && $negotiation ? 'disabled' : 'name="product_id"' }} id="product_id" class="input-field cursor-pointer">
-                                <option value="">-- Pilih Produk Emas --</option>
+                            <label class="input-label">Pilih Produk Emas <span class="text-red-600">*</span></label>
+                            <select name="product_id" id="product_id" {{ isset($negotiation) && $negotiation ? 'disabled' : '' }} required class="input-field cursor-pointer font-bold {{ $errors->has('product_id') ? 'border-red-500 ring-2 ring-red-200 bg-red-50/50' : '' }}">
+                                <option value="" disabled {{ old('product_id', $product->id ?? '') ? '' : 'selected' }}>-- Klik disini untuk memilih perhiasan emas --</option>
                                 @foreach($products as $p)
                                     <option value="{{ $p->id }}" {{ (old('product_id') ?? ($product->id ?? '')) == $p->id ? 'selected' : '' }}>
-                                        {{ $p->name }} ({{ number_format($p->weight_gram, 3) }} gram) - Stok: {{ $p->stock }}
+                                        💍 {{ $p->name }} ({{ number_format($p->weight_gram, 3) }} gram) - Rp {{ number_format($p->base_price, 0, ',', '.') }} (Stok: {{ $p->stock }})
                                     </option>
                                 @endforeach
                             </select>
+                            <p class="text-xs text-slate-500 font-medium mt-1">💡 Klik menu di atas untuk memilih item perhiasan dari katalog toko.</p>
+                            @error('product_id')
+                            <p class="text-xs text-red-600 font-bold mt-1.5 flex items-center gap-1">
+                                <span>⚠️</span> {{ $message }}
+                            </p>
+                            @enderror
                             @if(isset($negotiation) && $negotiation)
                             <p class="text-xs text-amber-700 font-semibold mt-1">🔒 Produk telah terkunci sesuai hasil penawaran tawar harga.</p>
                             @endif
