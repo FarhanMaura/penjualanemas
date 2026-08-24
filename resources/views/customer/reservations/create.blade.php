@@ -47,7 +47,7 @@
             </div>
             @endif
 
-            <form action="{{ route('customer.reservations.store') }}" method="POST">
+            <form action="{{ route('customer.reservations.store') }}" method="POST" onsubmit="if(this.dataset.submitted) return false; this.dataset.submitted = true;">
                 @csrf
                 
                 @if(isset($negotiation) && $negotiation)
@@ -105,24 +105,49 @@
                             <h4 class="text-sm font-bold text-emerald-950">Rincian Emas yang Ingin Anda Jual ke Toko</h4>
                         </div>
                         <div>
-                            <label class="input-label">Deskripsi / Jenis Perhiasan Emas *</label>
-                            <input type="text" name="pawn_gold_description" id="buyback_gold_description" value="{{ old('pawn_gold_description') }}"
-                                   placeholder="Contoh: Kalung Emas Model Medan 1 Suku (6.7 gram)" class="input-field">
+                            <label class="input-label">Pilih Jenis / Produk Emas yang Ingin Dijual <span class="text-red-600">*</span></label>
+                            <select name="pawn_gold_description" id="buyback_gold_description" class="input-field cursor-pointer font-bold {{ $errors->has('pawn_gold_description') ? 'border-red-500 ring-2 ring-red-200 bg-red-50/50' : '' }}" onchange="onBuybackProductChange(this)">
+                                <option value="" disabled {{ old('pawn_gold_description') ? '' : 'selected' }}>-- Pilih Jenis / Produk Emas yang Mau Dijual --</option>
+                                <optgroup label="📋 Koleksi Produk Toko Sinar Baru II">
+                                    @foreach($products as $p)
+                                    <option value="{{ $p->name }} (24K)" data-weight="{{ $p->weight_gram }}" {{ old('pawn_gold_description') == ($p->name . ' (24K)') ? 'selected' : '' }}>
+                                        💍 {{ $p->name }} (Standar: {{ number_format($p->weight_gram, 2) }} gram)
+                                    </option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="✨ Jenis Perhiasan Umum (24K Murni)">
+                                    <option value="Cincin Emas 24K" {{ old('pawn_gold_description') == 'Cincin Emas 24K' ? 'selected' : '' }}>💍 Cincin Emas 24K</option>
+                                    <option value="Kalung Emas 24K" {{ old('pawn_gold_description') == 'Kalung Emas 24K' ? 'selected' : '' }}>📿 Kalung Emas 24K</option>
+                                    <option value="Gelang Emas 24K" {{ old('pawn_gold_description') == 'Gelang Emas 24K' ? 'selected' : '' }}>🪙 Gelang Emas 24K</option>
+                                    <option value="Anting Emas 24K" {{ old('pawn_gold_description') == 'Anting Emas 24K' ? 'selected' : '' }}>✨ Anting Emas 24K</option>
+                                    <option value="Logam Mulia / Emas Batangan 24K" {{ old('pawn_gold_description') == 'Logam Mulia / Emas Batangan 24K' ? 'selected' : '' }}>🧱 Logam Mulia / Emas Batangan 24K</option>
+                                    <option value="Perhiasan Emas 24K Lainnya" {{ old('pawn_gold_description') == 'Perhiasan Emas 24K Lainnya' ? 'selected' : '' }}>🏷️ Perhiasan Emas 24K Lainnya</option>
+                                </optgroup>
+                            </select>
+                            <p class="text-xs text-slate-500 font-medium mt-1">💡 Pilih dari produk katalog toko atau kategori jenis perhiasan di atas.</p>
+                            @error('pawn_gold_description')
+                            <p class="text-xs text-red-600 font-bold mt-1.5 flex items-center gap-1">
+                                <span>⚠️</span> {{ $message }}
+                            </p>
+                            @enderror
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <label class="input-label">Kadar Emas *</label>
-                                <select name="pawn_gold_purity" id="buyback_gold_purity" class="input-field">
-                                    <option value="24K" selected>24 Karat (999 Murni)</option>
-                                    <option value="22K">22 Karat (916)</option>
-                                    <option value="18K">18 Karat (750)</option>
-                                    <option value="16K">16 Karat (700)</option>
+                                <label class="input-label">Kadar Emas <span class="text-red-600">*</span></label>
+                                <select name="pawn_gold_purity" id="buyback_gold_purity" class="input-field font-bold bg-slate-100 cursor-not-allowed">
+                                    <option value="24K" selected>24 Karat (24K - Emas Murni 999)</option>
                                 </select>
+                                <p class="text-[11px] text-emerald-800 font-semibold mt-1">🔒 Toko Sinar Baru II khusus melayani emas 24K murni.</p>
                             </div>
                             <div>
-                                <label class="input-label">Perkiraan Berat Emas (Gram) *</label>
+                                <label class="input-label">Perkiraan Berat Emas (Gram) <span class="text-red-600">*</span></label>
                                 <input type="number" step="0.001" name="pawn_weight_gram" id="buyback_weight_gram" value="{{ old('pawn_weight_gram') }}"
-                                       min="0.001" placeholder="cth: 6.700" class="input-field" oninput="calculateBuybackEstimate(this.value)">
+                                       min="0.001" placeholder="cth: 6.700" class="input-field font-bold text-slate-900 {{ $errors->has('pawn_weight_gram') ? 'border-red-500 ring-2 ring-red-200' : '' }}" oninput="calculateBuybackEstimate(this.value)">
+                                @error('pawn_weight_gram')
+                                <p class="text-xs text-red-600 font-bold mt-1.5 flex items-center gap-1">
+                                    <span>⚠️</span> {{ $message }}
+                                </p>
+                                @enderror
                             </div>
                         </div>
                         <div class="p-4 rounded-xl bg-white border border-emerald-300 shadow-sm flex justify-between items-center">
@@ -140,8 +165,8 @@
                     {{-- Metode Pembayaran --}}
                     <div id="payment_fields" class="space-y-5">
                         <div>
-                            <label class="input-label" id="payment_method_label">Pilih Metode Pembayaran *</label>
-                            <select name="payment_method" id="payment_method" class="input-field cursor-pointer">
+                            <label class="input-label" id="payment_method_label">Pilih Metode Pembayaran <span class="text-red-600">*</span></label>
+                            <select name="payment_method" id="payment_method" class="input-field cursor-pointer font-bold">
                                 <option value="cash" {{ old('payment_method') == 'cash' ? 'selected' : '' }}>Tunai (Cash di Toko)</option>
                                 <option value="transfer" {{ old('payment_method') == 'transfer' ? 'selected' : '' }}>Transfer Bank</option>
                                 <option value="debit" {{ old('payment_method') == 'debit' ? 'selected' : '' }}>Kartu Debit</option>
@@ -180,28 +205,58 @@
                             <h4 class="text-sm font-bold text-amber-950">Rincian Emas yang Ingin Digadai</h4>
                         </div>
                         <div>
-                            <label class="input-label">Deskripsi Emas yang Ingin Digadai *</label>
-                            <input type="text" name="pawn_gold_description" id="pawn_gold_description" value="{{ old('pawn_gold_description') }}"
-                                   placeholder="Contoh: Kalung Emas Rantai 10 Gram" class="input-field">
+                            <label class="input-label">Pilih Jenis / Produk Emas yang Digadai <span class="text-red-600">*</span></label>
+                            <select name="pawn_gold_description" id="pawn_gold_description" class="input-field cursor-pointer font-bold {{ $errors->has('pawn_gold_description') ? 'border-red-500 ring-2 ring-red-200 bg-red-50/50' : '' }}" onchange="onPawnProductChange(this)">
+                                <option value="" disabled {{ old('pawn_gold_description') ? '' : 'selected' }}>-- Pilih Jenis / Produk Emas yang Mau Digadai --</option>
+                                <optgroup label="📋 Koleksi Produk Toko Sinar Baru II">
+                                    @foreach($products as $p)
+                                    <option value="{{ $p->name }} (24K)" data-weight="{{ $p->weight_gram }}" {{ old('pawn_gold_description') == ($p->name . ' (24K)') ? 'selected' : '' }}>
+                                        💍 {{ $p->name }} (Standar: {{ number_format($p->weight_gram, 2) }} gram)
+                                    </option>
+                                    @endforeach
+                                </optgroup>
+                                <optgroup label="✨ Jenis Perhiasan Umum (24K Murni)">
+                                    <option value="Cincin Emas 24K" {{ old('pawn_gold_description') == 'Cincin Emas 24K' ? 'selected' : '' }}>💍 Cincin Emas 24K</option>
+                                    <option value="Kalung Emas 24K" {{ old('pawn_gold_description') == 'Kalung Emas 24K' ? 'selected' : '' }}>📿 Kalung Emas 24K</option>
+                                    <option value="Gelang Emas 24K" {{ old('pawn_gold_description') == 'Gelang Emas 24K' ? 'selected' : '' }}>🪙 Gelang Emas 24K</option>
+                                    <option value="Anting Emas 24K" {{ old('pawn_gold_description') == 'Anting Emas 24K' ? 'selected' : '' }}>✨ Anting Emas 24K</option>
+                                    <option value="Logam Mulia / Emas Batangan 24K" {{ old('pawn_gold_description') == 'Logam Mulia / Emas Batangan 24K' ? 'selected' : '' }}>🧱 Logam Mulia / Emas Batangan 24K</option>
+                                    <option value="Perhiasan Emas 24K Lainnya" {{ old('pawn_gold_description') == 'Perhiasan Emas 24K Lainnya' ? 'selected' : '' }}>🏷️ Perhiasan Emas 24K Lainnya</option>
+                                </optgroup>
+                            </select>
+                            <p class="text-xs text-slate-500 font-medium mt-1">💡 Pilih dari produk katalog toko atau kategori jenis perhiasan di atas.</p>
+                            @error('pawn_gold_description')
+                            <p class="text-xs text-red-600 font-bold mt-1.5 flex items-center gap-1">
+                                <span>⚠️</span> {{ $message }}
+                            </p>
+                            @enderror
                         </div>
                         <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                             <div>
-                                <label class="input-label">Kadar Emas *</label>
-                                <select name="pawn_gold_purity" id="pawn_gold_purity" class="input-field">
-                                    <option value="24K" selected>24 Karat (Murni)</option>
-                                    <option value="22K">22 Karat</option>
-                                    <option value="18K">18 Karat</option>
+                                <label class="input-label">Kadar Emas <span class="text-red-600">*</span></label>
+                                <select name="pawn_gold_purity" id="pawn_gold_purity" class="input-field font-bold bg-slate-100 cursor-not-allowed">
+                                    <option value="24K" selected>24 Karat (24K - Murni)</option>
                                 </select>
                             </div>
                             <div>
-                                <label class="input-label">Berat Emas (Gram) *</label>
+                                <label class="input-label">Berat Emas (Gram) <span class="text-red-600">*</span></label>
                                 <input type="number" step="0.01" name="pawn_weight_gram" id="pawn_weight_gram" value="{{ old('pawn_weight_gram') }}" min="0.01" placeholder="0.00"
-                                       class="input-field">
+                                       class="input-field font-bold {{ $errors->has('pawn_weight_gram') ? 'border-red-500 ring-2 ring-red-200' : '' }}">
+                                @error('pawn_weight_gram')
+                                <p class="text-xs text-red-600 font-bold mt-1.5 flex items-center gap-1">
+                                    <span>⚠️</span> {{ $message }}
+                                </p>
+                                @enderror
                             </div>
                             <div>
-                                <label class="input-label">Pengajuan Pinjaman (Rp) *</label>
+                                <label class="input-label">Pengajuan Pinjaman (Rp) <span class="text-red-600">*</span></label>
                                 <input type="number" name="pawn_amount_requested" value="{{ old('pawn_amount_requested') }}" min="1000" placeholder="cth: 5000000"
-                                       class="input-field">
+                                       class="input-field font-bold {{ $errors->has('pawn_amount_requested') ? 'border-red-500 ring-2 ring-red-200' : '' }}">
+                                @error('pawn_amount_requested')
+                                <p class="text-xs text-red-600 font-bold mt-1.5 flex items-center gap-1">
+                                    <span>⚠️</span> {{ $message }}
+                                </p>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -211,14 +266,14 @@
                         <div>
                             <label class="input-label">Rencana Tanggal Kunjungan *</label>
                             <input type="date" name="preferred_date" min="{{ date('Y-m-d') }}" value="{{ old('preferred_date', date('Y-m-d', strtotime('+1 day'))) }}" required
-                                   class="input-field">
+                                   class="input-field font-bold">
                         </div>
 
                         {{-- Jam Kunjungan --}}
                         <div>
                             <label class="input-label">Perkiraan Jam (08:00 - 17:00) *</label>
                             <input type="time" name="preferred_time" value="{{ old('preferred_time', '10:00') }}" required
-                                   class="input-field">
+                                   class="input-field font-bold">
                         </div>
                     </div>
 
@@ -248,7 +303,29 @@
             const w = parseFloat(weight) || 0;
             const total = Math.round(w * BUY_PRICE_PER_GRAM);
             const formatted = new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(total);
-            document.getElementById('buyback-estimate-display').textContent = formatted.replace('IDR', 'Rp');
+            const display = document.getElementById('buyback-estimate-display');
+            if (display) {
+                display.textContent = formatted.replace('IDR', 'Rp');
+            }
+        }
+
+        function onBuybackProductChange(select) {
+            const opt = select.options[select.selectedIndex];
+            const weight = opt.getAttribute('data-weight');
+            const weightInput = document.getElementById('buyback_weight_gram');
+            if (weight && weightInput) {
+                weightInput.value = parseFloat(weight).toFixed(3);
+                calculateBuybackEstimate(weight);
+            }
+        }
+
+        function onPawnProductChange(select) {
+            const opt = select.options[select.selectedIndex];
+            const weight = opt.getAttribute('data-weight');
+            const weightInput = document.getElementById('pawn_weight_gram');
+            if (weight && weightInput) {
+                weightInput.value = parseFloat(weight).toFixed(2);
+            }
         }
     </script>
 

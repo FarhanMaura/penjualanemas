@@ -18,57 +18,60 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (!resType) return;
 
+    function setSectionState(sectionEl, isVisible, isRequired = false) {
+        if (!sectionEl) return;
+        sectionEl.style.display = isVisible ? 'block' : 'none';
+        const inputs = sectionEl.querySelectorAll('input, select, textarea');
+        inputs.forEach(input => {
+            input.disabled = !isVisible;
+            if (isRequired && isVisible) {
+                // If required is set on input specifically
+            } else if (!isVisible) {
+                input.removeAttribute('required');
+            }
+        });
+    }
+
     function toggleFields() {
         const val = resType.value;
         if (val === 'purchase') {
-            if (productFields) productFields.style.display = 'block';
+            setSectionState(productFields, true);
+            setSectionState(paymentFields, true);
+            setSectionState(installmentFields, false);
+            setSectionState(pawnFields, false);
+            setSectionState(buybackFields, false);
+
             if (productId) productId.setAttribute('required', 'required');
-            if (paymentFields) paymentFields.style.display = 'block';
             if (paymentMethod) paymentMethod.setAttribute('required', 'required');
             if (paymentMethodLabel) paymentMethodLabel.textContent = 'Pilih Metode Pembayaran *';
-            if (installmentFields) installmentFields.style.display = 'none';
-            if (pawnFields) pawnFields.style.display = 'none';
-            if (buybackFields) buybackFields.style.display = 'none';
-            if (buybackDesc) buybackDesc.removeAttribute('required');
-            if (buybackWeight) buybackWeight.removeAttribute('required');
-            if (pawnDesc) pawnDesc.removeAttribute('required');
-            if (pawnWeight) pawnWeight.removeAttribute('required');
         } else if (val === 'buyback') {
-            if (productFields) productFields.style.display = 'none';
-            if (productId) productId.removeAttribute('required');
-            if (paymentFields) paymentFields.style.display = 'block';
-            if (paymentMethod) paymentMethod.setAttribute('required', 'required');
-            if (paymentMethodLabel) paymentMethodLabel.textContent = 'Pilih Metode Penerimaan Pembayaran dari Toko *';
-            if (installmentFields) installmentFields.style.display = 'none';
-            if (pawnFields) pawnFields.style.display = 'none';
-            if (buybackFields) buybackFields.style.display = 'block';
+            setSectionState(productFields, false);
+            setSectionState(installmentFields, false);
+            setSectionState(pawnFields, false);
+            setSectionState(buybackFields, true);
+            setSectionState(paymentFields, true);
+
             if (buybackDesc) buybackDesc.setAttribute('required', 'required');
             if (buybackWeight) buybackWeight.setAttribute('required', 'required');
-            if (pawnDesc) pawnDesc.removeAttribute('required');
-            if (pawnWeight) pawnWeight.removeAttribute('required');
+            if (paymentMethod) paymentMethod.setAttribute('required', 'required');
+            if (paymentMethodLabel) paymentMethodLabel.textContent = 'Pilih Metode Penerimaan Pembayaran dari Toko *';
         } else if (val === 'installment') {
-            if (productFields) productFields.style.display = 'block';
+            setSectionState(productFields, true);
+            setSectionState(installmentFields, true);
+            setSectionState(paymentFields, true);
+            setSectionState(pawnFields, false);
+            setSectionState(buybackFields, false);
+
             if (productId) productId.setAttribute('required', 'required');
-            if (paymentFields) paymentFields.style.display = 'block';
             if (paymentMethod) paymentMethod.setAttribute('required', 'required');
             if (paymentMethodLabel) paymentMethodLabel.textContent = 'Pilih Metode Pembayaran DP / Angsuran *';
-            if (installmentFields) installmentFields.style.display = 'block';
-            if (pawnFields) pawnFields.style.display = 'none';
-            if (buybackFields) buybackFields.style.display = 'none';
-            if (buybackDesc) buybackDesc.removeAttribute('required');
-            if (buybackWeight) buybackWeight.removeAttribute('required');
-            if (pawnDesc) pawnDesc.removeAttribute('required');
-            if (pawnWeight) pawnWeight.removeAttribute('required');
         } else if (val === 'pawn') {
-            if (productFields) productFields.style.display = 'none';
-            if (productId) productId.removeAttribute('required');
-            if (paymentFields) paymentFields.style.display = 'none';
-            if (paymentMethod) paymentMethod.removeAttribute('required');
-            if (installmentFields) installmentFields.style.display = 'none';
-            if (pawnFields) pawnFields.style.display = 'block';
-            if (buybackFields) buybackFields.style.display = 'none';
-            if (buybackDesc) buybackDesc.removeAttribute('required');
-            if (buybackWeight) buybackWeight.removeAttribute('required');
+            setSectionState(productFields, false);
+            setSectionState(installmentFields, false);
+            setSectionState(paymentFields, false);
+            setSectionState(buybackFields, false);
+            setSectionState(pawnFields, true);
+
             if (pawnDesc) pawnDesc.setAttribute('required', 'required');
             if (pawnWeight) pawnWeight.setAttribute('required', 'required');
         }
