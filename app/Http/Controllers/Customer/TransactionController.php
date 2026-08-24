@@ -22,10 +22,14 @@ class TransactionController extends Controller
 
         $summary = [
             'total'    => Transaction::where('user_id', auth()->id())->count(),
-            'purchase' => Transaction::where('user_id', auth()->id())->where('type', 'purchase')
-                            ->where('status', 'completed')->sum('total_amount'),
-            'income'   => Transaction::where('user_id', auth()->id())->where('type', 'buyback')
-                            ->where('status', 'completed')->sum('total_amount'),
+            'purchase' => Transaction::where('user_id', auth()->id())
+                            ->whereIn('type', ['purchase', 'installment'])
+                            ->where('status', '!=', 'cancelled')
+                            ->sum('total_amount'),
+            'income'   => Transaction::where('user_id', auth()->id())
+                            ->whereIn('type', ['buyback', 'sell'])
+                            ->where('status', '!=', 'cancelled')
+                            ->sum('total_amount'),
         ];
 
         return view('customer.transactions.index', compact('transactions', 'summary'));

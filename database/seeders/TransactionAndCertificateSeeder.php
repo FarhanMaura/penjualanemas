@@ -62,5 +62,8 @@ class TransactionAndCertificateSeeder extends Seeder
             'issued_at'          => now(),
             'is_valid'           => true,
         ]);
+
+        // Award reward points
+        app(\App\Services\RewardService::class)->awardPoint($customer, $transaction);
     }
 }

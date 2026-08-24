@@ -1,22 +1,22 @@
 <x-customer-app>
     <x-slot name="pageTitle">Katalog Produk Emas</x-slot>
-    <x-slot name="breadcrumb">Temukan emas terbaik untuk investasi Anda</x-slot>
+    <x-slot name="breadcrumb">Temukan koleksi perhiasan emas murni 24K terbaik Toko Sinar Baru II</x-slot>
 
     {{-- Harga Emas Aktif --}}
     @if($goldPrice)
-    <div class="glass rounded-2xl p-4 mb-6 flex items-center justify-between">
+    <div class="glass rounded-2xl p-4 mb-6 flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-white border border-[#e8e3d5] shadow-sm">
         <div class="flex items-center gap-4">
             <span class="text-2xl">💰</span>
             <div>
-                <p class="text-xs text-gray-400">Harga Emas Hari Ini ({{ now()->isoFormat('D MMM Y') }})</p>
-                <p class="text-sm text-white font-semibold">
-                    Beli: <span class="text-green-400">Rp {{ number_format($goldPrice->buy_price_per_gram, 0, ',', '.') }}</span>/gram
+                <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Harga Emas Hari Ini ({{ now()->isoFormat('D MMM Y') }})</p>
+                <p class="text-sm text-slate-900 font-extrabold mt-0.5">
+                    Beli: <span class="text-emerald-700">Rp {{ number_format($goldPrice->buy_price_per_gram, 0, ',', '.') }}</span>/gram
                     &nbsp;•&nbsp;
-                    Jual: <span class="text-yellow-400">Rp {{ number_format($goldPrice->sell_price_per_gram, 0, ',', '.') }}</span>/gram
+                    Jual: <span class="text-[#C6A443]">Rp {{ number_format($goldPrice->sell_price_per_gram, 0, ',', '.') }}</span>/gram
                 </p>
             </div>
         </div>
-        <span class="text-xs text-gray-500">📡 {{ $goldPrice->source }}</span>
+        <span class="text-xs text-slate-500 font-semibold self-start sm:self-center">📡 Sumber: {{ $goldPrice->source }}</span>
     </div>
     @endif
 
@@ -26,12 +26,12 @@
             $currentCat = request('category');
         @endphp
         <a href="{{ route('customer.catalog.index', array_merge(request()->query(), ['category' => 'all'])) }}"
-           class="px-4 py-2 rounded-xl text-xs sm:text-sm transition-all {{ !$currentCat || $currentCat === 'all' ? 'bg-amber-500 text-gray-950 font-bold shadow-lg' : 'glass text-gray-300 hover:bg-white/10' }}">
+           class="px-4 py-2 rounded-xl text-xs sm:text-sm transition-all font-bold {{ !$currentCat || $currentCat === 'all' ? 'gold-gradient text-[#042623] shadow-md border border-[#C6A443]' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200' }}">
             📦 Semua Produk
         </a>
         @foreach($categories as $cat)
         <a href="{{ route('customer.catalog.index', array_merge(request()->query(), ['category' => $cat->slug])) }}"
-           class="px-4 py-2 rounded-xl text-xs sm:text-sm transition-all {{ $currentCat === $cat->slug ? 'bg-amber-500 text-gray-950 font-bold shadow-lg' : 'glass text-gray-300 hover:bg-white/10' }}">
+           class="px-4 py-2 rounded-xl text-xs sm:text-sm transition-all font-bold {{ $currentCat === $cat->slug ? 'gold-gradient text-[#042623] shadow-md border border-[#C6A443]' : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200' }}">
             {{ $cat->icon ?? '✨' }} {{ $cat->name }}
         </a>
         @endforeach
@@ -43,15 +43,13 @@
         <input type="hidden" name="category" value="{{ request('category') }}">
         @endif
         <input type="text" name="search" value="{{ request('search') }}"
-               placeholder="Cari produk emas..."
-               class="flex-1 rounded-xl px-4 py-2.5 text-sm text-white placeholder-gray-500 outline-none"
-               style="background:rgba(255,255,255,0.04); border:1px solid rgba(245,158,11,0.15);">
-        <button type="submit" class="px-5 py-2.5 rounded-xl text-sm font-semibold text-white"
-                style="background:linear-gradient(135deg,#f59e0b,#ee950a,#d97706);box-shadow:0 2px 10px rgba(238,149,10,0.3);">
+               placeholder="Cari kalung, gelang, cincin emas..."
+               class="flex-1 input-field">
+        <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-extrabold text-[#042623] gold-gradient border border-[#C6A443] shadow-md hover:brightness-110 transition">
             🔍 Cari
         </button>
         @if(request('search') || (request('category') && request('category') !== 'all'))
-        <a href="{{ route('customer.catalog.index') }}" class="px-4 py-2.5 rounded-xl text-sm text-gray-400 glass hover:bg-white/10 transition">
+        <a href="{{ route('customer.catalog.index') }}" class="px-4 py-2.5 rounded-xl text-sm font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition flex items-center">
             Reset
         </a>
         @endif
@@ -59,10 +57,11 @@
 
     {{-- Produk Grid --}}
     @if($products->isEmpty())
-    <div class="text-center py-20">
+    <div class="text-center py-20 bg-white rounded-3xl border border-[#e8e3d5] shadow-sm">
         <span class="text-6xl">🔍</span>
-        <p class="text-gray-400 text-lg mt-4">Produk tidak ditemukan</p>
-        <a href="{{ route('customer.catalog.index') }}" class="mt-4 inline-block text-yellow-400 hover:underline text-sm">Lihat Semua →</a>
+        <p class="text-slate-900 text-lg font-bold mt-4">Produk tidak ditemukan</p>
+        <p class="text-slate-600 text-sm mt-1">Coba kata kunci lain atau pilih kategori lain.</p>
+        <a href="{{ route('customer.catalog.index') }}" class="mt-4 inline-block font-bold text-[#085C54] hover:underline text-sm">Lihat Semua Produk →</a>
     </div>
     @else
     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-5 mb-8">
@@ -74,78 +73,74 @@
                 ? round($goldPrice->sell_price_per_gram * $product->weight_gram, -3)
                 : $product->base_price;
         @endphp
-        <div class="glass rounded-2xl overflow-hidden hover:scale-105 transition-all group"
+        <div class="glass rounded-2xl overflow-hidden hover:scale-105 transition-all group bg-white border border-[#e8e3d5] shadow-sm flex flex-col justify-between"
              style="transition: all 0.3s ease;">
-            <div class="h-36 flex items-center justify-center flex-col gap-2 relative"
-                 style="background:linear-gradient(135deg, rgba(124,45,18,0.5), rgba(194,65,12,0.2));">
-                @if($product->thumbnail_url)
-                <img src="{{ $product->thumbnail_url }}" class="h-28 w-28 object-contain group-hover:scale-110 transition-transform duration-300">
-                @else
-                <span class="text-4xl group-hover:scale-110 transition-transform">{{ $icon }}</span>
-                @endif
-                @if($product->stock <= 0)
-                <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(239,68,68,0.2); color:#f87171;">Stok Habis</span>
-                @endif
-            </div>
-            <div class="p-4">
-                <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(245,158,11,0.1); color:#f59e0b;">
-                    {{ $product->gold_purity }} Murni
-                </span>
-                <h3 class="font-semibold mt-2 text-sm text-white">{{ $product->name }}</h3>
-                <p class="text-xs text-gray-400 mt-1">{{ number_format($product->weight_gram, 3) }} gram</p>
-                <div class="mt-3 pt-3" style="border-top:1px solid rgba(245,158,11,0.1);">
-                    <p class="text-xs text-gray-500">Harga Jual</p>
-                    <p class="text-base font-bold text-yellow-400">Rp {{ number_format($harga, 0, ',', '.') }}</p>
-                    @if($goldPrice)
-                    <p class="text-xs text-gray-600 mt-0.5">Buyback: Rp {{ number_format($goldPrice->buy_price_per_gram * $product->weight_gram, 0, ',', '.') }}</p>
-                    @endif
-                </div>
-                <div class="mt-3 flex flex-col gap-2">
-                    <div class="flex justify-between items-center text-xs text-gray-500">
-                        <span>Stok: {{ $product->stock }}</span>
-                    </div>
-                    @if($product->is_available && $product->stock > 0)
-                    <div class="grid grid-cols-2 gap-1.5">
-                        <a href="{{ route('customer.negotiations.create', ['product_id' => $product->id]) }}"
-                           class="text-center text-[11px] font-semibold px-2 py-1.5 rounded-lg text-amber-300 glass hover:bg-white/10 transition border border-amber-500/20">
-                            🤝 Tawar
-                        </a>
-                        <a href="{{ route('customer.reservations.create', ['product_id' => $product->id]) }}"
-                           class="text-center text-[11px] font-semibold px-2 py-1.5 rounded-lg text-gray-950 transition font-bold"
-                           style="background:linear-gradient(135deg,#f59e0b,#d97706);">
-                            Reservasi →
-                        </a>
-                    </div>
+            <div>
+                <div class="h-36 flex items-center justify-center flex-col gap-2 relative bg-[#F4EDD9]/40 border-b border-[#e8e3d5]">
+                    @if($product->thumbnail_url)
+                    <img src="{{ $product->thumbnail_url }}" class="h-28 w-28 object-contain group-hover:scale-110 transition-transform duration-300">
                     @else
-                    <span class="text-xs text-gray-600">Tidak tersedia</span>
+                    <span class="text-4xl group-hover:scale-110 transition-transform">{{ $icon }}</span>
                     @endif
-
-                    @if($product->category)
-                    <a href="{{ route('customer.catalog.index', ['category' => $product->category->slug]) }}"
-                       class="w-full text-center text-[11px] font-semibold px-2 py-1.5 rounded-lg text-amber-300 glass hover:bg-white/10 transition border border-amber-500/30">
-                        📂 Semua {{ $product->category->name }} →
-                    </a>
+                    @if($product->stock <= 0)
+                    <span class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-red-100 text-red-800 border border-red-200 absolute top-2 right-2">Stok Habis</span>
                     @endif
                 </div>
+                <div class="p-4">
+                    <span class="text-[10px] px-2.5 py-0.5 rounded-full font-extrabold uppercase bg-amber-100 text-amber-900 border border-amber-300">
+                        {{ $product->gold_purity }} Murni
+                    </span>
+                    <h3 class="font-bold mt-2 text-sm text-slate-900 line-clamp-2">{{ $product->name }}</h3>
+                    <p class="text-xs font-semibold text-slate-500 mt-1">{{ number_format($product->weight_gram, 3) }} gram</p>
+                    <div class="mt-3 pt-3 border-t border-slate-100">
+                        <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Harga Jual</p>
+                        <p class="text-base font-extrabold text-[#C6A443]">Rp {{ number_format($harga, 0, ',', '.') }}</p>
+                        @if($goldPrice)
+                        <p class="text-[11px] text-emerald-800 font-semibold mt-0.5">Buyback: Rp {{ number_format($goldPrice->buy_price_per_gram * $product->weight_gram, 0, ',', '.') }}</p>
+                        @endif
+                    </div>
+                </div>
+            </div>
+            
+            <div class="p-4 pt-0">
+                <div class="flex justify-between items-center text-xs text-slate-500 font-medium mb-2">
+                    <span>Stok: <strong class="text-slate-800">{{ $product->stock }}</strong></span>
+                </div>
+                @if($product->is_available && $product->stock > 0)
+                <div class="grid grid-cols-2 gap-1.5">
+                    <a href="{{ route('customer.negotiations.create', ['product_id' => $product->id]) }}"
+                       class="text-center text-[11px] font-bold px-2 py-2 rounded-xl text-slate-800 bg-slate-100 hover:bg-slate-200 transition border border-slate-300 shadow-sm">
+                        🤝 Tawar
+                    </a>
+                    <a href="{{ route('customer.reservations.create', ['product_id' => $product->id]) }}"
+                       class="text-center text-[11px] font-extrabold px-2 py-2 rounded-xl text-[#042623] gold-gradient border border-[#C6A443] shadow-sm hover:brightness-110 transition">
+                        Reservasi →
+                    </a>
+                </div>
+                @else
+                <span class="text-xs font-semibold text-slate-400 block text-center py-1">Tidak tersedia</span>
+                @endif
             </div>
         </div>
         @endforeach
     </div>
-    {{ $products->links() }}
+    <div class="flex justify-center">
+        {{ $products->links() }}
+    </div>
     @endif
 
     {{-- Info O2O --}}
-    <div class="glass rounded-2xl p-6 mt-8">
-        <h3 class="font-semibold text-yellow-400 mb-4 text-center">📋 Cara Berbelanja di Sinar Baru II</h3>
+    <div class="glass rounded-2xl p-6 mt-8 bg-white border border-[#e8e3d5] shadow-sm">
+        <h3 class="font-bold text-slate-900 font-playfair mb-4 text-center text-base">📋 Cara Berbelanja di Toko Emas Sinar Baru II</h3>
         <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 text-center">
-            @foreach([['1','Pilih & Reservasi','Pilih produk, klik Reservasi untuk mendaftarkan minat Anda.'],['2','Tunggu Konfirmasi','Admin akan konfirmasi reservasi dalam 1×24 jam.'],['3','Datang ke Toko','Selesaikan transaksi langsung di toko dengan referensi reservasi.']] as [$num,$title,$desc])
+            @foreach([['1','Pilih & Reservasi','Pilih produk perhiasan emas idaman Anda, lalu klik Reservasi untuk memilih jadwal kunjungan.'],['2','Tunggu Konfirmasi','Admin akan mengonfirmasi jadwal & menyiapkan produk dalam 1×24 jam.'],['3','Datang ke Toko','Kunjungi toko kami di Teluk Lubuk untuk cek fisik emas, timbang transparan, & selesaikan pembayaran.']] as [$num,$title,$desc])
             <div class="flex flex-col items-center gap-3">
-                <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-white text-sm"
-                     style="background:linear-gradient(135deg,#f59e0b,#d97706,#92400e);">{{ $num }}</div>
-                <p class="font-semibold text-sm">{{ $title }}</p>
-                <p class="text-xs text-gray-400">{{ $desc }}</p>
+                <div class="w-10 h-10 rounded-full flex items-center justify-center font-extrabold text-[#042623] text-sm gold-gradient border border-[#C6A443] shadow-md">{{ $num }}</div>
+                <p class="font-bold text-sm text-slate-900">{{ $title }}</p>
+                <p class="text-xs text-slate-600 leading-relaxed">{{ $desc }}</p>
             </div>
             @endforeach
         </div>
     </div>
 </x-customer-app>
+

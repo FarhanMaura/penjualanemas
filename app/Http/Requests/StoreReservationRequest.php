@@ -20,19 +20,19 @@ class StoreReservationRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'type'                     => ['required', 'in:purchase,installment,pawn'],
+            'type'                     => ['required', 'in:purchase,buyback,installment,pawn'],
             'product_id'               => ['required_if:type,purchase,installment', 'nullable', 'exists:products,id'],
             'price_negotiation_id'     => ['nullable', 'exists:price_negotiations,id'],
             'agreed_price'             => ['nullable', 'numeric', 'min:0'],
             'quantity'                 => ['required_if:type,purchase,installment', 'nullable', 'integer', 'min:1', 'max:100'],
             'preferred_date'           => ['required','date','after_or_equal:today'],
             'preferred_time'           => ['nullable','date_format:H:i'],
-            'payment_method'           => ['required_if:type,purchase,installment', 'nullable', 'in:cash,transfer,debit,credit'],
+            'payment_method'           => ['required_if:type,purchase,installment,buyback', 'nullable', 'in:cash,transfer,debit,credit'],
             'notes'                    => ['nullable','string','max:500'],
-            'pawn_gold_description'    => ['required_if:type,pawn', 'nullable', 'string', 'max:500'],
-            'pawn_gold_purity'         => ['required_if:type,pawn', 'nullable', 'in:24K'],
-            'pawn_weight_gram'         => ['required_if:type,pawn', 'nullable', 'numeric', 'min:0.01'],
-            'pawn_amount_requested'    => ['required_if:type,pawn', 'nullable', 'numeric', 'min:1000'],
+            'pawn_gold_description'    => ['required_if:type,pawn,buyback', 'nullable', 'string', 'max:500'],
+            'pawn_gold_purity'         => ['required_if:type,pawn,buyback', 'nullable', 'string', 'max:20'],
+            'pawn_weight_gram'         => ['required_if:type,pawn,buyback', 'nullable', 'numeric', 'min:0.01'],
+            'pawn_amount_requested'    => ['nullable', 'numeric', 'min:0'],
             'installment_tenure'       => ['required_if:type,installment', 'nullable', 'integer', 'in:3,6,12'],
             'installment_down_payment' => ['required_if:type,installment', 'nullable', 'numeric', 'min:0'],
         ];
@@ -43,6 +43,9 @@ class StoreReservationRequest extends FormRequest
         return [
             'preferred_date.after_or_equal' => 'Tanggal kunjungan tidak boleh di masa lalu.',
             'preferred_time.date_format'     => 'Format waktu harus HH:MM (contoh: 09:30).',
+            'pawn_gold_description.required_if' => 'Deskripsi perhiasan emas wajib diisi.',
+            'pawn_gold_purity.required_if'      => 'Kadar emas wajib dipilih.',
+            'pawn_weight_gram.required_if'      => 'Berat emas dalam gram wajib diisi.',
         ];
     }
 }

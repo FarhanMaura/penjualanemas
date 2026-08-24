@@ -42,6 +42,7 @@ class TransactionController extends Controller
         $stats = [
             'total'       => Transaction::count(),
             'purchase'    => Transaction::where('type', 'purchase')->count(),
+            'buyback'     => Transaction::whereIn('type', ['buyback', 'sell'])->count(),
             'installment' => Transaction::where('type', 'installment')->where('status', 'in_progress')->count(),
             'pawn'        => Transaction::where('type', 'pawn')->where('status', 'in_progress')->count(),
         ];
@@ -107,7 +108,7 @@ class TransactionController extends Controller
                 'notes'            => $validated['notes'] ?? null,
             ]);
 
-            // Simpan item transaksi & kurangi stok
+            // Simpan item transaksi & update stok
             if ($validated['type'] !== 'pawn' && isset($validated['items'])) {
                 foreach ($validated['items'] as $item) {
                     $product = \App\Models\Product::find($item['product_id']);
@@ -123,14 +124,18 @@ class TransactionController extends Controller
                         'subtotal'       => $item['unit_price'] * $item['quantity'],
                     ]);
 
-                    // Kurangi stok produk
+                    // Update stok produk
                     if ($product) {
-                        $newStock = max(0, $product->stock - $item['quantity']);
-                        $product->update([
-                            'stock'        => $newStock,
-                            'is_available' => $newStock > 0,
-                            'is_reservable'=> $newStock > 0,
-                        ]);
+                        if ($validated['type'] === 'buyback') {
+                            $product->increment('stock', $item['quantity']);
+                        } else {
+                            $newStock = max(0, $product->stock - $item['quantity']);
+                            $product->update([
+                                'stock'        => $newStock,
+                                'is_available' => $newStock > 0,
+                                'is_reservable'=> $newStock > 0,
+                            ]);
+                        }
                     }
                 }
             }

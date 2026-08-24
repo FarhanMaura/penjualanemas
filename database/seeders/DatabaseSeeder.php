@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             GoldPriceSeeder::class,
             RewardProgramSeeder::class,
             TransactionAndCertificateSeeder::class,
+            NotificationSeeder::class,
         ]);
     }
 }

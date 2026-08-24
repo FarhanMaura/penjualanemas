@@ -99,7 +99,7 @@
                 <span class="text-base w-5 text-center">🏦</span> Gadai
             </a>
 
-            <p class="sidebar-section">CRM</p>
+            <p class="sidebar-section">CRM & Laporan</p>
             <a href="{{ route('admin.customers.index') }}" class="sidebar-link flex items-center gap-3 px-5 py-2.5 {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
                 <span class="text-base w-5 text-center">👥</span> Pelanggan
             </a>
@@ -108,6 +108,19 @@
             </a>
             <a href="{{ route('admin.reports.index') }}" class="sidebar-link flex items-center gap-3 px-5 py-2.5 {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
                 <span class="text-base w-5 text-center">📈</span> Laporan
+            </a>
+            @php
+                $adminUnreadNotifs = auth()->user()->notifications()->whereNull('read_at')->count();
+            @endphp
+            <a href="{{ route('admin.notifications.index') }}" class="sidebar-link flex items-center justify-between px-5 py-2.5 {{ request()->routeIs('admin.notifications.*') ? 'active' : '' }}">
+                <div class="flex items-center gap-3">
+                    <span class="text-base w-5 text-center">🔔</span> Notifikasi
+                </div>
+                @if($adminUnreadNotifs > 0)
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500 text-slate-950 shadow-sm">
+                    {{ $adminUnreadNotifs }}
+                </span>
+                @endif
             </a>
 
             <!-- Divider -->
@@ -165,9 +178,9 @@
             </div>
             <div class="flex items-center gap-3 lg:gap-4">
                 <div class="relative">
-                    <button class="glass px-3 lg:px-4 py-2 rounded-xl text-sm flex items-center gap-2 hover:bg-white transition border border-amber-300">
-                        🔔 <span class="text-amber-900 font-bold text-xs">5</span>
-                    </button>
+                    <a href="{{ route('admin.notifications.index') }}" class="glass px-3 lg:px-4 py-2 rounded-xl text-sm flex items-center gap-2 hover:bg-white transition border border-amber-300" title="Notifikasi Admin">
+                        🔔 <span class="text-amber-900 font-extrabold text-xs">{{ $adminUnreadNotifs }}</span>
+                    </a>
                 </div>
                 <div class="flex items-center gap-2 lg:gap-3 glass px-3 lg:px-4 py-2 rounded-xl border border-amber-300">
                     <div class="w-8 h-8 gold-gradient rounded-full flex items-center justify-center text-sm font-bold shadow-sm">

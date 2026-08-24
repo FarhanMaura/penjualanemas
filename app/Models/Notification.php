@@ -16,6 +16,7 @@ class Notification extends Model
         'message',
         'data',
         'read_at',
+        'created_at',
     ];
 
     protected function casts(): array

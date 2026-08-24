@@ -27,9 +27,10 @@
     <a href="{{ route('admin.transactions.create') }}" class="btn-orange">+ Catat Transaksi</a>
 </div>
 
-<div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+<div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4 mb-6">
     <div class="kpi-card border border-[#e8e3d5] shadow-sm bg-white"><p class="kpi-label">Total Transaksi</p><p class="kpi-value text-[#042623]">{{ $stats['total'] }}</p></div>
-    <div class="kpi-card border border-[#e8e3d5] shadow-sm bg-white"><p class="kpi-label">Pembelian</p><p class="kpi-value text-[#C6A443]">{{ $stats['purchase'] }}</p></div>
+    <div class="kpi-card border border-[#e8e3d5] shadow-sm bg-white"><p class="kpi-label">Beli Emas</p><p class="kpi-value text-[#C6A443]">{{ $stats['purchase'] }}</p></div>
+    <div class="kpi-card border border-[#e8e3d5] shadow-sm bg-white"><p class="kpi-label">Jual Emas (Buyback)</p><p class="kpi-value text-[#085C54]">{{ $stats['buyback'] ?? 0 }}</p></div>
     <div class="kpi-card border border-[#e8e3d5] shadow-sm bg-white"><p class="kpi-label">Cicilan Aktif</p><p class="kpi-value text-blue-700">{{ $stats['installment'] }}</p></div>
     <div class="kpi-card border border-[#e8e3d5] shadow-sm bg-white"><p class="kpi-label">Gadai Berjalan</p><p class="kpi-value text-purple-700">{{ $stats['pawn'] }}</p></div>
 </div>

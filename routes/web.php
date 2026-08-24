@@ -92,6 +92,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Reports
         Route::get('/reports',                  [Admin\ReportController::class, 'index'])->name('reports.index');
+
+        // Notifications
+        Route::get('/notifications',                           [Admin\NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/{notification}/read',      [Admin\NotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/notifications/mark-all-read',             [Admin\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     });
 
     // ── CUSTOMER ───────────────────────────────────────────────────────────
@@ -135,6 +140,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Pawns
         Route::get('/pawns',                    [Customer\PawnController::class, 'index'])->name('pawns.index');
         Route::get('/pawns/{pawn}',             [Customer\PawnController::class, 'show'])->name('pawns.show');
+
+        // Notifications
+        Route::get('/notifications',                           [Customer\NotificationController::class, 'index'])->name('notifications.index');
+        Route::post('/notifications/{notification}/read',      [Customer\NotificationController::class, 'markAsRead'])->name('notifications.read');
+        Route::post('/notifications/mark-all-read',             [Customer\NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-read');
     });
 });
 

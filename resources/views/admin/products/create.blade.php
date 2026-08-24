@@ -89,21 +89,21 @@
                     @error('image')<p class="field-error">{{ $message }}</p>@enderror
                 </div>
 
-                <div class="flex items-center gap-6">
+                <div class="flex flex-wrap items-center gap-6">
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" name="is_available" value="1" {{ old('is_available',true) ? 'checked':'' }}
-                               class="w-4 h-4 rounded" style="accent-color:#f59e0b;">
-                        <span class="text-sm text-gray-300">Tampilkan di Katalog</span>
+                                class="w-4 h-4 rounded accent-[#085C54]">
+                        <span class="text-sm text-slate-800 font-semibold">Tampilkan di Katalog</span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" name="is_reservable" value="1" {{ old('is_reservable',true) ? 'checked':'' }}
-                               class="w-4 h-4 rounded" style="accent-color:#f59e0b;">
-                        <span class="text-sm text-gray-300">Bisa Direservasi</span>
+                                class="w-4 h-4 rounded accent-[#085C54]">
+                        <span class="text-sm text-slate-800 font-semibold">Bisa Direservasi</span>
                     </label>
                     <label class="flex items-center gap-2 cursor-pointer">
                         <input type="checkbox" name="is_basic" value="1" {{ old('is_basic') ? 'checked':'' }}
-                               class="w-4 h-4 rounded" style="accent-color:#f59e0b;">
-                        <span class="text-sm text-gray-300">Produk Ori/Basic (Default Halaman Utama)</span>
+                                class="w-4 h-4 rounded accent-[#085C54]">
+                        <span class="text-sm text-slate-800 font-semibold">Produk Ori/Basic (Default Halaman Utama)</span>
                     </label>
                 </div>
             </div>

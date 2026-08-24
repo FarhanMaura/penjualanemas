@@ -32,10 +32,15 @@ class ReservationController extends Controller
         return view('customer.reservations.index', compact('reservations'));
     }
 
+    public function __construct(
+        private \App\Services\GoldPriceService $goldPriceService
+    ) {}
+
     public function create(Request $request)
     {
         $product = null;
         $negotiation = null;
+        $todayGoldPrice = $this->goldPriceService->getTodayPrice();
 
         if ($request->filled('negotiation_id')) {
             $negotiation = PriceNegotiation::where('user_id', auth()->id())
@@ -58,7 +63,7 @@ class ReservationController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('customer.reservations.create', compact('products', 'product', 'negotiation'));
+        return view('customer.reservations.create', compact('products', 'product', 'negotiation', 'todayGoldPrice'));
     }
 
     public function store(StoreReservationRequest $request)
@@ -109,7 +114,7 @@ class ReservationController extends Controller
             'type'                      => $request->type,
             'product_id'                => $request->product_id,
             'price_negotiation_id'     => $negotiationId,
-            'quantity'                  => $request->quantity,
+            'quantity'                  => $request->quantity ?? 1,
             'agreed_price'              => $agreedPrice,
             'preferred_date'            => $request->preferred_date,
             'preferred_time'            => $request->preferred_time,

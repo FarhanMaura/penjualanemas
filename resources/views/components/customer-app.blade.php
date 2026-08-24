@@ -77,6 +77,10 @@
             <a href="{{ route('customer.catalog.index') }}" class="sidebar-link {{ request()->routeIs('customer.catalog*') ? 'active' : '' }}">
                 <span class="text-base w-5 text-center">💍</span> Katalog Produk
             </a>
+            <a href="{{ route('customer.gold-prices.index') }}" class="sidebar-link {{ request()->routeIs('customer.gold-prices*') ? 'active' : '' }}">
+                <span class="text-base w-5 text-center">📈</span> Grafik Harga Emas
+            </a>
+            
             <p class="sidebar-section">Aktivitas Saya</p>
             <a href="{{ route('customer.negotiations.index') }}" class="sidebar-link {{ request()->routeIs('customer.negotiations*') ? 'active' : '' }}">
                 <span class="text-base w-5 text-center">🤝</span> Tawar Harga
@@ -87,6 +91,9 @@
             <a href="{{ route('customer.transactions.index') }}" class="sidebar-link {{ request()->routeIs('customer.transactions*') ? 'active' : '' }}">
                 <span class="text-base w-5 text-center">🧾</span> Riwayat Transaksi
             </a>
+            <a href="{{ route('customer.certificates.index') }}" class="sidebar-link {{ request()->routeIs('customer.certificates*') ? 'active' : '' }}">
+                <span class="text-base w-5 text-center">📜</span> Surat Emas Digital
+            </a>
             <a href="{{ route('customer.installments.index') }}" class="sidebar-link {{ request()->routeIs('customer.installments*') ? 'active' : '' }}">
                 <span class="text-base w-5 text-center">📅</span> Cicilan Saya
             </a>
@@ -94,9 +101,22 @@
                 <span class="text-base w-5 text-center">🏦</span> Gadai Saya
             </a>
 
-            <p class="sidebar-section">Loyalty</p>
+            <p class="sidebar-section">Loyalty & Notifikasi</p>
             <a href="{{ route('customer.rewards.index') }}" class="sidebar-link {{ request()->routeIs('customer.rewards*') ? 'active' : '' }}">
                 <span class="text-base w-5 text-center">🎁</span> Reward & Poin
+            </a>
+            @php
+                $sidebarUnreadCount = auth()->user()->notifications()->whereNull('read_at')->count();
+            @endphp
+            <a href="{{ route('customer.notifications.index') }}" class="sidebar-link {{ request()->routeIs('customer.notifications*') ? 'active' : '' }} justify-between">
+                <div class="flex items-center gap-3">
+                    <span class="text-base w-5 text-center">🔔</span> Notifikasi
+                </div>
+                @if($sidebarUnreadCount > 0)
+                <span class="px-2 py-0.5 rounded-full text-[10px] font-extrabold bg-amber-500 text-slate-950 shadow-sm">
+                    {{ $sidebarUnreadCount }}
+                </span>
+                @endif
             </a>
 
             <!-- Divider -->
@@ -151,9 +171,14 @@
             </div>
             <div class="flex items-center gap-2 lg:gap-3">
                 <!-- Notification Bell -->
-                <button class="glass w-9 h-9 flex items-center justify-center rounded-xl hover:bg-amber-100 transition text-amber-800">
+                <a href="{{ route('customer.notifications.index') }}" class="glass relative w-9 h-9 flex items-center justify-center rounded-xl hover:bg-amber-100 transition text-amber-800 border border-amber-300" title="Notifikasi">
                     <span>🔔</span>
-                </button>
+                    @if($sidebarUnreadCount > 0)
+                    <span class="absolute -top-1.5 -right-1.5 min-w-[18px] h-[18px] px-1 bg-red-600 text-white text-[10px] font-extrabold rounded-full flex items-center justify-center shadow-md animate-pulse">
+                        {{ $sidebarUnreadCount > 9 ? '9+' : $sidebarUnreadCount }}
+                    </span>
+                    @endif
+                </a>
                 <!-- Profile -->
                 <div class="glass flex items-center gap-2 px-2.5 lg:px-3 py-1.5 rounded-xl border border-amber-300">
                     <div class="w-7 h-7 gold-gradient rounded-full flex items-center justify-center text-xs font-bold">

@@ -25,10 +25,11 @@ class ReportController extends Controller
 
         // Transaksi Summary
         $transactions = Transaction::where('created_at', '>=', $startDate);
-        $totalRevenue    = (clone $transactions)->where('status', 'completed')->sum('total_amount');
-        $totalTrx        = (clone $transactions)->count();
-        $purchaseCount   = (clone $transactions)->where('type', 'purchase')->count();
-        $buybackCount    = (clone $transactions)->where('type', 'buyback')->count();
+        $totalRevenue    = (clone $transactions)->where('status', '!=', 'cancelled')->where('type', 'purchase')->sum('total_amount');
+        $totalTrx        = (clone $transactions)->where('status', '!=', 'cancelled')->count();
+        $purchaseCount   = (clone $transactions)->where('type', 'purchase')->where('status', '!=', 'cancelled')->count();
+        $buybackCount    = (clone $transactions)->whereIn('type', ['buyback', 'sell'])->where('status', '!=', 'cancelled')->count();
+        $buybackTotal    = (clone $transactions)->whereIn('type', ['buyback', 'sell'])->where('status', '!=', 'cancelled')->sum('total_amount');
 
         // Reservasi Summary
         $reservationStats = [
@@ -70,7 +71,7 @@ class ReportController extends Controller
         $latestGoldPrice = GoldPrice::latest('price_date')->first();
 
         return view('admin.reports.index', compact(
-            'period', 'totalRevenue', 'totalTrx', 'purchaseCount', 'buybackCount',
+            'period', 'totalRevenue', 'totalTrx', 'purchaseCount', 'buybackCount', 'buybackTotal',
             'reservationStats', 'newCustomers', 'totalCustomers',
             'chartData', 'recentTransactions', 'latestGoldPrice'
         ));

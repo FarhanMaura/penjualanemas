@@ -3,13 +3,13 @@
     <x-slot name="breadcrumb">Isi formulir di bawah ini untuk mengajukan penawaran harga kepada admin</x-slot>
 
     <div class="max-w-3xl mx-auto">
-        <a href="{{ route('customer.negotiations.index') }}" class="inline-flex items-center gap-2 text-xs text-amber-400 hover:underline mb-6">
+        <a href="{{ route('customer.negotiations.index') }}" class="inline-flex items-center gap-2 text-xs font-bold text-[#085C54] hover:underline mb-6">
             ← Kembali ke Daftar Tawar Harga
         </a>
 
         @if($errors->any())
-        <div class="glass rounded-xl p-4 mb-6 border-red-500/30 text-red-400 text-sm">
-            <ul class="list-disc list-inside space-y-1">
+        <div class="rounded-2xl p-4 mb-6 bg-red-50 border border-red-300 text-red-900 text-sm shadow-sm">
+            <ul class="list-disc list-inside space-y-1 font-semibold">
                 @foreach($errors->all() as $error)
                     <li>{{ $error }}</li>
                 @endforeach
@@ -17,22 +17,21 @@
         </div>
         @endif
 
-        <form method="POST" action="{{ route('customer.negotiations.store') }}" onsubmit="if(this.dataset.submitted) return false; this.dataset.submitted = true;" class="glass rounded-2xl p-6 sm:p-8 space-y-6">
+        <form method="POST" action="{{ route('customer.negotiations.store') }}" onsubmit="if(this.dataset.submitted) return false; this.dataset.submitted = true;" class="glass rounded-2xl p-6 sm:p-8 space-y-6 bg-white border border-[#e8e3d5] shadow-lg">
             @csrf
 
-            <h3 class="text-lg font-bold text-white flex items-center gap-2 pb-4 border-b border-white/10">
-                <span>🤝</span> Form Pengajuan Tawar Harga
+            <h3 class="text-lg font-bold text-slate-900 flex items-center gap-2 pb-4 border-b border-slate-200">
+                <span>🤝</span> Formulir Pengajuan Tawar Harga
             </h3>
 
             {{-- Pilih Produk --}}
             <div>
-                <label for="product_id" class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-                    Pilih Produk Emas <span class="text-red-400">*</span>
+                <label for="product_id" class="input-label">
+                    Pilih Produk Emas <span class="text-red-600">*</span>
                 </label>
                 <select name="product_id" id="product_id" required onchange="updateProductDetails(this)"
-                        class="w-full rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-amber-500"
-                        style="background:rgba(255,255,255,0.06); border:1px solid rgba(245,158,11,0.2);">
-                    <option value="" class="bg-gray-900 text-gray-400">-- Pilih Produk --</option>
+                        class="input-field cursor-pointer">
+                    <option value="" class="text-slate-500">-- Pilih Produk Emas --</option>
                     @foreach($products as $p)
                         @php
                             $hargaProduk = $goldPrice
@@ -44,7 +43,7 @@
                                 data-weight="{{ number_format($p->weight_gram, 3) }}"
                                 data-purity="{{ $p->gold_purity }}"
                                 {{ (old('product_id', $selectedProduct->id ?? null) == $p->id) ? 'selected' : '' }}
-                                class="bg-gray-900 text-white">
+                                class="text-slate-900">
                             {{ $p->name }} ({{ number_format($p->weight_gram, 3) }}g) - Rp {{ number_format($hargaProduk, 0, ',', '.') }}
                         </option>
                     @endforeach
@@ -52,13 +51,13 @@
             </div>
 
             {{-- Info Ringkasan Produk --}}
-            <div id="product_info_card" class="glass rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-amber-500/5">
+            <div id="product_info_card" class="rounded-xl p-4 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-amber-50/80 border border-amber-200 shadow-sm">
                 <div>
-                    <span class="text-xs text-gray-400">Harga Normal Saat Ini</span>
-                    <p id="display_normal_price" class="text-xl font-extrabold text-amber-400">Rp 0</p>
+                    <span class="text-xs text-slate-600 font-bold uppercase tracking-wider">Harga Normal Saat Ini</span>
+                    <p id="display_normal_price" class="text-2xl font-extrabold text-[#C6A443]">Rp 0</p>
                 </div>
                 <div class="text-left sm:text-right">
-                    <span id="display_purity" class="text-xs px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-300 font-semibold border border-amber-500/20">
+                    <span id="display_purity" class="text-xs px-3 py-1 rounded-full bg-white text-slate-800 font-bold border border-amber-300 shadow-sm">
                         Kemurnian Emas
                     </span>
                 </div>
@@ -67,55 +66,51 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                 {{-- Jumlah Qty --}}
                 <div>
-                    <label for="quantity" class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-                        Jumlah (Qty) <span class="text-red-400">*</span>
+                    <label for="quantity" class="input-label">
+                        Jumlah (Qty) <span class="text-red-600">*</span>
                     </label>
                     <input type="number" name="quantity" id="quantity" value="{{ old('quantity', 1) }}" min="1" max="100" required
                            oninput="calculateDiscount()"
-                           class="w-full rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-amber-500"
-                           style="background:rgba(255,255,255,0.06); border:1px solid rgba(245,158,11,0.2);">
+                           class="input-field">
                 </div>
 
                 {{-- Harga Penawaran Pembeli --}}
                 <div>
-                    <label for="offered_price" class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
-                        Harga Penawaran Anda (Rp) <span class="text-red-400">*</span>
+                    <label for="offered_price" class="input-label">
+                        Harga Penawaran Anda (Rp) <span class="text-red-600">*</span>
                     </label>
                     <input type="number" name="offered_price" id="offered_price" value="{{ old('offered_price') }}" required step="1000" min="10000"
                            placeholder="Contoh: 3900000"
                            oninput="calculateDiscount()"
-                           class="w-full rounded-xl px-4 py-3 text-sm text-white font-bold outline-none focus:ring-2 focus:ring-amber-500"
-                           style="background:rgba(255,255,255,0.06); border:1px solid rgba(245,158,11,0.2);">
+                           class="input-field font-extrabold text-slate-900">
                 </div>
             </div>
 
             {{-- Realtime Discount Summary --}}
-            <div id="discount_summary" class="hidden glass rounded-xl p-4 border-green-500/20 bg-green-500/5 text-sm">
+            <div id="discount_summary" class="hidden rounded-xl p-4 border border-emerald-300 bg-emerald-50 text-sm shadow-sm">
                 <div class="flex items-center justify-between">
-                    <span class="text-gray-300">Potongan Harga Penawaran:</span>
-                    <span id="diff_amount" class="font-extrabold text-green-400">Rp 0</span>
+                    <span class="text-emerald-950 font-bold">Potongan Harga Penawaran:</span>
+                    <span id="diff_amount" class="font-black text-[#085C54] text-base">Rp 0</span>
                 </div>
             </div>
 
             {{-- Catatan Pembeli --}}
             <div>
-                <label for="notes" class="block text-xs font-semibold text-gray-300 uppercase tracking-wider mb-2">
+                <label for="notes" class="input-label">
                     Catatan Pembeli (Opsional)
                 </label>
                 <textarea name="notes" id="notes" rows="3"
                           placeholder="Alasan penawaran atau keterangan tambahan..."
-                          class="w-full rounded-xl px-4 py-3 text-sm text-white outline-none focus:ring-2 focus:ring-amber-500"
-                          style="background:rgba(255,255,255,0.06); border:1px solid rgba(245,158,11,0.2);">{{ old('notes') }}</textarea>
+                          class="input-field">{{ old('notes') }}</textarea>
             </div>
 
             {{-- Action Submit --}}
-            <div class="pt-4 border-t border-white/10 flex justify-end gap-3">
-                <a href="{{ route('customer.negotiations.index') }}" class="px-5 py-2.5 rounded-xl text-sm text-gray-400 glass hover:bg-white/10 transition">
+            <div class="pt-4 border-t border-slate-200 flex justify-end gap-3">
+                <a href="{{ route('customer.negotiations.index') }}" class="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition shadow-sm">
                     Batal
                 </a>
-                <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-bold text-gray-950 shadow-lg hover:brightness-110 transition"
-                        style="background:linear-gradient(135deg,#f59e0b,#d97706);">
-                    🚀 Kirim Penawaran
+                <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-extrabold text-[#042623] gold-gradient border border-[#C6A443] shadow-md hover:brightness-110 transition">
+                    🚀 Kirim Penawaran →
                 </button>
             </div>
         </form>
@@ -152,11 +147,11 @@
                 const diff = totalNormalPrice - offeredPrice;
                 if (diff > 0) {
                     diffAmountSpan.innerText = 'Hemat Rp ' + new Intl.NumberFormat('id-ID').format(diff);
-                    diffAmountSpan.className = 'font-extrabold text-green-400';
+                    diffAmountSpan.className = 'font-black text-[#085C54] text-base';
                     summaryBox.classList.remove('hidden');
                 } else if (diff < 0) {
                     diffAmountSpan.innerText = 'Lebih tinggi Rp ' + new Intl.NumberFormat('id-ID').format(Math.abs(diff));
-                    diffAmountSpan.className = 'font-extrabold text-amber-400';
+                    diffAmountSpan.className = 'font-black text-[#C6A443] text-base';
                     summaryBox.classList.remove('hidden');
                 } else {
                     summaryBox.classList.add('hidden');
@@ -166,7 +161,6 @@
             }
         }
 
-        // Trigger on load if initial product selected
         document.addEventListener('DOMContentLoaded', () => {
             const select = document.getElementById('product_id');
             if (select && select.value) {
@@ -175,3 +169,4 @@
         });
     </script>
 </x-customer-app>
+

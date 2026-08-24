@@ -49,7 +49,7 @@
                 <span class="text-slate-600 font-bold">Tipe:</span>
                 <select name="type" onchange="this.form.submit()" class="bg-transparent text-slate-900 font-bold text-sm focus:outline-none cursor-pointer">
                     <option value="" class="text-slate-900">Semua</option>
-                    @foreach(['purchase'=>'Pembelian (Tunai)','installment'=>'Cicilan Emas','pawn'=>'Gadai Emas'] as $val => $lbl)
+                    @foreach(['purchase'=>'Pembelian (Tunai)','buyback'=>'Jual Kembali (Buyback)','installment'=>'Cicilan Emas','pawn'=>'Gadai Emas'] as $val => $lbl)
                     <option value="{{ $val }}" {{ request('type')==$val ? 'selected':'' }} class="text-slate-900">{{ $lbl }}</option>
                     @endforeach
                 </select>
@@ -115,6 +115,7 @@
                             {{
                                 match($r->type) {
                                     'purchase'    => 'Pembelian',
+                                    'buyback'     => 'Jual Emas',
                                     'installment' => 'Cicilan',
                                     'pawn'        => 'Gadai',
                                     default       => ucfirst($r->type ?? 'Pembelian')
@@ -122,7 +123,9 @@
                             }}
                         </td>
                         <td class="py-3.5 px-4 font-bold text-[#085C54]">
-                            @if(($r->type ?? 'purchase') === 'pawn')
+                            @if($r->type === 'buyback')
+                                💰 {{ $r->pawn_gold_description ?? 'Jual Emas' }} ({{ $r->pawn_gold_purity }}, {{ number_format($r->pawn_weight_gram, 3) }}g)
+                            @elseif($r->type === 'pawn')
                                 📦 {{ $r->pawn_gold_description ?? 'Gadai Emas' }} ({{ $r->pawn_gold_purity }}, {{ number_format($r->pawn_weight_gram, 2) }}g)
                             @else
                                 💍 {{ $r->product->name ?? 'Produk Dihapus' }} (Qty: {{ $r->quantity }})

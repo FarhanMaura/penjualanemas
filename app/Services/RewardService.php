@@ -92,6 +92,9 @@ class RewardService
              'total_redeemed_points' => 0, 'lifetime_spending' => 0]
         );
 
+        $this->recalculateTierByTransactions($user, $reward);
+        $reward->refresh();
+
         $completedCount = Transaction::where('user_id', $user->id)
             ->where('status', 'completed')
             ->count();

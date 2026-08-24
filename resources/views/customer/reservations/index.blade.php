@@ -4,77 +4,80 @@
 
     {{-- Flash Messages --}}
     @if(session('success'))
-    <div class="mb-6 px-4 py-3 rounded-xl text-sm font-medium flex items-center gap-2"
-         style="background:rgba(16,185,129,0.1); border:1px solid rgba(16,185,129,0.3); color:#34d399;">
+    <div class="mb-6 px-4 py-3 rounded-xl text-sm font-semibold flex items-center gap-2 bg-emerald-50 border border-emerald-300 text-emerald-900 shadow-sm">
         ✅ {{ session('success') }}
     </div>
     @endif
     @if(session('error'))
-    <div class="mb-6 px-4 py-3 rounded-xl text-sm font-medium"
-         style="background:rgba(239,68,68,0.1); border:1px solid rgba(239,68,68,0.3); color:#f87171;">
+    <div class="mb-6 px-4 py-3 rounded-xl text-sm font-semibold bg-red-50 border border-red-300 text-red-900 shadow-sm">
         ❌ {{ session('error') }}
     </div>
     @endif
 
     {{-- Filter Bar --}}
-    <div class="glass rounded-2xl p-4 mb-6 flex flex-wrap gap-4 items-center justify-between">
+    <div class="glass rounded-2xl p-4 mb-6 flex flex-wrap gap-4 items-center justify-between bg-white border border-[#e8e3d5] shadow-sm">
         <form method="GET" action="{{ route('customer.reservations.index') }}" class="flex gap-2">
-            <select name="status" class="rounded-xl px-4 py-2 text-sm text-white outline-none focus:ring-2"
-                    style="background:rgba(255,255,255,0.05); border:1px solid rgba(255,255,255,0.1); --tw-ring-color:#f59e0b;"
+            <select name="status" class="rounded-xl px-4 py-2 text-sm text-slate-900 font-semibold bg-[#F4EDD9]/60 border border-[#e8e3d5] outline-none focus:ring-2 focus:ring-[#085C54] cursor-pointer"
                     onchange="this.form.submit()">
-                <option value="" class="text-gray-900">Semua Status</option>
-                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }} class="text-gray-900">Menunggu (Pending)</option>
-                <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }} class="text-gray-900">Dikonfirmasi</option>
-                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }} class="text-gray-900">Selesai (Completed)</option>
-                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }} class="text-gray-900">Dibatalkan</option>
+                <option value="" class="text-slate-900">Semua Status</option>
+                <option value="pending" {{ request('status') == 'pending' ? 'selected' : '' }} class="text-slate-900">Menunggu (Pending)</option>
+                <option value="confirmed" {{ request('status') == 'confirmed' ? 'selected' : '' }} class="text-slate-900">Dikonfirmasi</option>
+                <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }} class="text-slate-900">Selesai (Completed)</option>
+                <option value="cancelled" {{ request('status') == 'cancelled' ? 'selected' : '' }} class="text-slate-900">Dibatalkan</option>
             </select>
         </form>
-        <a href="{{ route('customer.reservations.create') }}" class="px-5 py-2 rounded-xl text-sm font-semibold text-white shadow-lg transition hover:brightness-110"
-           style="background:linear-gradient(135deg,#f59e0b,#d97706);">
+        <a href="{{ route('customer.reservations.create') }}" class="px-5 py-2.5 rounded-xl text-xs sm:text-sm font-extrabold text-[#042623] gold-gradient border border-[#C6A443] shadow-md hover:brightness-110 transition">
             + Buat Reservasi Baru
         </a>
     </div>
 
     {{-- Reservasi List --}}
     @if($reservations->isEmpty())
-    <div class="glass rounded-3xl p-12 text-center mt-6">
+    <div class="glass rounded-3xl p-12 text-center mt-6 bg-white border border-[#e8e3d5] shadow-md">
         <span class="text-6xl">📋</span>
-        <p class="text-gray-400 text-lg mt-4 font-semibold">Tidak Ada Reservasi</p>
-        <p class="text-gray-500 text-sm mt-2">Anda belum memiliki reservasi dengan status tersebut.</p>
-        <a href="{{ route('customer.reservations.create') }}" class="mt-6 inline-block text-yellow-400 hover:underline">Mulai Reservasi Pertama →</a>
+        <p class="text-slate-900 text-lg mt-4 font-bold">Tidak Ada Reservasi</p>
+        <p class="text-slate-600 text-sm mt-2">Anda belum memiliki reservasi dengan status tersebut.</p>
+        <a href="{{ route('customer.reservations.create') }}" class="mt-6 inline-block font-bold text-[#085C54] hover:underline">Mulai Reservasi Pertama →</a>
     </div>
     @else
     <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         @foreach($reservations as $r)
         @php
-            // Setup status colors
             $statusStyles = [
-                'pending'   => ['bg'=>'rgba(245,158,11,0.1)','border'=>'rgba(245,158,11,0.3)','text'=>'#f59e0b','label'=>'Menunggu ⏳'],
-                'confirmed' => ['bg'=>'rgba(59,130,246,0.1)','border'=>'rgba(59,130,246,0.3)','text'=>'#60a5fa','label'=>'Dikonfirmasi ✓'],
-                'completed' => ['bg'=>'rgba(16,185,129,0.1)','border'=>'rgba(16,185,129,0.3)','text'=>'#34d399','label'=>'Selesai 🏁'],
-                'cancelled' => ['bg'=>'rgba(239,68,68,0.1)','border'=>'rgba(239,68,68,0.3)','text'=>'#f87171','label'=>'Batal ❌'],
-                'expired'   => ['bg'=>'rgba(156,163,175,0.1)','border'=>'rgba(156,163,175,0.3)','text'=>'#9ca3af','label'=>'Kedaluwarsa ⌛'],
+                'pending'   => ['bg'=>'bg-amber-100','border'=>'border-amber-300','text'=>'text-amber-900','label'=>'Menunggu ⏳'],
+                'confirmed' => ['bg'=>'bg-blue-100','border'=>'border-blue-300','text'=>'text-blue-900','label'=>'Dikonfirmasi ✓'],
+                'completed' => ['bg'=>'bg-emerald-100','border'=>'border-emerald-300','text'=>'text-emerald-900','label'=>'Selesai 🏁'],
+                'cancelled' => ['bg'=>'bg-red-100','border'=>'border-red-300','text'=>'text-red-900','label'=>'Batal ❌'],
+                'expired'   => ['bg'=>'bg-slate-100','border'=>'border-slate-300','text'=>'text-slate-700','label'=>'Kedaluwarsa ⌛'],
             ];
             $style = $statusStyles[$r->status] ?? $statusStyles['pending'];
         @endphp
         
-        <div class="glass rounded-2xl overflow-hidden relative flex flex-col" style="border-color:rgba(255,255,255,0.05);">
+        <div class="glass rounded-2xl overflow-hidden relative flex flex-col bg-white border border-[#e8e3d5] shadow-md hover:border-[#085C54]/40 transition">
             {{-- Header Card --}}
-            <div class="p-5" style="border-bottom:1px solid rgba(255,255,255,0.05);">
+            <div class="p-5 bg-[#F4EDD9]/40 border-b border-[#e8e3d5]">
                 <div class="flex justify-between items-start mb-2">
-                    <span class="font-mono text-xs text-gray-400 bg-black/30 px-2 py-1 rounded">{{ $r->reservation_code }}</span>
-                    <span class="text-xs font-semibold px-2 py-1 rounded-full"
-                          style="background:{{ $style['bg'] }}; border:1px solid {{ $style['border'] }}; color:{{ $style['text'] }};">
+                    <span class="font-mono text-xs text-[#085C54] font-bold bg-white border border-[#e8e3d5] px-2.5 py-1 rounded-md">{{ $r->reservation_code }}</span>
+                    <span class="text-xs font-bold px-2.5 py-1 rounded-full border {{ $style['bg'] }} {{ $style['border'] }} {{ $style['text'] }}">
                         {{ $style['label'] }}
                     </span>
                 </div>
-                <h3 class="font-bold text-white text-lg leading-tight mt-3">{{ $r->product->name ?? ($r->pawn_gold_description ?? 'Produk Dihapus') }}</h3>
-                <p class="text-xs text-gray-400 mt-1">
+                <h3 class="font-bold text-slate-900 text-lg leading-tight mt-3">
+                    @if($r->type === 'buyback')
+                        💰 {{ $r->pawn_gold_description ?? 'Jual Emas ke Toko' }}
+                    @elseif($r->type === 'pawn')
+                        🏦 {{ $r->pawn_gold_description ?? 'Gadai Emas' }}
+                    @else
+                        💍 {{ $r->product->name ?? 'Produk Dihapus' }}
+                    @endif
+                </h3>
+                <p class="text-xs text-slate-600 font-semibold mt-1">
                     Tipe: 
-                    <span class="text-yellow-400 font-semibold">
+                    <span class="text-[#085C54] font-bold">
                         {{
                             match($r->type) {
                                 'purchase'    => 'Pembelian (Tunai)',
+                                'buyback'     => 'Jual Emas (Buyback)',
                                 'installment' => 'Pembelian (Cicilan)',
                                 'pawn'        => 'Gadai Emas (Pinjaman)',
                                 default       => ucfirst($r->type ?? 'Pembelian')
@@ -86,83 +89,99 @@
 
             {{-- Body Card --}}
             <div class="p-5 flex-1 space-y-3">
-                @if(($r->type ?? 'purchase') !== 'pawn')
+                @if(in_array($r->type, ['purchase', 'installment']))
                 <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Jumlah</span>
-                    <span class="text-white font-medium">{{ $r->quantity }} item</span>
+                    <span class="text-slate-600 font-semibold">Jumlah</span>
+                    <span class="text-slate-900 font-bold">{{ $r->quantity }} item</span>
                 </div>
-                <div class="flex justify-between items-center text-sm pt-1 border-t border-white/5">
-                    <span class="text-gray-400">Total Harga</span>
+                <div class="flex justify-between items-center text-sm pt-1 border-t border-slate-100">
+                    <span class="text-slate-600 font-semibold">Total Harga</span>
                     @if($r->agreed_price || $r->priceNegotiation)
                     <div class="text-right">
-                        <span class="text-amber-400 font-extrabold text-base">Rp {{ number_format($r->agreed_price ?? $r->priceNegotiation->agreed_price, 0, ',', '.') }}</span>
-                        <span class="block text-[10px] text-amber-300 font-semibold bg-amber-500/10 px-1.5 py-0.5 rounded border border-amber-500/20 mt-0.5">🤝 Tawar Harga ACC</span>
+                        <span class="text-[#C6A443] font-extrabold text-base">Rp {{ number_format($r->agreed_price ?? $r->priceNegotiation->agreed_price, 0, ',', '.') }}</span>
+                        <span class="block text-[10px] text-amber-900 font-bold bg-amber-100 px-1.5 py-0.5 rounded border border-amber-300 mt-0.5">🤝 Tawar Harga ACC</span>
                     </div>
                     @elseif($r->product)
-                    <span class="text-yellow-400 font-bold">Rp {{ number_format($r->product->base_price * $r->quantity, 0, ',', '.') }}</span>
+                    <span class="text-slate-900 font-extrabold">Rp {{ number_format($r->product->base_price * $r->quantity, 0, ',', '.') }}</span>
                     @endif
                 </div>
                 @if($r->payment_method)
                 <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Metode Bayar</span>
-                    <span class="text-white font-medium uppercase">{{ $r->payment_method }}</span>
+                    <span class="text-slate-600 font-semibold">Metode Bayar</span>
+                    <span class="text-slate-900 font-bold uppercase">{{ $r->payment_method }}</span>
                 </div>
                 @endif
                 @endif
 
-                @if(($r->type ?? 'purchase') === 'pawn')
+                @if($r->type === 'buyback')
                 <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Kadar Emas</span>
-                    <span class="text-white font-medium">{{ $r->pawn_gold_purity }}</span>
+                    <span class="text-slate-600 font-semibold">Kadar Emas</span>
+                    <span class="text-slate-900 font-bold">{{ $r->pawn_gold_purity }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Berat Emas</span>
-                    <span class="text-white font-medium">{{ number_format($r->pawn_weight_gram, 2) }} g</span>
+                    <span class="text-slate-600 font-semibold">Berat Emas</span>
+                    <span class="text-slate-900 font-bold">{{ number_format($r->pawn_weight_gram, 3) }} gram</span>
+                </div>
+                @if($r->payment_method)
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-600 font-semibold">Metode Penerimaan</span>
+                    <span class="text-slate-900 font-bold uppercase">{{ $r->payment_method }}</span>
+                </div>
+                @endif
+                @endif
+
+                @if($r->type === 'pawn')
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-600 font-semibold">Kadar Emas</span>
+                    <span class="text-slate-900 font-bold">{{ $r->pawn_gold_purity }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Pengajuan Pinjaman</span>
-                    <span class="text-yellow-400 font-bold">Rp {{ number_format($r->pawn_amount_requested, 0, ',', '.') }}</span>
+                    <span class="text-slate-600 font-semibold">Berat Emas</span>
+                    <span class="text-slate-900 font-bold">{{ number_format($r->pawn_weight_gram, 3) }} gram</span>
+                </div>
+                <div class="flex justify-between text-sm">
+                    <span class="text-slate-600 font-semibold">Pengajuan Pinjaman</span>
+                    <span class="text-[#085C54] font-extrabold">Rp {{ number_format($r->pawn_amount_requested, 0, ',', '.') }}</span>
                 </div>
                 @endif
 
-                @if(($r->type ?? 'purchase') === 'installment')
+                @if($r->type === 'installment')
                 <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Tenor Cicilan</span>
-                    <span class="text-white font-medium">{{ $r->installment_tenure }} Bulan</span>
+                    <span class="text-slate-600 font-semibold">Tenor Cicilan</span>
+                    <span class="text-slate-900 font-bold">{{ $r->installment_tenure }} Bulan</span>
                 </div>
                 <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Uang Muka (DP)</span>
-                    <span class="text-white font-medium">Rp {{ number_format($r->installment_down_payment, 0, ',', '.') }}</span>
+                    <span class="text-slate-600 font-semibold">Uang Muka (DP)</span>
+                    <span class="text-[#085C54] font-extrabold">Rp {{ number_format($r->installment_down_payment, 0, ',', '.') }}</span>
                 </div>
                 @endif
 
-                <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Tgl. Kunjungan</span>
-                    <span class="text-white font-medium">{{ \Carbon\Carbon::parse($r->preferred_date)->isoFormat('D MMM Y') }}</span>
+                <div class="flex justify-between text-sm pt-2 border-t border-slate-100">
+                    <span class="text-slate-600 font-semibold">Tgl. Kunjungan</span>
+                    <span class="text-slate-900 font-bold">{{ \Carbon\Carbon::parse($r->preferred_date)->isoFormat('D MMM Y') }}</span>
                 </div>
                 <div class="flex justify-between text-sm">
-                    <span class="text-gray-500">Jam Kunjungan</span>
-                    <span class="text-white font-medium">{{ \Carbon\Carbon::parse($r->preferred_time)->format('H:i') }} WIB</span>
+                    <span class="text-slate-600 font-semibold">Jam Kunjungan</span>
+                    <span class="text-slate-900 font-bold">{{ \Carbon\Carbon::parse($r->preferred_time)->format('H:i') }} WIB</span>
                 </div>
                 @if($r->notes)
                 <div class="pt-2">
-                    <p class="text-xs text-gray-500 mb-1">Catatan Anda:</p>
-                    <p class="text-xs text-gray-300 italic glass p-2 rounded-lg">"{{ $r->notes }}"</p>
+                    <p class="text-xs text-slate-500 font-bold uppercase mb-1">Catatan Anda:</p>
+                    <p class="text-xs text-slate-700 italic bg-slate-50 p-2.5 rounded-xl border border-slate-200">"{{ $r->notes }}"</p>
                 </div>
                 @endif
-                <div class="pt-2">
-                    <p class="text-xs text-gray-500 mb-1">Kedaluwarsa:</p>
-                    <p class="text-xs text-red-400">{{ \Carbon\Carbon::parse($r->expired_at)->isoFormat('D MMM Y, H:i') }}</p>
+                <div class="pt-1">
+                    <p class="text-xs text-slate-500 font-medium">Batas Konfirmasi: <span class="text-red-700 font-semibold">{{ \Carbon\Carbon::parse($r->expired_at)->isoFormat('D MMM Y, H:i') }}</span></p>
                 </div>
             </div>
 
             {{-- Footer Actions --}}
             @if(in_array($r->status, ['pending', 'confirmed']))
-            <div class="p-4" style="border-top:1px solid rgba(255,255,255,0.05); background:rgba(0,0,0,0.2);">
+            <div class="p-4 bg-slate-50 border-t border-slate-100">
                 <form action="{{ route('customer.reservations.cancel', $r) }}" method="POST" onsubmit="return confirm('Yakin ingin membatalkan reservasi ini?');">
                     @csrf
                     @method('PATCH')
-                    <button type="submit" class="w-full text-xs font-semibold text-red-400 py-2 rounded-lg hover:bg-red-900/30 transition border border-transparent hover:border-red-900/50">
+                    <button type="submit" class="w-full text-xs font-bold text-red-700 py-2 rounded-xl bg-red-50 hover:bg-red-100 transition border border-red-200">
                         Batalkan Reservasi
                     </button>
                 </form>
@@ -178,3 +197,4 @@
     </div>
     @endif
 </x-customer-app>
+
