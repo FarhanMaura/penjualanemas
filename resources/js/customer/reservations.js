@@ -79,5 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
 
     resType.addEventListener('change', toggleFields);
     toggleFields(); // run initially
+
+    if (productId) {
+        productId.addEventListener('change', () => {
+            if (window.updateSelectedProductCard) {
+                window.updateSelectedProductCard(productId.value);
+            }
+        });
+    }
 });
 

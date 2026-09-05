@@ -16,6 +16,8 @@ class InstallmentPayment extends Model
         'amount_paid',
         'payment_method',
         'status',
+        'installment_transaction_id',
+        'proof_image',
         'received_by',
         'notes',
     ];
@@ -37,6 +39,11 @@ class InstallmentPayment extends Model
         return $this->status === 'paid';
     }
 
+    public function isWaitingVerification(): bool
+    {
+        return $this->status === 'waiting_verification';
+    }
+
     public function isOverdue(): bool
     {
         return $this->status === 'overdue'
@@ -48,6 +55,11 @@ class InstallmentPayment extends Model
     public function installmentPlan(): BelongsTo
     {
         return $this->belongsTo(InstallmentPlan::class);
+    }
+
+    public function installmentTransaction(): BelongsTo
+    {
+        return $this->belongsTo(InstallmentTransaction::class);
     }
 
     /** Admin yang menerima pembayaran cicilan */

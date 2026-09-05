@@ -207,4 +207,203 @@ class RevisiFeaturesTest extends TestCase
         $adminRes->assertSee('Rp 5.000.000'); // Omzet Pembelian
         $adminRes->assertSee('Rp 3.000.000'); // Total Buyback
     }
+
+    /**
+     * Test Poin 1 & 6: Customer Reservasi Cicilan dengan Tenor 3, 6, 12 Bulan & Preselect Produk
+     */
+    public function test_customer_can_create_installment_reservation_with_tenure(): void
+    {
+        // Akses form dengan parameter product_id
+        $formRes = $this->actingAs($this->customer)->get(route('customer.reservations.create', [
+            'product_id' => $this->product->id,
+            'type'       => 'installment',
+        ]));
+        $formRes->assertOk();
+        $formRes->assertSee($this->product->name);
+
+        // Submit reservasi cicilan dengan tenor 3 bulan
+        $res = $this->actingAs($this->customer)->post(route('customer.reservations.store'), [
+            'type'                     => 'installment',
+            'product_id'               => $this->product->id,
+            'quantity'                 => 1,
+            'preferred_date'           => today()->addDays(3)->toDateString(),
+            'preferred_time'           => '11:00',
+            'payment_method'           => 'transfer',
+            'installment_tenure'       => 3,
+            'installment_down_payment' => 500000,
+            'notes'                    => 'Rencana cicilan 3 bulan',
+        ]);
+
+        $res->assertSessionHasNoErrors();
+        $res->assertRedirect(route('customer.reservations.index'));
+        $this->assertDatabaseHas('reservations', [
+            'user_id'            => $this->customer->id,
+            'type'               => 'installment',
+            'product_id'         => $this->product->id,
+            'installment_tenure' => 3,
+        ]);
+    }
+
+    /**
+     * Test Poin 2: Admin CRUD Metode Pembayaran (Nomor Rekening, Bank, A.N.)
+     */
+    public function test_admin_can_manage_payment_methods(): void
+    {
+        // 1. Admin Store
+        $storeRes = $this->actingAs($this->admin)->post(route('admin.payment-methods.store'), [
+            'name'           => 'Bank BCA Bisnis',
+            'code'           => 'bca_bisnis',
+            'type'           => 'bank_transfer',
+            'bank_name'      => 'Bank Central Asia',
+            'account_number' => '1234567890',
+            'account_name'   => 'TOKO EMAS SINAR BARU II',
+            'instructions'   => 'Transfer via KlikBCA',
+            'is_active'      => 1,
+            'sort_order'     => 1,
+        ]);
+        $storeRes->assertRedirect(route('admin.payment-methods.index'));
+        $this->assertDatabaseHas('payment_methods', [
+            'code'           => 'bca_bisnis',
+            'account_number' => '1234567890',
+        ]);
+
+        $pm = \App\Models\PaymentMethod::where('code', 'bca_bisnis')->first();
+
+        // 2. Admin Index
+        $indexRes = $this->actingAs($this->admin)->get(route('admin.payment-methods.index'));
+        $indexRes->assertOk();
+        $indexRes->assertSee('Bank BCA Bisnis');
+        $indexRes->assertSee('1234567890');
+
+        // 3. Admin Update
+        $updateRes = $this->actingAs($this->admin)->put(route('admin.payment-methods.update', $pm), [
+            'name'           => 'Bank BCA Bisnis Updated',
+            'code'           => 'bca_bisnis',
+            'type'           => 'bank_transfer',
+            'bank_name'      => 'BCA Syariah',
+            'account_number' => '999888777',
+            'account_name'   => 'SINAR BARU PUSAT',
+            'instructions'   => 'Transfer via mobile',
+            'is_active'      => 1,
+            'sort_order'     => 2,
+        ]);
+        $updateRes->assertRedirect(route('admin.payment-methods.index'));
+        $this->assertDatabaseHas('payment_methods', [
+            'id'             => $pm->id,
+            'name'           => 'Bank BCA Bisnis Updated',
+            'account_number' => '999888777',
+        ]);
+
+        // 4. Admin Delete
+        $deleteRes = $this->actingAs($this->admin)->delete(route('admin.payment-methods.destroy', $pm));
+        $deleteRes->assertRedirect(route('admin.payment-methods.index'));
+        $this->assertDatabaseMissing('payment_methods', ['id' => $pm->id]);
+    }
+
+    /**
+     * Test Poin 7: Aturan Pembukaan Jadwal Reservasi Pengambilan Emas Cicilan di Bulan Terakhir
+     */
+    public function test_installment_pickup_reservation_unlocks_only_in_final_month(): void
+    {
+        // Buat transaksi installment 3 bulan
+        $trx = Transaction::create([
+            'transaction_code' => 'TRX-INST-3MO',
+            'user_id'          => $this->customer->id,
+            'type'             => 'installment',
+            'gold_price_id'    => $this->goldPrice->id,
+            'subtotal'         => 3000000,
+            'total_amount'     => 3000000,
+            'payment_method'   => 'transfer',
+            'payment_date'     => today(),
+            'status'           => 'in_progress',
+            'processed_by'     => $this->admin->id,
+        ]);
+
+        \App\Models\TransactionItem::create([
+            'transaction_id' => $trx->id,
+            'product_id'     => $this->product->id,
+            'product_name'   => $this->product->name,
+            'gold_purity'    => '24K',
+            'weight_gram'    => 2.5,
+            'quantity'       => 1,
+            'price_per_unit' => 3000000,
+            'subtotal'       => 3000000,
+        ]);
+
+        $plan = \App\Models\InstallmentPlan::create([
+            'transaction_id'    => $trx->id,
+            'down_payment'      => 600000,
+            'total_installment' => 2400000,
+            'tenure_months'     => 3,
+            'monthly_amount'    => 800000,
+            'start_date'        => today(),
+            'end_date'          => today()->addMonths(3),
+            'status'            => 'active',
+        ]);
+
+        // Buat 3 pembayaran angsuran (Bulan 1, Bulan 2, Bulan 3)
+        $payment1 = \App\Models\InstallmentPayment::create([
+            'installment_plan_id' => $plan->id,
+            'installment_number'  => 1,
+            'due_date'            => today()->addMonth(1),
+            'amount_due'          => 800000,
+            'status'              => 'pending',
+        ]);
+
+        $payment2 = \App\Models\InstallmentPayment::create([
+            'installment_plan_id' => $plan->id,
+            'installment_number'  => 2,
+            'due_date'            => today()->addMonth(2),
+            'amount_due'          => 800000,
+            'status'              => 'pending',
+        ]);
+
+        $payment3 = \App\Models\InstallmentPayment::create([
+            'installment_plan_id' => $plan->id,
+            'installment_number'  => 3,
+            'due_date'            => today()->addMonth(3),
+            'amount_due'          => 800000,
+            'status'              => 'pending',
+        ]);
+
+        // FASE 1: Belum ada pembayaran atau baru bulan 1 -> canSchedulePickup() harus FALSE
+        $this->assertFalse($plan->canSchedulePickup());
+
+        // Coba jadwalkan pickup saat belum bulan terakhir -> harus ditolak
+        $failScheduleRes = $this->actingAs($this->customer)->post(route('customer.installments.schedule-pickup', $plan), [
+            'preferred_date' => today()->addDays(5)->toDateString(),
+            'preferred_time' => '10:00',
+        ]);
+        $failScheduleRes->assertSessionHas('error');
+        $this->assertNull($plan->fresh()->pickup_reservation_id);
+
+        // FASE 2: Bayar bulan 1
+        $payment1->update(['status' => 'paid', 'paid_date' => now()]);
+        $this->assertFalse($plan->fresh()->canSchedulePickup()); // 1/3 bulan masih belum cukup (harus bulan 1 dan 2 kelar)
+
+        // FASE 3: Bayar bulan 2 -> Sekarang memasuki angsuran bulan terakhir (2/3 kelar)
+        $payment2->update(['status' => 'paid', 'paid_date' => now()]);
+        $this->assertTrue($plan->fresh()->canSchedulePickup()); // canSchedulePickup() kini TRUE!
+
+        // Halaman detail cicilan sekarang menampilkan jadwal terbuka
+        $viewRes = $this->actingAs($this->customer)->get(route('customer.installments.show', $plan));
+        $viewRes->assertOk();
+        $viewRes->assertSee('Jadwal Pengambilan Emas Terbuka!');
+
+        // Customer sekarang berhasil menjadwalkan pengambilan emas fisik
+        $successScheduleRes = $this->actingAs($this->customer)->post(route('customer.installments.schedule-pickup', $plan), [
+            'preferred_date' => today()->addDays(7)->toDateString(),
+            'preferred_time' => '14:30',
+            'notes'          => 'Saya bawa KTP asli',
+        ]);
+        $successScheduleRes->assertSessionHas('success');
+
+        $updatedPlan = $plan->fresh();
+        $this->assertNotNull($updatedPlan->pickup_reservation_id);
+        $this->assertDatabaseHas('reservations', [
+            'id'             => $updatedPlan->pickup_reservation_id,
+            'user_id'        => $this->customer->id,
+            'preferred_time' => '14:30',
+        ]);
+    }
 }

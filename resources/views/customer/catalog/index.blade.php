@@ -76,21 +76,29 @@
         <div class="glass rounded-2xl overflow-hidden hover:scale-105 transition-all group bg-white border border-[#e8e3d5] shadow-sm flex flex-col justify-between"
              style="transition: all 0.3s ease;">
             <div>
-                <div class="h-36 flex items-center justify-center flex-col gap-2 relative bg-[#F4EDD9]/40 border-b border-[#e8e3d5]">
-                    @if($product->thumbnail_url)
-                    <img src="{{ $product->thumbnail_url }}" class="h-28 w-28 object-contain group-hover:scale-110 transition-transform duration-300">
-                    @else
-                    <span class="text-4xl group-hover:scale-110 transition-transform">{{ $icon }}</span>
-                    @endif
-                    @if($product->stock <= 0)
-                    <span class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-red-100 text-red-800 border border-red-200 absolute top-2 right-2">Stok Habis</span>
-                    @endif
-                </div>
+                <a href="{{ route('customer.reservations.create', ['product_id' => $product->id]) }}" class="block relative overflow-hidden bg-slate-50 border-b border-[#e8e3d5]">
+                    <div class="h-44 sm:h-48 flex items-center justify-center relative overflow-hidden">
+                        @if($product->thumbnail_url)
+                        <img src="{{ $product->thumbnail_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" style="image-rendering: -webkit-optimize-contrast;">
+                        @else
+                        <span class="text-4xl group-hover:scale-110 transition-transform">{{ $icon }}</span>
+                        @endif
+                        @if($product->stock <= 0)
+                        <span class="text-xs px-2.5 py-0.5 rounded-full font-bold bg-red-100 text-red-800 border border-red-200 absolute top-2 right-2 shadow-sm">Stok Habis</span>
+                        @else
+                        <span class="text-[10px] px-2 py-0.5 rounded-md font-bold bg-[#042623]/75 text-[#E3D193] backdrop-blur-sm absolute top-2 right-2">
+                            24K Murni
+                        </span>
+                        @endif
+                    </div>
+                </a>
                 <div class="p-4">
                     <span class="text-[10px] px-2.5 py-0.5 rounded-full font-extrabold uppercase bg-amber-100 text-amber-900 border border-amber-300">
                         {{ $product->gold_purity }} Murni
                     </span>
-                    <h3 class="font-bold mt-2 text-sm text-slate-900 line-clamp-2">{{ $product->name }}</h3>
+                    <a href="{{ route('customer.reservations.create', ['product_id' => $product->id]) }}">
+                        <h3 class="font-bold mt-2 text-sm text-slate-900 line-clamp-2 hover:text-[#085C54] transition">{{ $product->name }}</h3>
+                    </a>
                     <p class="text-xs font-semibold text-slate-500 mt-1">{{ number_format($product->weight_gram, 3) }} gram</p>
                     <div class="mt-3 pt-3 border-t border-slate-100">
                         <p class="text-xs font-bold text-slate-500 uppercase tracking-wider">Harga Jual</p>

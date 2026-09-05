@@ -18,6 +18,7 @@ class InstallmentPlan extends Model
         'end_date',
         'status',
         'notes',
+        'pickup_reservation_id',
     ];
 
     protected function casts(): array
@@ -43,9 +44,29 @@ class InstallmentPlan extends Model
         return $this->payments()->where('status', 'paid')->count();
     }
 
+    public function settledOrSubmittedCount(): int
+    {
+        return $this->payments()->whereIn('status', ['paid', 'waiting_verification'])->count();
+    }
+
     public function remainingMonths(): int
     {
-        return $this->tenure_months - $this->paidCount();
+        return max(0, $this->tenure_months - $this->settledOrSubmittedCount());
+    }
+
+    /**
+     * Jadwal reservasi pengambilan emas baru bisa dibuka ketika memasuki pembayaran bulan terakhir
+     * (misal tenor 3 bulan: pembayaran bulan 1 dan 2 harus kelar/lunas/diajukan dulu, menyisakan bulan terakhir).
+     */
+    public function canSchedulePickup(): bool
+    {
+        $requiredPaid = $this->requiredPaidForPickup();
+        return $this->settledOrSubmittedCount() >= $requiredPaid;
+    }
+
+    public function requiredPaidForPickup(): int
+    {
+        return max(1, $this->tenure_months - 1);
     }
 
     // ─── Relationships ────────────────────────────────────────────────────────
@@ -53,6 +74,11 @@ class InstallmentPlan extends Model
     public function transaction(): BelongsTo
     {
         return $this->belongsTo(Transaction::class);
+    }
+
+    public function pickupReservation(): BelongsTo
+    {
+        return $this->belongsTo(Reservation::class, 'pickup_reservation_id');
     }
 
     public function payments(): HasMany
@@ -68,5 +94,15 @@ class InstallmentPlan extends Model
     public function overduePayments(): HasMany
     {
         return $this->hasMany(InstallmentPayment::class)->where('status', 'overdue');
+    }
+
+    public function installmentTransactions(): HasMany
+    {
+        return $this->hasMany(InstallmentTransaction::class)->latest();
+    }
+
+    public function waitingVerificationCount(): int
+    {
+        return $this->payments()->where('status', 'waiting_verification')->count();
     }
 }

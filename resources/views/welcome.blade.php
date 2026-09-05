@@ -200,14 +200,14 @@
                      data-slug="{{ $product->slug }}"
                      data-image="{{ $product->thumbnail_url ?? '' }}"
                      class="landing-product-card p-0 group bg-white">
-                    <div class="h-40 flex items-center justify-center flex-col gap-2 relative overflow-hidden bg-slate-50 border-b border-slate-100">
+                    <div class="h-48 flex items-center justify-center relative overflow-hidden bg-slate-50 border-b border-slate-100">
                         @if($product->thumbnail_url)
-                        <img src="{{ $product->thumbnail_url }}" class="h-32 w-32 object-contain group-hover:scale-110 transition-transform duration-500">
+                        <img src="{{ $product->thumbnail_url }}" alt="{{ $product->name }}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" style="image-rendering: -webkit-optimize-contrast;">
                         @else
                         <span class="text-5xl group-hover:scale-110 transition-transform duration-300">{{ $icon }}</span>
                         @endif
                         @if(!$product->is_available)
-                        <span class="absolute top-2 right-2 text-[10px] bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full border border-red-300">Habis</span>
+                        <span class="absolute top-2 right-2 text-[10px] bg-red-100 text-red-700 font-bold px-2 py-0.5 rounded-full border border-red-300 shadow-sm">Habis</span>
                         @endif
                     </div>
                     <div class="p-4">
@@ -259,11 +259,11 @@
     {{-- MODAL PRODUK --}}
     <div id="modal" class="fixed inset-0 z-50 hidden items-center justify-center modal-bg" onclick="closeModal(event)">
         <div class="bg-white rounded-3xl p-0 max-w-md w-full mx-4 overflow-hidden shadow-2xl border border-slate-200" onclick="event.stopPropagation()">
-            <div id="modal-header" class="h-48 flex items-center justify-center relative overflow-hidden bg-slate-50 border-b border-slate-200">
+            <div id="modal-header" class="h-56 flex items-center justify-center relative overflow-hidden bg-slate-100 border-b border-slate-200">
                 <span id="modal-icon" class="text-7xl">🪙</span>
-                <img id="modal-img" src="" class="hidden h-36 w-36 object-contain" />
+                <img id="modal-img" src="" class="hidden w-full h-full object-cover" style="image-rendering: -webkit-optimize-contrast;" />
                 <button onclick="closeModal()"
-                    class="absolute top-4 right-4 text-slate-500 hover:text-slate-800 text-xl bg-white/80 w-8 h-8 rounded-full flex items-center justify-center z-10 border border-slate-200 shadow-sm">×</button>
+                    class="absolute top-4 right-4 text-slate-700 hover:text-slate-950 text-xl bg-white/90 hover:bg-white w-9 h-9 rounded-full flex items-center justify-center z-10 border border-slate-300 shadow-md transition">×</button>
             </div>
             <div class="p-6">
                 <div class="flex justify-between items-start mb-3">

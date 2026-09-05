@@ -64,8 +64,10 @@ class TransactionController extends Controller
             $selectedReservation = Reservation::with(['user','product','priceNegotiation'])->find($request->reservation_id);
         }
 
+        $paymentMethods = \App\Models\PaymentMethod::active()->ordered()->get();
+
         return view('admin.transactions.create', compact(
-            'customers', 'goldPrices', 'reservations', 'selectedReservation', 'products'
+            'customers', 'goldPrices', 'reservations', 'selectedReservation', 'products', 'paymentMethods'
         ));
     }
 

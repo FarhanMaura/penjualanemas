@@ -63,7 +63,9 @@ class ReservationController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('customer.reservations.create', compact('products', 'product', 'negotiation', 'todayGoldPrice'));
+        $paymentMethods = \App\Models\PaymentMethod::active()->ordered()->get();
+
+        return view('customer.reservations.create', compact('products', 'product', 'negotiation', 'todayGoldPrice', 'paymentMethods'));
     }
 
     public function store(StoreReservationRequest $request)

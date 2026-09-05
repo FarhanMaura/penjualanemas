@@ -98,6 +98,9 @@
             <a href="{{ route('admin.pawns.index') }}" class="sidebar-link flex items-center gap-3 px-5 py-2.5 {{ request()->routeIs('admin.pawns.*') ? 'active' : '' }}">
                 <span class="text-base w-5 text-center">🏦</span> Gadai
             </a>
+            <a href="{{ route('admin.payment-methods.index') }}" class="sidebar-link flex items-center gap-3 px-5 py-2.5 {{ request()->routeIs('admin.payment-methods.*') ? 'active' : '' }}">
+                <span class="text-base w-5 text-center">💳</span> Metode Pembayaran
+            </a>
 
             <p class="sidebar-section">CRM & Laporan</p>
             <a href="{{ route('admin.customers.index') }}" class="sidebar-link flex items-center gap-3 px-5 py-2.5 {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">

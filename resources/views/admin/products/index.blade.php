@@ -98,9 +98,9 @@
                     <tr class="hover:bg-slate-50 transition">
                         <td class="py-3 px-4">
                             @if($p->thumbnail_url)
-                            <img src="{{ $p->thumbnail_url }}" class="w-10 h-10 rounded-lg object-cover border border-slate-200 shadow-sm">
+                            <img src="{{ $p->thumbnail_url }}" alt="{{ $p->name }}" class="w-12 h-12 rounded-xl object-cover border border-slate-200 shadow-sm" style="image-rendering: -webkit-optimize-contrast;">
                             @else
-                            <div class="w-10 h-10 rounded-lg flex items-center justify-center text-xl bg-amber-50 border border-amber-200">
+                            <div class="w-12 h-12 rounded-xl flex items-center justify-center text-xl bg-amber-50 border border-amber-200">
                                 🪙
                             </div>
                             @endif

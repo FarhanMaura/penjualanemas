@@ -36,8 +36,192 @@ class InstallmentController extends Controller
 
     public function show(InstallmentPlan $installmentPlan)
     {
-        $installmentPlan->load(['transaction.user.profile', 'transaction.items.product', 'payments']);
-        return view('admin.installments.show', compact('installmentPlan'));
+        $installmentPlan->load([
+            'transaction.user.profile',
+            'transaction.items.product',
+            'payments',
+            'installmentTransactions.verifier'
+        ]);
+        $paymentMethods = \App\Models\PaymentMethod::active()->ordered()->get();
+        $unpaidPayments = $installmentPlan->payments()->whereIn('status', ['pending', 'overdue'])->orderBy('installment_number')->get();
+
+        return view('admin.installments.show', compact('installmentPlan', 'paymentMethods', 'unpaidPayments'));
+    }
+
+    public function verifyPayment(\App\Models\InstallmentTransaction $installmentTransaction)
+    {
+        if ($installmentTransaction->status !== 'waiting_verification') {
+            return back()->with('error', 'Transaksi pembayaran ini sudah tidak dalam status menunggu verifikasi.');
+        }
+
+        $installmentPlan = $installmentTransaction->installmentPlan;
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($installmentTransaction, $installmentPlan) {
+            $installmentTransaction->update([
+                'status'      => 'verified',
+                'verified_by' => auth()->id(),
+                'verified_at' => now(),
+            ]);
+
+            // Ambil pembayaran angsuran terkait
+            $payments = $installmentPlan->payments()
+                ->whereIn('installment_number', (array) $installmentTransaction->months_paid)
+                ->get();
+
+            foreach ($payments as $payment) {
+                $payment->update([
+                    'status'         => 'paid',
+                    'paid_date'      => now(),
+                    'amount_paid'    => $payment->amount_due,
+                    'payment_method' => $installmentTransaction->payment_method,
+                    'received_by'    => auth()->id(),
+                ]);
+            }
+
+            // Cek apakah seluruh angsuran sudah lunas
+            $remainingPending = $installmentPlan->payments()->where('status', '!=', 'paid')->count();
+            if ($remainingPending === 0) {
+                $installmentPlan->update(['status' => 'completed']);
+                $mainTransaction = $installmentPlan->transaction;
+                $mainTransaction->update(['status' => 'completed']);
+                $this->rewardService->awardPoint($mainTransaction->user, $mainTransaction);
+                $this->certificateService->generateForTransaction($mainTransaction);
+            }
+
+            // Kirim notifikasi ke pelanggan
+            $monthDesc = $installmentTransaction->formattedMonths();
+            \App\Models\Notification::create([
+                'user_id'    => $installmentTransaction->user_id,
+                'type'       => 'installment_verified',
+                'title'      => 'Pembayaran Cicilan Diterima & Diverifikasi',
+                'message'    => "Pembayaran cicilan Anda ({$monthDesc}) sebesar Rp " . number_format($installmentTransaction->amount, 0, ',', '.') . " telah diverifikasi dan diterima. Terima kasih!",
+                'data'       => [
+                    'installment_plan_id'        => $installmentPlan->id,
+                    'installment_transaction_id' => $installmentTransaction->id,
+                ],
+                'created_at' => now(),
+            ]);
+        });
+
+        return back()->with('success', 'Pembayaran cicilan (' . $installmentTransaction->formattedMonths() . ') berhasil diverifikasi dan disetujui.');
+    }
+
+    public function rejectPayment(Request $request, \App\Models\InstallmentTransaction $installmentTransaction)
+    {
+        if ($installmentTransaction->status !== 'waiting_verification') {
+            return back()->with('error', 'Transaksi pembayaran ini sudah tidak dalam status menunggu verifikasi.');
+        }
+
+        $request->validate([
+            'rejection_reason' => ['required', 'string', 'max:500'],
+        ], [
+            'rejection_reason.required' => 'Wajib mengisi alasan penolakan pembayaran.',
+        ]);
+
+        $installmentPlan = $installmentTransaction->installmentPlan;
+
+        \Illuminate\Support\Facades\DB::transaction(function () use ($request, $installmentTransaction, $installmentPlan) {
+            $installmentTransaction->update([
+                'status'           => 'rejected',
+                'verified_by'      => auth()->id(),
+                'verified_at'      => now(),
+                'rejection_reason' => $request->rejection_reason,
+            ]);
+
+            // Kembalikan angsuran terkait ke pending
+            $payments = $installmentPlan->payments()
+                ->whereIn('installment_number', (array) $installmentTransaction->months_paid)
+                ->get();
+
+            foreach ($payments as $payment) {
+                if ($payment->status === 'waiting_verification') {
+                    $payment->update([
+                        'status' => 'pending',
+                    ]);
+                }
+            }
+
+            // Kirim notifikasi ke pelanggan
+            $monthDesc = $installmentTransaction->formattedMonths();
+            \App\Models\Notification::create([
+                'user_id'    => $installmentTransaction->user_id,
+                'type'       => 'installment_rejected',
+                'title'      => 'Pembayaran Cicilan Ditolak',
+                'message'    => "Pembayaran cicilan Anda ({$monthDesc}) ditolak. Alasan: {$request->rejection_reason}. Silakan periksa kembali dan unggah bukti transfer yang valid.",
+                'data'       => [
+                    'installment_plan_id'        => $installmentPlan->id,
+                    'installment_transaction_id' => $installmentTransaction->id,
+                ],
+                'created_at' => now(),
+            ]);
+        });
+
+        return back()->with('success', 'Pembayaran cicilan telah ditolak dan notifikasi telah dikirim ke pelanggan.');
+    }
+
+    public function recordBatchPayment(Request $request, InstallmentPlan $installmentPlan)
+    {
+        $request->validate([
+            'payment_method' => ['required', 'string', 'max:50'],
+            'month_count'    => ['required', 'integer', 'min:1', 'max:' . $installmentPlan->tenure_months],
+            'notes'          => ['nullable', 'string', 'max:500'],
+        ]);
+
+        $unpaidPayments = $installmentPlan->payments()
+            ->whereIn('status', ['pending', 'overdue'])
+            ->orderBy('installment_number')
+            ->take($request->month_count)
+            ->get();
+
+        if ($unpaidPayments->isEmpty()) {
+            return back()->with('error', 'Tidak ada angsuran yang belum dibayar.');
+        }
+
+        $totalAmount = $unpaidPayments->sum('amount_due');
+        $months = $unpaidPayments->pluck('installment_number')->toArray();
+        $transactionCode = 'TRX-CCL-DIR-' . date('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(4));
+
+        \Illuminate\Support\Facades\DB::transaction(function () use (
+            $installmentPlan, $unpaidPayments, $totalAmount, $months, $transactionCode, $request
+        ) {
+            $trx = \App\Models\InstallmentTransaction::create([
+                'installment_plan_id' => $installmentPlan->id,
+                'user_id'             => $installmentPlan->transaction->user_id,
+                'transaction_code'    => $transactionCode,
+                'amount'              => $totalAmount,
+                'months_paid'         => $months,
+                'month_count'         => count($months),
+                'payment_method'      => $request->payment_method,
+                'proof_image'         => null,
+                'notes'               => 'Pembayaran langsung kasir toko. ' . ($request->notes ?? ''),
+                'status'              => 'verified',
+                'verified_by'         => auth()->id(),
+                'verified_at'         => now(),
+            ]);
+
+            foreach ($unpaidPayments as $p) {
+                $p->update([
+                    'status'                     => 'paid',
+                    'paid_date'                  => now(),
+                    'amount_paid'                => $p->amount_due,
+                    'payment_method'             => $request->payment_method,
+                    'received_by'                => auth()->id(),
+                    'installment_transaction_id' => $trx->id,
+                    'notes'                      => $request->notes,
+                ]);
+            }
+
+            $remaining = $installmentPlan->payments()->where('status', '!=', 'paid')->count();
+            if ($remaining === 0) {
+                $installmentPlan->update(['status' => 'completed']);
+                $mainTransaction = $installmentPlan->transaction;
+                $mainTransaction->update(['status' => 'completed']);
+                $this->rewardService->awardPoint($mainTransaction->user, $mainTransaction);
+                $this->certificateService->generateForTransaction($mainTransaction);
+            }
+        });
+
+        return back()->with('success', 'Pembayaran langsung ' . count($months) . ' bulan angsuran berhasil dicatat!');
     }
 
     public function recordPayment(Request $request, InstallmentPlan $installmentPlan, InstallmentPayment $installmentPayment)
@@ -49,7 +233,7 @@ class InstallmentController extends Controller
         }
 
         $request->validate([
-            'payment_method' => ['required', 'in:cash,transfer,debit,credit'],
+            'payment_method' => ['required', 'string', 'max:50'],
             'amount_paid'    => ['required', 'numeric', 'min:0'],
             'notes'          => ['nullable', 'string', 'max:500'],
         ]);

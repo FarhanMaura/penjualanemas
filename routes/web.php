@@ -78,6 +78,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/installments',             [Admin\InstallmentController::class, 'index'])->name('installments.index');
         Route::get('/installments/{installmentPlan}', [Admin\InstallmentController::class, 'show'])->name('installments.show');
         Route::post('/installments/{installmentPlan}/payments/{installmentPayment}/pay', [Admin\InstallmentController::class, 'recordPayment'])->name('installments.payments.pay');
+        Route::post('/installments/{installmentPlan}/pay-batch', [Admin\InstallmentController::class, 'recordBatchPayment'])->name('installments.pay-batch');
+        Route::post('/installments/transactions/{installmentTransaction}/verify', [Admin\InstallmentController::class, 'verifyPayment'])->name('installments.transactions.verify');
+        Route::post('/installments/transactions/{installmentTransaction}/reject', [Admin\InstallmentController::class, 'rejectPayment'])->name('installments.transactions.reject');
 
         // Pawns
         Route::get('/pawns',                    [Admin\PawnController::class, 'index'])->name('pawns.index');
@@ -92,6 +95,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
         // Reports
         Route::get('/reports',                  [Admin\ReportController::class, 'index'])->name('reports.index');
+
+        // Payment Methods
+        Route::resource('payment-methods', Admin\PaymentMethodController::class)->except(['show']);
 
         // Notifications
         Route::get('/notifications',                           [Admin\NotificationController::class, 'index'])->name('notifications.index');
@@ -136,6 +142,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Installments
         Route::get('/installments',             [Customer\InstallmentController::class, 'index'])->name('installments.index');
         Route::get('/installments/{installmentPlan}', [Customer\InstallmentController::class, 'show'])->name('installments.show');
+        Route::post('/installments/{installmentPlan}/pay', [Customer\InstallmentController::class, 'pay'])->name('installments.pay');
+        Route::post('/installments/{installmentPlan}/schedule-pickup', [Customer\InstallmentController::class, 'schedulePickup'])->name('installments.schedule-pickup');
 
         // Pawns
         Route::get('/pawns',                    [Customer\PawnController::class, 'index'])->name('pawns.index');

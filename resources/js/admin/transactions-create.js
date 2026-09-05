@@ -107,8 +107,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <input type="number" name="items[${itemIdx}][quantity]" value="1" class="input-field item-qty" min="1" required>
                 </div>
                 <div class="col-span-4">
-                    <label class="input-label">Harga Satuan (Rp)</label>
-                    <input type="number" name="items[${itemIdx}][unit_price]" value="0" class="input-field item-price" min="0" placeholder="0" required>
+                    <label class="input-label">Harga Satuan (Rp) <span class="text-xs text-slate-500 font-normal">(Otomatis Produk)</span></label>
+                    <input type="number" name="items[${itemIdx}][unit_price]" value="0" class="input-field item-price font-extrabold text-slate-800 bg-slate-100 cursor-not-allowed border-slate-300" min="0" placeholder="0" readonly required tabindex="-1">
                 </div>
                 <div class="col-span-1 flex items-end pb-0.5">
                     <button type="button" class="btn-danger w-full remove-item-btn">✕</button>
@@ -275,9 +275,23 @@ document.addEventListener('DOMContentLoaded', () => {
             subtotal += qty * price;
         });
         const feeVal = document.querySelector('[name=admin_fee]')?.value;
-        const discVal = document.querySelector('[name=discount]')?.value;
         const fee = parseFloat(feeVal || 0);
-        const discount = parseFloat(discVal || 0);
+
+        // Diskon Otomatis berbasis Persentase (Poin 3)
+        const discPercentEl = document.getElementById('discount_percentage');
+        const discAmountEl = document.getElementById('discount_amount');
+        const discDisplayEl = document.getElementById('discount-display');
+
+        const discountPercent = parseFloat(discPercentEl?.value || 0);
+        const discount = Math.round(subtotal * (discountPercent / 100));
+
+        if (discAmountEl) {
+            discAmountEl.value = discount;
+        }
+        if (discDisplayEl) {
+            discDisplayEl.textContent = 'Rp ' + discount.toLocaleString('id-ID') + ' (' + discountPercent + '%)';
+        }
+
         const total = subtotal + fee - discount;
         const totalDisplay = document.getElementById('total-display');
         if (totalDisplay) {
@@ -285,8 +299,14 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    const discPercentEl = document.getElementById('discount_percentage');
+    if (discPercentEl) {
+        discPercentEl.addEventListener('change', recalculate);
+    }
+
     const trxForm = document.getElementById('trx-form');
     if (trxForm) {
         trxForm.addEventListener('input', recalculate);
+        trxForm.addEventListener('change', recalculate);
     }
 });

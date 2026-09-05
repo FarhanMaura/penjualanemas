@@ -17,7 +17,7 @@ class StoreTransactionRequest extends FormRequest
             'reservation_id'   => ['nullable','exists:reservations,id'],
             'admin_fee'        => ['nullable','numeric','min:0'],
             'discount'         => ['nullable','numeric','min:0'],
-            'payment_method'   => ['required','in:cash,transfer,debit,credit'],
+            'payment_method'   => ['required','string','max:50'],
             'payment_date'     => ['required','date'],
             'notes'            => ['nullable','string','max:1000'],
             
@@ -28,7 +28,7 @@ class StoreTransactionRequest extends FormRequest
             'items.*.unit_price'  => ['required_with:items', 'numeric', 'min:0'],
 
             // Cicilan fields
-            'installment_tenure'       => ['required_if:type,installment', 'nullable', 'integer', 'min:1'],
+            'installment_tenure'       => ['required_if:type,installment', 'nullable', 'integer', 'in:3,6,12'],
             'installment_down_payment' => ['required_if:type,installment', 'nullable', 'numeric', 'min:0'],
 
             // Gadai fields

@@ -106,9 +106,18 @@
                     <div>
                         <label class="input-label">Metode Pembayaran <span class="text-red-600">*</span></label>
                         <select name="payment_method" id="transaction_payment_method" class="input-field cursor-pointer font-bold" required>
-                            @foreach(['cash'=>'Tunai (Cash)','transfer'=>'Transfer Bank','debit'=>'Kartu Debit','credit'=>'Kartu Kredit'] as $val=>$lbl)
-                            <option value="{{ $val }}" {{ old('payment_method', $selectedReservation?->payment_method ?? 'cash')==$val ? 'selected':'' }}>{{ $lbl }}</option>
-                            @endforeach
+                            @if(isset($paymentMethods) && $paymentMethods->count())
+                                @foreach($paymentMethods as $pm)
+                                <option value="{{ $pm->code }}" {{ old('payment_method', $selectedReservation?->payment_method ?? 'cash') == $pm->code ? 'selected' : '' }}>
+                                    {{ $pm->name }} {{ $pm->account_number ? '('.$pm->account_number.')' : '' }}
+                                </option>
+                                @endforeach
+                            @else
+                                <option value="cash" selected>Tunai (Cash)</option>
+                                <option value="transfer">Transfer Bank</option>
+                                <option value="debit">Kartu Debit</option>
+                                <option value="credit">Kartu Kredit</option>
+                            @endif
                         </select>
                     </div>
 
@@ -143,40 +152,38 @@
                     </div>
 
                     {{-- Pawn Extra Fields --}}
-                    <div id="pawn-extra-fields" class="col-span-1 sm:col-span-2 grid grid-cols-2 gap-4" style="display: none;">
-                        <div class="col-span-2">
+                    <div id="pawn-extra-fields" class="col-span-1 sm:col-span-2 grid grid-cols-2 sm:grid-cols-3 gap-4" style="display: none;">
+                        <div class="col-span-2 sm:col-span-3">
                             <hr class="border-slate-200 my-2">
-                            <h4 class="text-sm font-bold text-purple-900">🏦 Detail Pengajuan Gadai</h4>
+                            <h4 class="text-sm font-bold text-amber-900">🏦 Data Barang Gadai & Pinjaman</h4>
                         </div>
-                        <div class="col-span-2">
-                            <label class="input-label">Deskripsi Emas <span class="text-red-600">*</span></label>
-                            <input type="text" name="pawn_gold_description" id="pawn_gold_description" value="{{ old('pawn_gold_description', $selectedReservation?->pawn_gold_description) }}" placeholder="Contoh: Kalung Emas Rantai 10 Gram" class="input-field">
-                        </div>
-                        <div>
-                            <label class="input-label">Kadar Emas <span class="text-red-600">*</span></label>
-                            <select name="pawn_gold_purity" id="pawn_gold_purity" class="input-field cursor-pointer">
-                                <option value="24K" selected>24K</option>
-                            </select>
+                        <div class="col-span-2 sm:col-span-3">
+                            <label class="input-label">Deskripsi Barang Emas <span class="text-red-600">*</span></label>
+                            <input type="text" name="pawn_gold_description" value="{{ old('pawn_gold_description', $selectedReservation?->pawn_gold_description) }}" placeholder="cth: Cincin Berlian 24K" class="input-field">
                         </div>
                         <div>
-                            <label class="input-label">Berat Emas (Gram) <span class="text-red-600">*</span></label>
-                            <input type="number" step="0.001" name="pawn_weight_gram" id="pawn_weight_gram" value="{{ old('pawn_weight_gram', $selectedReservation?->pawn_weight_gram) }}" class="input-field" min="0.001">
+                            <label class="input-label">Kadar Emas</label>
+                            <input type="text" name="pawn_gold_purity" value="{{ old('pawn_gold_purity', $selectedReservation?->pawn_gold_purity ?? '24K') }}" class="input-field">
                         </div>
                         <div>
-                            <label class="input-label">Nilai Taksiran (Rp) <span class="text-red-600">*</span></label>
-                            <input type="number" name="pawn_appraised_value" id="pawn_appraised_value" value="{{ old('pawn_appraised_value', $selectedReservation?->pawn_amount_requested) }}" class="input-field" min="0">
+                            <label class="input-label">Berat (Gram)</label>
+                            <input type="number" step="0.01" name="pawn_weight_gram" value="{{ old('pawn_weight_gram', $selectedReservation?->pawn_weight_gram) }}" class="input-field" min="0.01">
                         </div>
                         <div>
-                            <label class="input-label">Jumlah Pinjaman (Rp) <span class="text-red-600">*</span></label>
-                            <input type="number" name="pawn_loan_amount" id="pawn_loan_amount" value="{{ old('pawn_loan_amount', $selectedReservation?->pawn_amount_requested) }}" class="input-field" min="0">
+                            <label class="input-label">Nilai Taksiran (Rp)</label>
+                            <input type="number" name="pawn_appraised_value" value="{{ old('pawn_appraised_value') }}" class="input-field" min="0">
                         </div>
                         <div>
-                            <label class="input-label">Suku Bunga (% per bulan) <span class="text-red-600">*</span></label>
-                            <input type="number" step="0.01" name="pawn_interest_rate" value="{{ old('pawn_interest_rate', 1.5) }}" class="input-field" min="0">
+                            <label class="input-label">Uang Pinjaman (Rp)</label>
+                            <input type="number" name="pawn_loan_amount" value="{{ old('pawn_loan_amount', $selectedReservation?->pawn_amount_requested) }}" class="input-field" min="0">
                         </div>
                         <div>
-                            <label class="input-label">Tanggal Jatuh Tempo <span class="text-red-600">*</span></label>
-                            <input type="date" name="pawn_due_date" value="{{ old('pawn_due_date', today()->addMonths(4)->toDateString()) }}" class="input-field">
+                            <label class="input-label">Bunga Pinjaman (%)</label>
+                            <input type="number" step="0.1" name="pawn_interest_rate" value="{{ old('pawn_interest_rate', 1.5) }}" class="input-field" min="0">
+                        </div>
+                        <div>
+                            <label class="input-label">Jatuh Tempo Gadai</label>
+                            <input type="date" name="pawn_due_date" value="{{ old('pawn_due_date', now()->addMonths(4)->toDateString()) }}" class="input-field">
                         </div>
                     </div>
                 </div>
@@ -212,9 +219,9 @@
                                    class="input-field item-qty" min="1" required>
                         </div>
                         <div class="col-span-4">
-                            <label class="input-label">Harga Satuan (Rp) <span class="text-red-600">*</span></label>
+                            <label class="input-label">Harga Satuan (Rp) <span class="text-xs text-slate-500 font-normal">(Otomatis Produk)</span> <span class="text-red-600">*</span></label>
                             <input type="number" name="items[0][unit_price]" value="{{ $initialUnitPrice }}"
-                                   class="input-field item-price font-extrabold text-slate-900" min="0" placeholder="0" required>
+                                   class="input-field item-price font-extrabold text-slate-800 bg-slate-100 cursor-not-allowed border-slate-300" min="0" placeholder="0" readonly required tabindex="-1">
                         </div>
                         <div class="col-span-1 flex items-end pb-0.5">
                             <button type="button" class="btn-danger w-full remove-item-btn" style="display:none;">✕</button>
@@ -234,8 +241,21 @@
                         <input type="number" name="admin_fee" value="{{ old('admin_fee',0) }}" class="input-field" min="0">
                     </div>
                     <div>
-                        <label class="input-label">Diskon (Rp)</label>
-                        <input type="number" name="discount" value="{{ old('discount',0) }}" class="input-field" min="0">
+                        <label class="input-label">Pilihan Diskon Otomatis <span class="text-xs font-normal text-emerald-700">(Persentase)</span></label>
+                        <select id="discount_percentage" class="input-field cursor-pointer font-bold text-emerald-800 bg-emerald-50/50 border-emerald-300">
+                            <option value="0">0% — Tanpa Diskon</option>
+                            <option value="2">2% — Promo Reguler</option>
+                            <option value="5">5% — Promo Member Gold</option>
+                            <option value="10">10% — Spesial Hari Raya / Event</option>
+                            <option value="15">15% — Flash Sale Eksklusif</option>
+                            <option value="20">20% — Promo VIP Member</option>
+                            <option value="25">25% — Cuci Gudang Mega Promo</option>
+                        </select>
+                        <input type="hidden" name="discount" id="discount_amount" value="{{ old('discount', 0) }}">
+                        <p class="text-xs text-slate-500 mt-1.5 flex items-center justify-between">
+                            <span>Potongan Diskon:</span>
+                            <span id="discount-display" class="font-extrabold text-emerald-700">Rp 0 (0%)</span>
+                        </p>
                     </div>
                     <div class="rounded-xl p-4 flex flex-col justify-center bg-amber-50 border border-amber-200 shadow-sm">
                         <p class="text-xs text-slate-500 font-bold uppercase tracking-wider">Total Akhir Transaksi</p>

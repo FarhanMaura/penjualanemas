@@ -27,7 +27,7 @@ class StoreReservationRequest extends FormRequest
             'quantity'                 => ['required_if:type,purchase,installment', 'nullable', 'integer', 'min:1', 'max:100'],
             'preferred_date'           => ['required','date','after_or_equal:today'],
             'preferred_time'           => ['nullable','date_format:H:i'],
-            'payment_method'           => ['required_if:type,purchase,installment,buyback', 'nullable', 'in:cash,transfer,debit,credit'],
+            'payment_method'           => ['required_if:type,purchase,installment,buyback', 'nullable', 'string', 'max:50'],
             'notes'                    => ['nullable','string','max:500'],
             'pawn_gold_description'    => ['required_if:type,pawn,buyback', 'nullable', 'string', 'max:500'],
             'pawn_gold_purity'         => ['required_if:type,pawn,buyback', 'nullable', 'string', 'max:20'],
