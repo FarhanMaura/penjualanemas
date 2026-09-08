@@ -49,13 +49,13 @@
                 </div>
                 <div>
                     <label class="input-label">Harga Jual (Rp) *</label>
-                    <input type="number" name="base_price" value="{{ old('base_price', $product->base_price) }}"
-                           class="input-field" min="1" required>
+                    <input type="text" inputmode="numeric" name="base_price" value="{{ old('base_price', $product->base_price) }}"
+                           class="input-field format-rupiah" required>
                 </div>
                 <div>
                     <label class="input-label">Harga Buyback (Rp)</label>
-                    <input type="number" name="buy_back_price" value="{{ old('buy_back_price', $product->buy_back_price) }}"
-                           class="input-field" min="0">
+                    <input type="text" inputmode="numeric" name="buy_back_price" value="{{ old('buy_back_price', $product->buy_back_price) }}"
+                           class="input-field format-rupiah">
                 </div>
                 <div>
                     <label class="input-label">Stok *</label>

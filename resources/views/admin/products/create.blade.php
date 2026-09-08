@@ -60,15 +60,15 @@
 
                 <div>
                     <label class="input-label">Harga Jual Dasar (Rp) *</label>
-                    <input type="number" name="base_price" value="{{ old('base_price') }}"
-                           class="input-field" min="1" placeholder="cth: 4050000" required>
+                    <input type="text" inputmode="numeric" name="base_price" value="{{ old('base_price') }}"
+                           class="input-field format-rupiah" placeholder="cth: 4.050.000" required>
                     @error('base_price')<p class="field-error">{{ $message }}</p>@enderror
                 </div>
 
                 <div>
                     <label class="input-label">Harga Buyback (Rp)</label>
-                    <input type="number" name="buy_back_price" value="{{ old('buy_back_price') }}"
-                           class="input-field" min="0" placeholder="Biarkan kosong = otomatis 97%">
+                    <input type="text" inputmode="numeric" name="buy_back_price" value="{{ old('buy_back_price') }}"
+                           class="input-field format-rupiah" placeholder="Biarkan kosong = otomatis 97%">
                 </div>
 
                 <div>

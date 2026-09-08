@@ -60,7 +60,6 @@
                     <th class="py-4 px-5">Kode / Pelanggan</th>
                     <th class="py-4 px-5">Deskripsi Emas</th>
                     <th class="py-4 px-5 text-right">Pinjaman</th>
-                    <th class="py-4 px-5 text-right">Bunga</th>
                     <th class="py-4 px-5 text-center">Jatuh Tempo</th>
                     <th class="py-4 px-5 text-center">Status</th>
                     <th class="py-4 px-5 text-right">Aksi</th>
@@ -90,7 +89,6 @@
                     <td class="py-4 px-5 text-right font-extrabold text-[#C6A443]">
                         Rp {{ number_format($pawn->loan_amount, 0, ',', '.') }}
                     </td>
-                    <td class="py-4 px-5 text-right font-bold text-slate-700">{{ $pawn->interest_rate }}%/bln</td>
                     <td class="py-4 px-5 text-center">
                         <p class="text-sm font-bold {{ $isExpired ? 'text-red-700 font-extrabold' : ($isWarning ? 'text-amber-800' : 'text-slate-800') }}">
                             {{ $pawn->due_date?->isoFormat('D MMM Y') }}
@@ -105,7 +103,14 @@
                         <span class="text-xs px-2.5 py-0.5 rounded-full font-bold border {{ $statusCls }}">{{ ucfirst($pawn->status) }}</span>
                     </td>
                     <td class="py-4 px-5 text-right">
-                        <a href="{{ route('admin.pawns.show', $pawn) }}" class="btn-edit text-xs">Detail</a>
+                        <div class="flex items-center justify-end gap-2">
+                            @if($pawn->status === 'active')
+                            <a href="{{ route('admin.pawns.show', $pawn) }}" class="px-3 py-1.5 rounded-xl text-xs font-extrabold text-[#042623] gold-gradient border border-[#C6A443] shadow-sm hover:brightness-110 transition">
+                                🔓 Tebus
+                            </a>
+                            @endif
+                            <a href="{{ route('admin.pawns.show', $pawn) }}" class="btn-edit text-xs">Detail</a>
+                        </div>
                     </td>
                 </tr>
                 @endforeach

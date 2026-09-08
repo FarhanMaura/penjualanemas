@@ -67,29 +67,6 @@
 
             {{-- Footer Verification / Signatures --}}
             <div class="grid grid-cols-2 gap-6 items-center pt-6 border-t border-[#e8e3d5]">
-                {{-- QR Verification --}}
-                <div class="flex flex-col items-center">
-                    <div class="w-24 h-24 bg-white p-2 rounded-xl flex items-center justify-center shadow border border-slate-200 relative">
-                        <svg class="w-full h-full text-slate-900" viewBox="0 0 100 100">
-                            <rect width="100" height="100" fill="white" />
-                            <rect x="5" y="5" width="25" height="25" fill="black" />
-                            <rect x="10" y="10" width="15" height="15" fill="white" />
-                            <rect x="70" y="5" width="25" height="25" fill="black" />
-                            <rect x="75" y="10" width="15" height="15" fill="white" />
-                            <rect x="5" y="70" width="25" height="25" fill="black" />
-                            <rect x="10" y="75" width="15" height="15" fill="white" />
-                            <rect x="40" y="10" width="10" height="10" fill="black" />
-                            <rect x="50" y="25" width="10" height="10" fill="black" />
-                            <rect x="35" y="45" width="15" height="15" fill="black" />
-                            <rect x="60" y="50" width="10" height="15" fill="black" />
-                            <rect x="45" y="70" width="15" height="10" fill="black" />
-                            <rect x="75" y="40" width="15" height="15" fill="black" />
-                            <rect x="80" y="75" width="10" height="10" fill="black" />
-                        </svg>
-                    </div>
-                    <span class="text-[9px] font-bold text-slate-500 mt-2 tracking-widest uppercase">Pindai untuk Verifikasi</span>
-                </div>
-
                 {{-- Signature / Cap --}}
                 <div class="text-center">
                     <p class="text-xs text-slate-600 font-semibold">Penanggung Jawab,</p>
@@ -97,9 +74,9 @@
                         <div class="absolute w-24 h-12 border-2 border-red-600/40 rounded-full flex items-center justify-center text-[10px] text-red-600 font-extrabold uppercase rotate-12 bg-red-50/20">
                             SINAR BARU II
                         </div>
-                        <span class="font-playfair text-xl italic text-[#042623] font-black select-none rotate-3">H. Sulaiman</span>
+                        <span class="font-playfair text-xl italic text-[#042623] font-black select-none rotate-3">Tasni</span>
                     </div>
-                    <p class="text-xs text-slate-900 font-bold border-t border-slate-300 pt-1.5 inline-block px-4">H. Sulaiman, M.M.</p>
+                    <p class="text-xs text-slate-900 font-bold border-t border-slate-300 pt-1.5 inline-block px-4">Tasni</p>
                     <p class="text-[10px] text-slate-500 font-semibold mt-0.5">Pemilik Toko</p>
                 </div>
             </div>

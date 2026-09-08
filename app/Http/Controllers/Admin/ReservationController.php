@@ -15,7 +15,7 @@ class ReservationController extends Controller
             ->where('expired_at', '<', now())
             ->update(['status' => 'expired']);
 
-        $query = Reservation::with(['user', 'product.category', 'priceNegotiation'])
+        $query = Reservation::with(['user', 'product.category', 'priceNegotiation', 'paymentMethodDetail'])
             ->latest();
 
         if ($request->filled('status')) {
@@ -46,7 +46,7 @@ class ReservationController extends Controller
 
     public function show(Reservation $reservation)
     {
-        $reservation->load(['user.profile', 'product.category', 'priceNegotiation', 'transaction']);
+        $reservation->load(['user.profile', 'product.category', 'priceNegotiation', 'transaction', 'paymentMethodDetail']);
 
         return view('admin.reservations.show', compact('reservation'));
     }
@@ -63,12 +63,53 @@ class ReservationController extends Controller
             'confirmed_at' => now(),
         ]);
 
-        if ($request->boolean('process_transaction') || $request->has('process_transaction')) {
+        // Notifikasi ke Customer
+        \App\Models\Notification::create([
+            'user_id' => $reservation->user_id,
+            'type'    => 'reservation.confirmed',
+            'title'   => "Reservasi Dikonfirmasi (#{$reservation->reservation_code})",
+            'message' => "Reservasi #{$reservation->reservation_code} Anda telah dikonfirmasi oleh toko. Silakan datang ke toko.",
+            'data'    => ['reservation_id' => $reservation->id],
+        ]);
+
+        $isPickupReservation = str_starts_with($reservation->reservation_code, 'RSV-PKP-');
+
+        if (! $isPickupReservation && ($request->boolean('process_transaction') || $request->has('process_transaction'))) {
             return redirect()->route('admin.transactions.create', ['reservation_id' => $reservation->id])
                 ->with('success', "Reservasi #{$reservation->reservation_code} dikonfirmasi. Form transaksi telah otomatis terisi.");
         }
 
         return back()->with('success', "Reservasi #{$reservation->reservation_code} dikonfirmasi.");
+    }
+
+    public function complete(Reservation $reservation)
+    {
+        if (! in_array($reservation->status, ['pending', 'confirmed'])) {
+            return back()->with('error', 'Reservasi tidak dapat diselesaikan.');
+        }
+
+        $reservation->update([
+            'status'       => 'completed',
+            'confirmed_by' => auth()->id(),
+            'confirmed_at' => $reservation->confirmed_at ?? now(),
+        ]);
+
+        $isBuyback = $reservation->type === 'buyback';
+
+        // Notifikasi ke Customer
+        \App\Models\Notification::create([
+            'user_id' => $reservation->user_id,
+            'type'    => 'reservation.completed',
+            'title'   => $isBuyback ? "Buyback Selesai (#{$reservation->reservation_code})" : "Serah Terima Emas Selesai (#{$reservation->reservation_code})",
+            'message' => $isBuyback
+                ? "Transaksi buyback emas di toko untuk reservasi #{$reservation->reservation_code} telah selesai dilakukan. Terima kasih atas kunjungan Anda di Toko Emas Sinar Baru II!"
+                : "Serah terima perhiasan emas fisik untuk reservasi #{$reservation->reservation_code} telah selesai dilakukan. Terima kasih telah bertransaksi di Toko Emas Sinar Baru II!",
+            'data'    => ['reservation_id' => $reservation->id],
+        ]);
+
+        return back()->with('success', $isBuyback
+            ? "Reservasi buyback #{$reservation->reservation_code} telah ditandai Selesai (Kunjungan & Transaksi di Toko Selesai)."
+            : "Reservasi #{$reservation->reservation_code} telah ditandai Selesai (Serah Terima Emas Fisik Selesai).");
     }
 
     public function reject(Request $request, Reservation $reservation)
@@ -84,6 +125,38 @@ class ReservationController extends Controller
             'admin_notes' => $request->admin_notes,
         ]);
 
+        // Notifikasi ke Customer
+        \App\Models\Notification::create([
+            'user_id' => $reservation->user_id,
+            'type'    => 'reservation.rejected',
+            'title'   => "Reservasi Dibatalkan (#{$reservation->reservation_code})",
+            'message' => "Reservasi #{$reservation->reservation_code} Anda telah dibatalkan oleh toko.",
+            'data'    => ['reservation_id' => $reservation->id],
+        ]);
+
         return back()->with('success', "Reservasi #{$reservation->reservation_code} ditolak.");
+    }
+
+    public function destroy(Reservation $reservation)
+    {
+        // Putuskan relasi transaksi jika ada
+        if ($reservation->transaction_id) {
+            $reservation->update(['transaction_id' => null]);
+        }
+
+        // Putuskan relasi di transaksi yang merujuk reservasi ini
+        \App\Models\Transaction::where('reservation_id', $reservation->id)->update(['reservation_id' => null]);
+
+        // Putuskan relasi di cicilan jika ada
+        \App\Models\InstallmentPlan::where('pickup_reservation_id', $reservation->id)->update(['pickup_reservation_id' => null]);
+
+        // Hapus notifikasi terkait reservasi ini
+        \App\Models\Notification::whereJsonContains('data->reservation_id', $reservation->id)->delete();
+
+        $code = $reservation->reservation_code;
+        $reservation->delete();
+
+        return redirect()->route('admin.reservations.index')
+            ->with('success', "Reservasi #{$code} berhasil dihapus permanen.");
     }
 }

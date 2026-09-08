@@ -83,4 +83,21 @@ class Reservation extends Model
     {
         return $this->belongsTo(Transaction::class);
     }
+
+    /** Detail Metode Pembayaran */
+    public function paymentMethodDetail(): BelongsTo
+    {
+        return $this->belongsTo(PaymentMethod::class, 'payment_method', 'code');
+    }
+
+    public function getPaymentMethodModelAttribute(): ?PaymentMethod
+    {
+        if (! $this->payment_method) {
+            return null;
+        }
+
+        return PaymentMethod::where('code', $this->payment_method)
+            ->orWhere('name', $this->payment_method)
+            ->first();
+    }
 }

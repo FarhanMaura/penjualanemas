@@ -126,10 +126,15 @@
                             </span>
                         </td>
                         <td class="px-4 py-3.5 text-right whitespace-nowrap">
-                            @if(in_array($item->status, ['approved', 'used']))
+                            @if($item->status === 'approved')
                                 <a href="{{ route('customer.reservations.create', ['negotiation_id' => $item->id]) }}"
                                    class="inline-block px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-950 gold-gradient border border-[#C6A443] shadow hover:brightness-110 transition">
                                     🚀 Reservasi Beli →
+                                </a>
+                            @elseif($item->status === 'used')
+                                <a href="{{ route('customer.reservations.index') }}"
+                                   class="inline-block px-3.5 py-1.5 rounded-xl text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 border border-slate-300 shadow-sm transition">
+                                    🛒 Lihat Reservasi
                                 </a>
                             @else
                                 <span class="text-xs text-slate-400">-</span>

@@ -162,7 +162,7 @@ class InstallmentAndPawnTest extends TestCase
             'pawn_weight_gram' => 10.5,
             'pawn_appraised_value' => 8000000,
             'pawn_loan_amount' => 5000000,
-            'pawn_interest_rate' => 2.0,
+            'pawn_tenure' => 4,
             'pawn_due_date' => today()->addMonths(4)->toDateString(),
         ]);
 
@@ -184,5 +184,36 @@ class InstallmentAndPawnTest extends TestCase
 
         $this->assertEquals('redeemed', $pawn->fresh()->status);
         $this->assertEquals('completed', $transaction->fresh()->status);
+    }
+
+    public function test_installment_transaction_with_string_tenure_input()
+    {
+        $response = $this->actingAs($this->admin)->post(route('admin.transactions.store'), [
+            'user_id' => $this->customer->id,
+            'type' => 'installment',
+            'gold_price_id' => $this->goldPrice->id,
+            'payment_method' => 'cash',
+            'payment_date' => today()->toDateString(),
+            'admin_fee' => '0',
+            'discount' => '0',
+            'installment_tenure' => '12',
+            'installment_down_payment' => '500000',
+            'items' => [
+                [
+                    'product_id' => $this->product->id,
+                    'quantity' => '1',
+                    'unit_price' => '1620000.00',
+                ]
+            ]
+        ]);
+
+        $response->assertRedirect(route('admin.transactions.index'));
+
+        $transaction = Transaction::where('user_id', $this->customer->id)->firstOrFail();
+        $this->assertEquals('in_progress', $transaction->status);
+
+        $plan = InstallmentPlan::where('transaction_id', $transaction->id)->firstOrFail();
+        $this->assertEquals(12, $plan->tenure_months);
+        $this->assertCount(12, $plan->payments);
     }
 }

@@ -10,19 +10,29 @@ class InstallmentController extends Controller
 {
     public function index()
     {
-        $installments = InstallmentPlan::whereHas('transaction', fn($q) => $q->where('user_id', auth()->id()))
+        $installments = InstallmentPlan::whereHas('transaction', fn($q) => $q->where('user_id', auth()->id())->where('type', 'installment'))
             ->with(['transaction.items.product', 'payments'])
             ->latest()
             ->paginate(10);
 
+        $pendingReservations = \App\Models\Reservation::where('user_id', auth()->id())
+            ->where('type', 'installment')
+            ->whereIn('status', ['pending', 'confirmed'])
+            ->whereNull('transaction_id')
+            ->where('reservation_code', 'not like', 'RSV-PKP-%')
+            ->with('product')
+            ->latest()
+            ->get();
+
         $summary = [
-            'active'    => InstallmentPlan::whereHas('transaction', fn($q) => $q->where('user_id', auth()->id()))
+            'active'    => InstallmentPlan::whereHas('transaction', fn($q) => $q->where('user_id', auth()->id())->where('type', 'installment'))
                             ->where('status', 'active')->count(),
-            'completed' => InstallmentPlan::whereHas('transaction', fn($q) => $q->where('user_id', auth()->id()))
+            'completed' => InstallmentPlan::whereHas('transaction', fn($q) => $q->where('user_id', auth()->id())->where('type', 'installment'))
                             ->where('status', 'completed')->count(),
+            'pending_applications' => $pendingReservations->count(),
         ];
 
-        return view('customer.installments.index', compact('installments', 'summary'));
+        return view('customer.installments.index', compact('installments', 'pendingReservations', 'summary'));
     }
 
     public function show(InstallmentPlan $installmentPlan)
@@ -35,7 +45,10 @@ class InstallmentController extends Controller
             'installmentTransactions.verifier'
         ]);
 
-        $paymentMethods = \App\Models\PaymentMethod::active()->ordered()->get();
+        $paymentMethods = \App\Models\PaymentMethod::active()
+            ->orderByRaw("CASE WHEN type = 'cash' THEN 1 ELSE 0 END")
+            ->orderBy('sort_order')
+            ->get();
         $unpaidPayments = $installmentPlan->payments()->whereIn('status', ['pending', 'overdue'])->orderBy('installment_number')->get();
 
         return view('customer.installments.show', compact('installmentPlan', 'paymentMethods', 'unpaidPayments'));
@@ -49,7 +62,7 @@ class InstallmentController extends Controller
             return back()->with('error', 'Rencana cicilan ini sudah tidak aktif atau telah selesai.');
         }
 
-        $request->validate([
+        $rules = [
             'payment_option'    => ['required', 'in:next_month,custom_months,pay_all'],
             'selected_months'   => ['required_if:payment_option,custom_months', 'nullable', 'array'],
             'selected_months.*' => ['integer', 'min:1', 'max:' . $installmentPlan->tenure_months],
@@ -58,10 +71,20 @@ class InstallmentController extends Controller
             'sender_bank'       => ['nullable', 'string', 'max:50'],
             'sender_name'       => ['nullable', 'string', 'max:100'],
             'notes'             => ['nullable', 'string', 'max:500'],
-        ], [
-            'proof_image.required' => 'Wajib mengunggah foto / file bukti transfer pembayaran.',
-            'proof_image.image'    => 'Bukti pembayaran harus berupa gambar (JPG, PNG, atau WebP).',
-            'proof_image.max'      => 'Ukuran bukti pembayaran maksimal 5MB.',
+        ];
+
+        if ($installmentPlan->canSchedulePickup() && ! $installmentPlan->pickupReservation) {
+            $rules['preferred_date'] = ['required', 'date', 'after_or_equal:today'];
+            $rules['preferred_time'] = ['required', 'date_format:H:i'];
+            $rules['pickup_notes']   = ['nullable', 'string', 'max:500'];
+        }
+
+        $request->validate($rules, [
+            'proof_image.required'   => 'Wajib mengunggah foto / file bukti transfer pembayaran.',
+            'proof_image.image'      => 'Bukti pembayaran harus berupa gambar (JPG, PNG, atau WebP).',
+            'proof_image.max'        => 'Ukuran bukti pembayaran maksimal 5MB.',
+            'preferred_date.required'=> 'Wajib memilih tanggal pengambilan emas fisik.',
+            'preferred_time.required'=> 'Wajib memilih jam kunjungan pengambilan emas.',
         ]);
 
         $unpaidPayments = $installmentPlan->payments()
@@ -123,6 +146,26 @@ class InstallmentController extends Controller
                 ]);
             }
 
+            // Jika masuk bulan terakhir dan belum ada reservasi pengambilan, buat reservasi sekaligus
+            if ($installmentPlan->canSchedulePickup() && ! $installmentPlan->pickupReservation && $request->filled('preferred_date')) {
+                $product = $installmentPlan->transaction->items->first()?->product;
+
+                $reservation = \App\Models\Reservation::create([
+                    'reservation_code' => 'RSV-PKP-' . date('Ymd') . '-' . strtoupper(\Illuminate\Support\Str::random(4)),
+                    'user_id'          => auth()->id(),
+                    'type'             => 'installment',
+                    'product_id'       => $product?->id,
+                    'quantity'         => 1,
+                    'preferred_date'   => $request->preferred_date,
+                    'preferred_time'   => $request->preferred_time,
+                    'payment_method'   => $request->payment_method,
+                    'notes'            => 'Reservasi Pengambilan Emas Fisik (Cicilan ' . $installmentPlan->transaction->transaction_code . '). ' . ($request->pickup_notes ?? ''),
+                    'status'           => 'confirmed',
+                ]);
+
+                $installmentPlan->update(['pickup_reservation_id' => $reservation->id]);
+            }
+
             // Notifikasi ke Admin
             $productName = $installmentPlan->transaction->items->first()?->product?->name ?? 'Cicilan Emas';
             $monthDesc = $installmentTransaction->formattedMonths();
@@ -156,7 +199,14 @@ class InstallmentController extends Controller
             ]);
         });
 
-        return back()->with('success', "Bukti pembayaran ({$targetPayments->count()} Bulan) sebesar Rp " . number_format($totalAmount, 0, ',', '.') . " berhasil dikirim! Status saat ini menunggu verifikasi admin toko.");
+        $installmentPlan->refresh();
+        $msg = "Bukti pembayaran ({$targetPayments->count()} Bulan) sebesar Rp " . number_format($totalAmount, 0, ',', '.') . " berhasil dikirim!";
+        if ($installmentPlan->pickupReservation) {
+            $msg .= " Jadwal pengambilan emas fisik Anda juga telah dibuat ({$installmentPlan->pickupReservation->reservation_code}).";
+        }
+        $msg .= " Status saat ini menunggu verifikasi admin toko.";
+
+        return back()->with('success', $msg);
     }
 
     public function schedulePickup(Request $request, InstallmentPlan $installmentPlan)

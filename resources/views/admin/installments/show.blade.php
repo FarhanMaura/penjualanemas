@@ -141,9 +141,8 @@
                     {{-- Detail Keuangan --}}
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
                         @foreach([
-                            ['Down Payment (DP)', 'Rp '.number_format($installmentPlan->down_payment, 0, ',', '.')],
                             ['Angsuran / Bulan', 'Rp '.number_format($installmentPlan->monthly_amount, 0, ',', '.')],
-                            ['Total Cicilan', 'Rp '.number_format($installmentPlan->total_installment, 0, ',', '.')],
+                            ['Total Nilai Emas', 'Rp '.number_format($installmentPlan->total_installment, 0, ',', '.')],
                             ['Tenor', $installmentPlan->tenure_months.' Bulan'],
                             ['Mulai', $installmentPlan->start_date?->isoFormat('D MMM Y') ?? '-'],
                             ['Selesai', $installmentPlan->end_date?->isoFormat('D MMM Y') ?? '-'],
@@ -154,6 +153,54 @@
                         </div>
                         @endforeach
                     </div>
+
+                    {{-- Status Reservasi Pengambilan Emas Fisik --}}
+                    @if($installmentPlan->pickupReservation)
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-emerald-50 border-2 border-emerald-400 shadow-md">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-3 pb-3 border-b border-emerald-200">
+                            <div>
+                                <span class="px-2.5 py-1 rounded-full text-xs font-extrabold bg-emerald-600 text-white shadow-sm">
+                                    📦 Jadwal Pengambilan Emas Fisik
+                                </span>
+                                <h4 class="font-bold text-slate-900 text-base mt-2">Kode Reservasi: <span class="font-mono text-[#085C54]">{{ $installmentPlan->pickupReservation->reservation_code }}</span></h4>
+                            </div>
+                            <span class="px-3 py-1 rounded-full text-xs font-bold bg-white text-emerald-900 border border-emerald-300">
+                                {{ ucfirst($installmentPlan->pickupReservation->status) }}
+                            </span>
+                        </div>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs text-slate-700">
+                            <div>
+                                <p class="text-slate-500 font-bold uppercase">Tanggal Kunjungan</p>
+                                <p class="font-bold text-sm text-slate-900 mt-0.5">{{ \Carbon\Carbon::parse($installmentPlan->pickupReservation->preferred_date)->isoFormat('dddd, D MMMM Y') }}</p>
+                            </div>
+                            <div>
+                                <p class="text-slate-500 font-bold uppercase">Jam Kunjungan</p>
+                                <p class="font-bold text-sm text-slate-900 mt-0.5">{{ $installmentPlan->pickupReservation->preferred_time ?? '09:00 - 17:00' }} WIB</p>
+                            </div>
+                            @if($installmentPlan->pickupReservation->notes)
+                            <div class="sm:col-span-2">
+                                <p class="text-slate-500 font-bold uppercase">Catatan Pelanggan</p>
+                                <p class="font-semibold text-slate-800 italic">"{{ $installmentPlan->pickupReservation->notes }}"</p>
+                            </div>
+                            @endif
+                        </div>
+
+                        @if(in_array($installmentPlan->pickupReservation->status, ['pending', 'confirmed']))
+                        <div class="mt-4 pt-3 border-t border-emerald-200 flex justify-end">
+                            <form action="{{ route('admin.reservations.complete', $installmentPlan->pickupReservation) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin serah terima perhiasan emas fisik telah selesai dilakukan?');">
+                                @csrf
+                                <button type="submit" class="px-4 py-2 rounded-xl text-xs font-extrabold text-[#042623] gold-gradient border border-[#C6A443] shadow-md hover:brightness-110 transition flex items-center gap-1.5">
+                                    <span>🎉</span> <span>Tandai Selesai (Serah Terima Emas Fisik)</span>
+                                </button>
+                            </form>
+                        </div>
+                        @elseif($installmentPlan->pickupReservation->status === 'completed')
+                        <div class="mt-3 text-xs font-bold text-emerald-800 flex items-center gap-1">
+                            <span>✅</span> <span>Perhiasan emas fisik telah selesai diserahkan ke pelanggan.</span>
+                        </div>
+                        @endif
+                    </div>
+                    @endif
 
                     {{-- Jadwal Angsuran Per Bulan --}}
                     <div>
@@ -352,7 +399,7 @@
 
                 <div class="mb-4">
                     <label class="input-label">Jumlah Bayar (Rp) <span class="text-red-600">*</span></label>
-                    <input type="number" name="amount_paid" id="modal_amount_paid" class="input-field font-extrabold text-slate-900" required>
+                    <input type="text" inputmode="numeric" name="amount_paid" id="modal_amount_paid" class="input-field format-rupiah font-extrabold text-slate-900" required>
                 </div>
 
                 <div class="mb-4">
@@ -491,7 +538,9 @@
             form.action = url;
             document.getElementById('modal_payment_id').value = id;
             document.getElementById('modal_installment_number').textContent = 'Bulan ke-' + number;
-            document.getElementById('modal_amount_paid').value = amount;
+            
+            const amountInput = document.getElementById('modal_amount_paid');
+            amountInput.value = window.formatRupiah ? window.formatRupiah(amount) : amount;
 
             modal.classList.remove('hidden');
         }

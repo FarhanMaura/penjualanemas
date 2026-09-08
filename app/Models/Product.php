@@ -74,6 +74,40 @@ class Product extends Model
         return \Illuminate\Support\Facades\Storage::url($thumbnail);
     }
 
+    /**
+     * Cek apakah stok mencukupi.
+     */
+    public function hasStock(int $quantity = 1): bool
+    {
+        return $this->is_available && $this->stock >= $quantity;
+    }
+
+    /**
+     * Kurangi stok produk dan update ketersediaan secara otomatis.
+     */
+    public function reduceStock(int $quantity = 1): bool
+    {
+        $newStock = max(0, $this->stock - $quantity);
+        return $this->update([
+            'stock'        => $newStock,
+            'is_available' => $newStock > 0,
+            'is_reservable'=> $newStock > 0,
+        ]);
+    }
+
+    /**
+     * Tambah stok produk.
+     */
+    public function increaseStock(int $quantity = 1): bool
+    {
+        $newStock = $this->stock + $quantity;
+        return $this->update([
+            'stock'        => $newStock,
+            'is_available' => true,
+            'is_reservable'=> true,
+        ]);
+    }
+
     // ─── Relationships ────────────────────────────────────────────────────────
 
     public function category(): BelongsTo

@@ -85,10 +85,10 @@
                     {{-- Tipe Reservasi --}}
                     <div>
                         <label class="input-label">Tipe Pengajuan / Reservasi *</label>
-                        <select name="type" id="reservation_type" required class="input-field cursor-pointer">
-                            <option value="purchase" {{ old('type', request('type') == 'beli' ? 'purchase' : 'purchase') == 'purchase' ? 'selected' : '' }}>🛒 Pembelian Emas (Tunai / Transfer)</option>
-                            <option value="buyback" {{ old('type', request('type') == 'jual' ? 'buyback' : '') == 'buyback' ? 'selected' : '' }}>💰 Jual Emas ke Toko (Buyback)</option>
+                        <select name="type" id="reservation_type" required class="input-field cursor-pointer font-bold">
+                            <option value="purchase" {{ old('type', request('type') == 'beli' ? 'purchase' : 'purchase') == 'purchase' ? 'selected' : '' }}>🛒 Pembelian Emas (Beli Lunas / Pembayaran Langsung)</option>
                             <option value="installment" {{ old('type', request('type') == 'cicilan' ? 'installment' : '') == 'installment' ? 'selected' : '' }}>📅 Pembelian Emas (Cicilan)</option>
+                            <option value="buyback" {{ old('type', request('type') == 'jual' ? 'buyback' : '') == 'buyback' ? 'selected' : '' }}>💰 Jual Emas ke Toko (Buyback)</option>
                             <option value="pawn" {{ old('type', request('type') == 'gadai' ? 'pawn' : '') == 'pawn' ? 'selected' : '' }}>🏦 Gadai Emas (Pengajuan Pinjaman)</option>
                         </select>
                     </div>
@@ -167,101 +167,76 @@
                         </div>
                     </div>
 
-                    {{-- Jual Emas (Buyback) Fields --}}
+                    {{-- Jual Emas (Buyback) Fields — Murni Reservasi O2O --}}
                     <div id="buyback_fields" class="space-y-5 p-5 rounded-2xl bg-emerald-50/70 border border-emerald-200" style="display: none;">
                         <div class="flex items-center gap-2 pb-2 border-b border-emerald-200">
                             <span class="text-xl">💰</span>
-                            <h4 class="text-sm font-bold text-emerald-950">Rincian Emas yang Ingin Anda Jual ke Toko</h4>
+                            <h4 class="text-sm font-bold text-emerald-950">Informasi Kunjungan Buyback (Jual Emas ke Toko)</h4>
                         </div>
+
+                        {{-- Info Konsep O2O --}}
+                        <div class="p-4 rounded-xl bg-white border-2 border-emerald-300 shadow-sm">
+                            <div class="flex items-start gap-3">
+                                <span class="text-2xl">🏪</span>
+                                <div>
+                                    <p class="font-extrabold text-emerald-950 text-sm">Reservasi Janji Temu Toko (Murni O2O)</p>
+                                    <p class="text-xs text-emerald-800 mt-1 leading-relaxed">
+                                        Reservasi ini <strong>hanya untuk membuat janji kunjungan</strong> ke toko. Penilaian kondisi fisik barang, penimbangan berat riil, pengujian kadar, penentuan harga beli, dan pembayaran uang tunai — semuanya dilakukan <strong>langsung di Toko Sinar Baru II</strong> saat Anda datang.
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+
+                        {{-- Hanya deskripsi barang yang akan dijual --}}
                         <div>
-                            <label class="input-label">Pilih Jenis / Produk Emas yang Ingin Dijual <span class="text-red-600">*</span></label>
-                            <select name="pawn_gold_description" id="buyback_gold_description" class="input-field cursor-pointer font-bold {{ $errors->has('pawn_gold_description') ? 'border-red-500 ring-2 ring-red-200 bg-red-50/50' : '' }}" onchange="onBuybackProductChange(this)">
-                                <option value="" disabled {{ old('pawn_gold_description') ? '' : 'selected' }}>-- Pilih Jenis / Produk Emas yang Mau Dijual --</option>
-                                <optgroup label="📋 Koleksi Produk Toko Sinar Baru II">
+                            <label class="input-label">Jenis Perhiasan / Emas yang Ingin Dijual <span class="text-red-600">*</span></label>
+                            <select name="pawn_gold_description" id="buyback_gold_description" class="input-field cursor-pointer font-bold {{ $errors->has('pawn_gold_description') ? 'border-red-500 ring-2 ring-red-200 bg-red-50/50' : '' }}">
+                                <option value="" disabled {{ old('pawn_gold_description') ? '' : 'selected' }}>-- Pilih Jenis Perhiasan / Emas yang Mau Dijual --</option>
+                                <optgroup label="📋 Dari Koleksi Toko">
                                     @foreach($products as $p)
-                                    <option value="{{ $p->name }} (24K)" data-weight="{{ $p->weight_gram }}" {{ old('pawn_gold_description') == ($p->name . ' (24K)') ? 'selected' : '' }}>
-                                        💍 {{ $p->name }} (Standar: {{ number_format($p->weight_gram, 2) }} gram)
+                                    <option value="{{ $p->name }}" {{ old('pawn_gold_description') == $p->name ? 'selected' : '' }}>
+                                        💍 {{ $p->name }}
                                     </option>
                                     @endforeach
                                 </optgroup>
-                                <optgroup label="✨ Jenis Perhiasan Umum (24K Murni)">
-                                    <option value="Cincin Emas 24K" {{ old('pawn_gold_description') == 'Cincin Emas 24K' ? 'selected' : '' }}>💍 Cincin Emas 24K</option>
-                                    <option value="Kalung Emas 24K" {{ old('pawn_gold_description') == 'Kalung Emas 24K' ? 'selected' : '' }}>📿 Kalung Emas 24K</option>
-                                    <option value="Gelang Emas 24K" {{ old('pawn_gold_description') == 'Gelang Emas 24K' ? 'selected' : '' }}>🪙 Gelang Emas 24K</option>
-                                    <option value="Anting Emas 24K" {{ old('pawn_gold_description') == 'Anting Emas 24K' ? 'selected' : '' }}>✨ Anting Emas 24K</option>
-                                    <option value="Logam Mulia / Emas Batangan 24K" {{ old('pawn_gold_description') == 'Logam Mulia / Emas Batangan 24K' ? 'selected' : '' }}>🧱 Logam Mulia / Emas Batangan 24K</option>
-                                    <option value="Perhiasan Emas 24K Lainnya" {{ old('pawn_gold_description') == 'Perhiasan Emas 24K Lainnya' ? 'selected' : '' }}>🏷️ Perhiasan Emas 24K Lainnya</option>
+                                <optgroup label="✨ Jenis Perhiasan Umum">
+                                    <option value="Cincin Emas" {{ old('pawn_gold_description') == 'Cincin Emas' ? 'selected' : '' }}>💍 Cincin Emas</option>
+                                    <option value="Kalung Emas" {{ old('pawn_gold_description') == 'Kalung Emas' ? 'selected' : '' }}>📿 Kalung Emas</option>
+                                    <option value="Gelang Emas" {{ old('pawn_gold_description') == 'Gelang Emas' ? 'selected' : '' }}>🪙 Gelang Emas</option>
+                                    <option value="Anting Emas" {{ old('pawn_gold_description') == 'Anting Emas' ? 'selected' : '' }}>✨ Anting Emas</option>
+                                    <option value="Logam Mulia / Emas Batangan" {{ old('pawn_gold_description') == 'Logam Mulia / Emas Batangan' ? 'selected' : '' }}>🧱 Logam Mulia / Emas Batangan</option>
+                                    <option value="Perhiasan Emas Lainnya" {{ old('pawn_gold_description') == 'Perhiasan Emas Lainnya' ? 'selected' : '' }}>🏷️ Perhiasan Emas Lainnya</option>
                                 </optgroup>
                             </select>
-                            <p class="text-xs text-slate-500 font-medium mt-1">💡 Pilih dari produk katalog toko atau kategori jenis perhiasan di atas.</p>
+                            <p class="text-xs text-slate-500 font-medium mt-1">ℹ️ Kadar, berat riil, dan harga beli akan dinilai & ditentukan langsung oleh kasir/penilai toko saat kunjungan.</p>
                             @error('pawn_gold_description')
                             <p class="text-xs text-red-600 font-bold mt-1.5 flex items-center gap-1">
                                 <span>⚠️</span> {{ $message }}
                             </p>
                             @enderror
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="input-label">Kadar Emas <span class="text-red-600">*</span></label>
-                                <select name="pawn_gold_purity" id="buyback_gold_purity" class="input-field font-bold bg-slate-100 cursor-not-allowed">
-                                    <option value="24K" selected>24 Karat (24K - Emas Murni 999)</option>
-                                </select>
-                                <p class="text-[11px] text-emerald-800 font-semibold mt-1">🔒 Toko Sinar Baru II khusus melayani emas 24K murni.</p>
-                            </div>
-                            <div>
-                                <label class="input-label">Perkiraan Berat Emas (Gram) <span class="text-red-600">*</span></label>
-                                <input type="number" step="0.001" name="pawn_weight_gram" id="buyback_weight_gram" value="{{ old('pawn_weight_gram') }}"
-                                       min="0.001" placeholder="cth: 6.700" class="input-field font-bold text-slate-900 {{ $errors->has('pawn_weight_gram') ? 'border-red-500 ring-2 ring-red-200' : '' }}" oninput="calculateBuybackEstimate(this.value)">
-                                @error('pawn_weight_gram')
-                                <p class="text-xs text-red-600 font-bold mt-1.5 flex items-center gap-1">
-                                    <span>⚠️</span> {{ $message }}
-                                </p>
-                                @enderror
-                            </div>
-                        </div>
-                        <div class="p-4 rounded-xl bg-white border border-emerald-300 shadow-sm flex justify-between items-center">
-                            <div>
-                                <p class="text-xs text-slate-500 font-bold uppercase">Estimasi Penerimaan Dana</p>
-                                <p class="text-xs text-emerald-800 font-medium mt-0.5">Berdasarkan harga beli emas hari ini (Rp {{ number_format($todayGoldPrice->buy_price_per_gram ?? 1580000, 0, ',', '.') }}/g)</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-2xl font-extrabold text-[#085C54]" id="buyback-estimate-display">Rp 0</p>
-                            </div>
-                        </div>
-                        <p class="text-xs text-slate-500 italic">* Nilai final akan ditimbang & diuji kadar secara transparan langsung di toko saat kunjungan.</p>
                     </div>
 
-                    {{-- Installment Fields (Revisi Poin 1 & 7) --}}
+                    {{-- Installment Fields (Cicilan tanpa DP) --}}
                     <div id="installment_fields" class="space-y-5 p-5 rounded-2xl bg-blue-50/70 border border-blue-200" style="display: none;">
                         <div class="flex items-center gap-2 pb-2 border-b border-blue-200">
                             <span class="text-xl">📅</span>
                             <h4 class="text-sm font-bold text-blue-950">Rencana Cicilan Emas</h4>
                         </div>
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <label class="input-label">Tenor Cicilan <span class="text-red-600">*</span></label>
-                                <select name="installment_tenure" id="installment_tenure" class="input-field cursor-pointer font-bold" onchange="updatePricesAndSimulations()">
-                                    <option value="3" {{ old('installment_tenure') == 3 ? 'selected' : '' }}>3 Bulan (Tenor Singkat)</option>
-                                    <option value="6" {{ old('installment_tenure') == 6 ? 'selected' : '' }}>6 Bulan (Tenor Menengah)</option>
-                                    <option value="12" {{ old('installment_tenure', 12) == 12 ? 'selected' : '' }}>12 Bulan (Tenor 1 Tahun)</option>
-                                </select>
-                            </div>
-                            <div>
-                                <label class="input-label">Uang Muka / DP (Rp) <span class="text-red-600">*</span></label>
-                                <input type="number" name="installment_down_payment" id="installment_down_payment" value="{{ old('installment_down_payment', 0) }}" min="0"
-                                       class="input-field font-bold text-slate-900" oninput="updatePricesAndSimulations()">
-                            </div>
+                        <div>
+                            <label class="input-label">Tenor Cicilan <span class="text-red-600">*</span></label>
+                            <select name="installment_tenure" id="installment_tenure" class="input-field cursor-pointer font-bold" onchange="updatePricesAndSimulations()">
+                                <option value="3" {{ old('installment_tenure') == 3 ? 'selected' : '' }}>3 Bulan (Tenor Singkat)</option>
+                                <option value="6" {{ old('installment_tenure') == 6 ? 'selected' : '' }}>6 Bulan (Tenor Menengah)</option>
+                                <option value="12" {{ old('installment_tenure', 12) == 12 ? 'selected' : '' }}>12 Bulan (Tenor 1 Tahun)</option>
+                            </select>
                         </div>
 
-                        {{-- Simulasi Angsuran --}}
+                        {{-- Simulasi Angsuran (Tanpa DP) --}}
                         <div class="p-4 rounded-xl bg-white border border-blue-200 shadow-sm space-y-2">
                             <div class="flex justify-between items-center text-xs">
                                 <span class="text-slate-600 font-semibold">Total Nilai Emas:</span>
                                 <span id="inst_total_display" class="font-bold text-slate-900">Rp 0</span>
-                            </div>
-                            <div class="flex justify-between items-center text-xs">
-                                <span class="text-slate-600 font-semibold">Uang Muka (DP):</span>
-                                <span id="inst_dp_display" class="font-bold text-slate-900">Rp 0</span>
                             </div>
                             <div class="flex justify-between items-center text-xs pt-1 border-t border-slate-100">
                                 <span class="text-slate-700 font-bold">Estimasi Angsuran / Bulan:</span>
@@ -269,19 +244,21 @@
                             </div>
                         </div>
 
-                        {{-- Keterangan Aturan Pengambilan Emas Cicilan (Poin 7) --}}
+                        {{-- Keterangan Aturan Pengambilan Emas Cicilan --}}
                         <div class="p-4 rounded-xl bg-amber-50 border border-amber-300 text-xs text-amber-900 leading-relaxed shadow-sm">
                             <div class="flex items-start gap-2.5">
                                 <span class="text-base shrink-0">⚠️</span>
                                 <div>
                                     <p class="font-bold">Ketentuan Pengambilan Emas untuk Pembelian Cicilan:</p>
                                     <p class="mt-1">
-                                        Perhiasan emas fisik disimpan aman di toko selama periode angsuran. <strong>Jadwal reservasi pengambilan emas fisik baru dapat dibuka saat Anda memasuki pembayaran bulan terakhir</strong> (setelah pembayaran bulan ke-1 dan ke-2 telah lunas untuk tenor 3 bulan). Tanggal kunjungan yang Anda isi di bawah ini adalah estimasi awal untuk verifikasi & akad cicilan di toko.
+                                        Perhiasan emas fisik disimpan aman di toko selama periode angsuran. <strong>Anda tidak perlu mengisi jadwal tanggal kunjungan fisik saat ini.</strong> Jadwal reservasi pengambilan emas fisik baru akan dibuka secara otomatis di Halaman Detail Cicilan Anda ketika sisa angsuran menyisakan 1 bulan lagi.
                                     </p>
                                 </div>
                             </div>
                         </div>
                     </div>
+
+
 
                     {{-- Pawn Fields --}}
                     <div id="pawn_fields" class="space-y-5 p-5 rounded-2xl bg-amber-50/70 border border-amber-200" style="display: none;">
@@ -335,8 +312,8 @@
                             </div>
                             <div>
                                 <label class="input-label">Pengajuan Pinjaman (Rp) <span class="text-red-600">*</span></label>
-                                <input type="number" name="pawn_amount_requested" value="{{ old('pawn_amount_requested') }}" min="1000" placeholder="cth: 5000000"
-                                       class="input-field font-bold {{ $errors->has('pawn_amount_requested') ? 'border-red-500 ring-2 ring-red-200' : '' }}">
+                                <input type="text" inputmode="numeric" name="pawn_amount_requested" value="{{ old('pawn_amount_requested') }}" placeholder="cth: 5.000.000"
+                                       class="input-field format-rupiah font-bold {{ $errors->has('pawn_amount_requested') ? 'border-red-500 ring-2 ring-red-200' : '' }}">
                                 @error('pawn_amount_requested')
                                 <p class="text-xs text-red-600 font-bold mt-1.5 flex items-center gap-1">
                                     <span>⚠️</span> {{ $message }}
@@ -348,23 +325,63 @@
 
                     {{-- Metode Pembayaran (Revisi Poin 2) --}}
                     <div id="payment_fields" class="space-y-4">
-                        <div>
+                        <div id="payment_method_select_wrapper">
                             <label class="input-label" id="payment_method_label">Pilih Metode Pembayaran <span class="text-red-600">*</span></label>
                             <select name="payment_method" id="payment_method" class="input-field cursor-pointer font-bold" onchange="onPaymentMethodChange(this.value)">
                                 @if(isset($paymentMethods) && $paymentMethods->count())
-                                    @foreach($paymentMethods as $pm)
-                                    <option value="{{ $pm->code }}" {{ old('payment_method') == $pm->code ? 'selected' : '' }}>
-                                        {{ $pm->name }} {{ $pm->account_number ? '('.$pm->account_number.')' : '' }}
-                                    </option>
-                                    @endforeach
+                                    @php
+                                        $transferMethods = $paymentMethods->filter(fn($m) => $m->type === 'bank_transfer');
+                                        $cashMethods = $paymentMethods->filter(fn($m) => $m->type === 'cash');
+                                        $otherMethods = $paymentMethods->filter(fn($m) => !in_array($m->type, ['cash', 'bank_transfer']));
+                                    @endphp
+
+                                    @if($transferMethods->count())
+                                    <optgroup label="💳 Transfer Bank (Non-Tunai)">
+                                        @foreach($transferMethods as $pm)
+                                        <option value="{{ $pm->code }}" {{ old('payment_method', 'bca') == $pm->code ? 'selected' : '' }}>
+                                            🏦 {{ $pm->name }} (No. Rek: {{ $pm->account_number }})
+                                        </option>
+                                        @endforeach
+                                    </optgroup>
+                                    @endif
+
+                                    @if($otherMethods->count())
+                                    <optgroup label="📲 E-Wallet / QRIS / EDC Kasir">
+                                        @foreach($otherMethods as $pm)
+                                        <option value="{{ $pm->code }}" {{ old('payment_method') == $pm->code ? 'selected' : '' }}>
+                                            📲 {{ $pm->name }} {{ $pm->account_number ? '('.$pm->account_number.')' : '' }}
+                                        </option>
+                                        @endforeach
+                                    </optgroup>
+                                    @endif
+
+                                    @if($cashMethods->count())
+                                    <optgroup label="💵 Pembayaran Tunai (Cash di Toko)">
+                                        @foreach($cashMethods as $pm)
+                                        <option value="{{ $pm->code }}" {{ old('payment_method') == $pm->code ? 'selected' : '' }}>
+                                            💵 {{ $pm->name }}
+                                        </option>
+                                        @endforeach
+                                    </optgroup>
+                                    @endif
                                 @else
-                                    <option value="cash" {{ old('payment_method') == 'cash' ? 'selected' : '' }}>Tunai (Cash di Toko)</option>
-                                    <option value="transfer" {{ old('payment_method') == 'transfer' ? 'selected' : '' }}>Transfer Bank</option>
-                                    <option value="debit" {{ old('payment_method') == 'debit' ? 'selected' : '' }}>Kartu Debit</option>
-                                    <option value="credit" {{ old('payment_method') == 'credit' ? 'selected' : '' }}>Kartu Kredit</option>
+                                    <optgroup label="💳 Transfer Bank">
+                                        <option value="bca" {{ old('payment_method', 'bca') == 'bca' ? 'selected' : '' }}>Transfer Bank BCA (8820 9182 34)</option>
+                                        <option value="mandiri" {{ old('payment_method') == 'mandiri' ? 'selected' : '' }}>Transfer Bank Mandiri (113 00 1829 4432)</option>
+                                        <option value="bri" {{ old('payment_method') == 'bri' ? 'selected' : '' }}>Transfer Bank BRI (0089 01 028472 50 1)</option>
+                                    </optgroup>
+                                    <optgroup label="💵 Pembayaran Tunai">
+                                        <option value="cash" {{ old('payment_method') == 'cash' ? 'selected' : '' }}>Tunai (Cash di Toko)</option>
+                                    </optgroup>
+                                    <optgroup label="💳 Transfer Bank">
+                                        <option value="bca" {{ old('payment_method') == 'bca' ? 'selected' : '' }}>Transfer Bank BCA (8820 9182 34)</option>
+                                        <option value="mandiri" {{ old('payment_method') == 'mandiri' ? 'selected' : '' }}>Transfer Bank Mandiri (113 00 1829 4432)</option>
+                                        <option value="bri" {{ old('payment_method') == 'bri' ? 'selected' : '' }}>Transfer Bank BRI (0089 01 028472 50 1)</option>
+                                    </optgroup>
                                 @endif
                             </select>
                         </div>
+
 
                         {{-- Card Rincian Rekening Pembayaran Toko (Poin 2) --}}
                         <div id="payment_method_info" class="p-4 rounded-2xl bg-white border border-[#085C54]/30 shadow-sm transition-all" style="display: none;">
@@ -387,18 +404,18 @@
                         </div>
                     </div>
 
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div id="schedule_fields" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         {{-- Tanggal Kunjungan --}}
                         <div>
                             <label class="input-label">Rencana Tanggal Kunjungan *</label>
-                            <input type="date" name="preferred_date" min="{{ date('Y-m-d') }}" value="{{ old('preferred_date', date('Y-m-d', strtotime('+1 day'))) }}" required
+                            <input type="date" name="preferred_date" id="preferred_date" min="{{ date('Y-m-d') }}" value="{{ old('preferred_date', date('Y-m-d', strtotime('+1 day'))) }}" required
                                    class="input-field font-bold">
                         </div>
 
                         {{-- Jam Kunjungan --}}
                         <div>
                             <label class="input-label">Perkiraan Jam (08:00 - 17:00) *</label>
-                            <input type="time" name="preferred_time" value="{{ old('preferred_time', '10:00') }}" required
+                            <input type="time" name="preferred_time" id="preferred_time" value="{{ old('preferred_time', '10:00') }}" required
                                    class="input-field font-bold">
                         </div>
                     </div>
@@ -537,12 +554,17 @@
             if (!pm || pm.type === 'cash') {
                 if (pm && pm.type === 'cash') {
                     infoBox.style.display = 'block';
+                    const resType = document.getElementById('reservation_type')?.value;
+                    const isBuyback = resType === 'buyback';
+
                     document.getElementById('pm_icon').textContent = '💵';
-                    document.getElementById('pm_bank_name').textContent = 'Tunai (Cash)';
-                    document.getElementById('pm_account_number').textContent = 'Bayar Langsung di Kasir Toko';
+                    document.getElementById('pm_bank_name').textContent = isBuyback ? 'Penyerahan Tunai (Cash)' : 'Tunai (Cash di Toko)';
+                    document.getElementById('pm_account_number').textContent = isBuyback ? 'Penyerahan Tunai oleh Kasir Toko' : 'Bayar Langsung di Kasir Toko';
                     document.getElementById('copy_rekening_btn').style.display = 'none';
                     document.getElementById('pm_account_name').textContent = 'Toko Emas Sinar Baru II — Teluk Lubuk';
-                    document.getElementById('pm_instructions').textContent = pm.instructions || 'Selesaikan pembayaran tunai langsung di kasir toko saat verifikasi fisik barang.';
+                    document.getElementById('pm_instructions').textContent = isBuyback
+                        ? 'Dana buyback akan diserahkan secara TUNAI (Cash) oleh admin/kasir toko langsung kepada Anda saat penimbangan dan pengujian kadar emas di toko.'
+                        : (pm.instructions || 'Selesaikan pembayaran tunai langsung di kasir toko saat verifikasi fisik barang.');
                 } else {
                     infoBox.style.display = 'none';
                 }

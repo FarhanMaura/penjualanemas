@@ -86,11 +86,27 @@ class TransactionController extends Controller
             if ($validated['type'] === 'pawn') {
                 $subtotal = $validated['pawn_loan_amount'];
                 $total = $validated['pawn_loan_amount'];
+            } elseif ($validated['type'] === 'buyback') {
+                $subtotal = 0;
+                $adminFee = 0;
+                $discount = 0;
+                $total    = 0;
             }
 
             $status = 'completed';
             if ($validated['type'] === 'pawn' || $validated['type'] === 'installment') {
                 $status = 'in_progress';
+            }
+
+            // Validasi stok produk sebelum memproses transaksi
+            if (in_array($validated['type'], ['purchase', 'installment']) && isset($validated['items'])) {
+                foreach ($validated['items'] as $item) {
+                    $product = \App\Models\Product::find($item['product_id']);
+                    if ($product && $product->stock < $item['quantity']) {
+                        DB::rollBack();
+                        return back()->withInput()->with('error', "Stok produk '{$product->name}' tidak mencukupi. (Stok tersedia: {$product->stock} pcs).");
+                    }
+                }
             }
 
             $transaction = Transaction::create([
@@ -110,8 +126,35 @@ class TransactionController extends Controller
                 'notes'            => $validated['notes'] ?? null,
             ]);
 
+            // Jika transaksi berasal dari reservasi, update status reservasi ke completed/confirmed
+            if (!empty($validated['reservation_id'])) {
+                \App\Models\Reservation::where('id', $validated['reservation_id'])
+                    ->update([
+                        'status'         => 'completed',
+                        'transaction_id' => $transaction->id,
+                    ]);
+            }
+
             // Simpan item transaksi & update stok
-            if ($validated['type'] !== 'pawn' && isset($validated['items'])) {
+            if ($validated['type'] === 'buyback') {
+                $desc = 'Buyback Emas (Transaksi Langsung di Toko)';
+                if (!empty($validated['reservation_id'])) {
+                    $res = \App\Models\Reservation::find($validated['reservation_id']);
+                    if ($res && $res->pawn_gold_description) {
+                        $desc = 'Buyback: ' . $res->pawn_gold_description;
+                    }
+                }
+                TransactionItem::create([
+                    'transaction_id' => $transaction->id,
+                    'product_id'     => null,
+                    'product_name'   => $desc,
+                    'gold_purity'    => null,
+                    'weight_gram'    => 0,
+                    'quantity'       => 1,
+                    'price_per_unit' => 0,
+                    'subtotal'       => 0,
+                ]);
+            } elseif ($validated['type'] !== 'pawn' && isset($validated['items'])) {
                 foreach ($validated['items'] as $item) {
                     $product = \App\Models\Product::find($item['product_id']);
 
@@ -126,38 +169,33 @@ class TransactionController extends Controller
                         'subtotal'       => $item['unit_price'] * $item['quantity'],
                     ]);
 
-                    // Update stok produk
+                    // Update stok produk secara konsisten
                     if ($product) {
-                        if ($validated['type'] === 'buyback') {
-                            $product->increment('stock', $item['quantity']);
-                        } else {
-                            $newStock = max(0, $product->stock - $item['quantity']);
-                            $product->update([
-                                'stock'        => $newStock,
-                                'is_available' => $newStock > 0,
-                                'is_reservable'=> $newStock > 0,
-                            ]);
-                        }
+                        $product->reduceStock($item['quantity']);
                     }
                 }
             }
 
             // Create Installment Plan
             if ($validated['type'] === 'installment') {
+                $tenureMonths = (int) $validated['installment_tenure'];
+                $downPayment  = 0;
+                $totalInstallment = $total;
+                $monthlyAmount    = round($totalInstallment / $tenureMonths);
+
                 $installmentPlan = \App\Models\InstallmentPlan::create([
                     'transaction_id'    => $transaction->id,
-                    'down_payment'      => $validated['installment_down_payment'],
-                    'total_installment' => $total - $validated['installment_down_payment'],
-                    'tenure_months'     => $validated['installment_tenure'],
-                    'monthly_amount'    => ($total - $validated['installment_down_payment']) / $validated['installment_tenure'],
+                    'down_payment'      => 0,
+                    'total_installment' => $totalInstallment,
+                    'tenure_months'     => $tenureMonths,
+                    'monthly_amount'    => $monthlyAmount,
                     'start_date'        => $validated['payment_date'],
-                    'end_date'          => \Carbon\Carbon::parse($validated['payment_date'])->addMonths($validated['installment_tenure']),
+                    'end_date'          => \Carbon\Carbon::parse($validated['payment_date'])->addMonths($tenureMonths),
                     'status'            => 'active',
                 ]);
 
                 // Buat installment_payments schedule
-                $monthlyAmount = ($total - $validated['installment_down_payment']) / $validated['installment_tenure'];
-                for ($m = 1; $m <= $validated['installment_tenure']; $m++) {
+                for ($m = 1; $m <= $tenureMonths; $m++) {
                     \App\Models\InstallmentPayment::create([
                         'installment_plan_id' => $installmentPlan->id,
                         'installment_number'  => $m,
@@ -168,21 +206,60 @@ class TransactionController extends Controller
                 }
             }
 
-            // Create Pawn Record
+            // Create Pawn Record & Installment Plan for Pawn
             if ($validated['type'] === 'pawn') {
                 $pawnCode = 'PWN-' . date('Ymd') . '-' . strtoupper(Str::random(4));
-                \App\Models\Pawn::create([
+                $tenureMonths = max(1, (int) ($validated['pawn_tenure'] ?? 4));
+                $loanAmount = (float) $validated['pawn_loan_amount'];
+                $monthlyAmount = round($loanAmount / $tenureMonths);
+
+                $pawn = \App\Models\Pawn::create([
                     'transaction_id'   => $transaction->id,
                     'pawn_code'        => $pawnCode,
                     'gold_description' => $validated['pawn_gold_description'],
                     'gold_purity'      => $validated['pawn_gold_purity'],
                     'weight_gram'      => $validated['pawn_weight_gram'],
                     'appraised_value'  => $validated['pawn_appraised_value'],
-                    'loan_amount'      => $validated['pawn_loan_amount'],
-                    'interest_rate'    => $validated['pawn_interest_rate'],
+                    'loan_amount'      => $loanAmount,
+                    'interest_rate'    => (float) ($validated['pawn_interest_rate'] ?? 0),
                     'start_date'       => $validated['payment_date'],
                     'due_date'         => $validated['pawn_due_date'],
                     'status'           => 'active',
+                ]);
+
+                // Create Installment Plan & Payments for Pawn
+                $installmentPlan = \App\Models\InstallmentPlan::create([
+                    'transaction_id'    => $transaction->id,
+                    'down_payment'      => 0,
+                    'total_installment' => $loanAmount,
+                    'tenure_months'     => $tenureMonths,
+                    'monthly_amount'    => $monthlyAmount,
+                    'start_date'        => $validated['payment_date'],
+                    'end_date'          => \Carbon\Carbon::parse($validated['payment_date'])->addMonths($tenureMonths),
+                    'status'            => 'active',
+                    'notes'             => "Skema Cicilan Gadai {$pawnCode}",
+                ]);
+
+                for ($m = 1; $m <= $tenureMonths; $m++) {
+                    \App\Models\InstallmentPayment::create([
+                        'installment_plan_id' => $installmentPlan->id,
+                        'installment_number'  => $m,
+                        'due_date'            => \Carbon\Carbon::parse($validated['payment_date'])->addMonths($m),
+                        'amount_due'          => $monthlyAmount,
+                        'status'              => 'pending',
+                    ]);
+                }
+
+                // TransactionItem snapshot for invoice/receipt
+                \App\Models\TransactionItem::create([
+                    'transaction_id' => $transaction->id,
+                    'product_id'     => null,
+                    'product_name'   => 'Gadai: ' . $validated['pawn_gold_description'],
+                    'gold_purity'    => $validated['pawn_gold_purity'],
+                    'weight_gram'    => (float) $validated['pawn_weight_gram'],
+                    'quantity'       => 1,
+                    'price_per_unit' => $loanAmount,
+                    'subtotal'       => $loanAmount,
                 ]);
             }
 
@@ -202,6 +279,33 @@ class TransactionController extends Controller
 
             // Generate digital certificate for completed purchase/installment transactions
             $this->certificateService->generateForTransaction($transaction);
+
+            // Buat notifikasi otomatis
+            $typeLabel = match($transaction->type) {
+                'purchase'    => 'Pembelian Emas',
+                'buyback'     => 'Jual Emas (Buyback)',
+                'installment' => 'Cicilan Emas',
+                'pawn'        => 'Gadai Emas',
+                default       => 'Transaksi',
+            };
+
+            \App\Models\Notification::create([
+                'user_id' => $transaction->user_id,
+                'type'    => 'transaction.created',
+                'title'   => "Transaksi {$typeLabel} ({$transaction->transaction_code})",
+                'message' => "Transaksi {$typeLabel} Anda senilai Rp " . number_format($transaction->total_amount, 0, ',', '.') . " telah dicatat.",
+                'data'    => ['transaction_id' => $transaction->id, 'type' => $transaction->type],
+            ]);
+
+            foreach (User::where('role', 'admin')->get() as $adm) {
+                \App\Models\Notification::create([
+                    'user_id' => $adm->id,
+                    'type'    => 'transaction.created',
+                    'title'   => "Transaksi {$typeLabel} Baru",
+                    'message' => "Transaksi {$transaction->transaction_code} sebesar Rp " . number_format($transaction->total_amount, 0, ',', '.') . " telah berhasil dibuat.",
+                    'data'    => ['transaction_id' => $transaction->id],
+                ]);
+            }
 
             DB::commit();
 

@@ -132,11 +132,9 @@
                     </div>
 
                     {{-- Installment Extra Fields --}}
-                    <div id="installment-extra-fields" class="col-span-1 sm:col-span-2 grid grid-cols-2 gap-4" style="display: none;">
-                        <div class="col-span-2">
-                            <hr class="border-slate-200 my-2">
-                            <h4 class="text-sm font-bold text-blue-900">📅 Detail Rencana Cicilan</h4>
-                        </div>
+                    <div id="installment-extra-fields" class="col-span-1 sm:col-span-2 space-y-2" style="display: none;">
+                        <hr class="border-slate-200 my-2">
+                        <h4 class="text-sm font-bold text-blue-900">📅 Detail Rencana Cicilan</h4>
                         <div>
                             <label class="input-label">Tenor (Bulan) <span class="text-red-600">*</span></label>
                             <select name="installment_tenure" id="installment_tenure" class="input-field cursor-pointer">
@@ -144,10 +142,6 @@
                                 <option value="6" {{ old('installment_tenure', $selectedReservation?->installment_tenure) == 6 ? 'selected' : '' }}>6 Bulan</option>
                                 <option value="12" {{ old('installment_tenure', $selectedReservation?->installment_tenure ?? 12) == 12 ? 'selected' : '' }}>12 Bulan</option>
                             </select>
-                        </div>
-                        <div>
-                            <label class="input-label">Uang Muka / Down Payment (Rp) <span class="text-red-600">*</span></label>
-                            <input type="number" name="installment_down_payment" id="installment_down_payment" value="{{ old('installment_down_payment', $selectedReservation?->installment_down_payment ?? 0) }}" class="input-field" min="0">
                         </div>
                     </div>
 
@@ -170,20 +164,35 @@
                             <input type="number" step="0.01" name="pawn_weight_gram" value="{{ old('pawn_weight_gram', $selectedReservation?->pawn_weight_gram) }}" class="input-field" min="0.01">
                         </div>
                         <div>
-                            <label class="input-label">Nilai Taksiran (Rp)</label>
-                            <input type="number" name="pawn_appraised_value" value="{{ old('pawn_appraised_value') }}" class="input-field" min="0">
+                            <label class="input-label">Nilai Taksiran (Rp) <span class="text-red-600">*</span></label>
+                            <input type="text" inputmode="numeric" name="pawn_appraised_value" id="pawn_appraised_value" value="{{ old('pawn_appraised_value', $selectedReservation?->pawn_amount_requested) }}" class="input-field format-rupiah">
                         </div>
                         <div>
-                            <label class="input-label">Uang Pinjaman (Rp)</label>
-                            <input type="number" name="pawn_loan_amount" value="{{ old('pawn_loan_amount', $selectedReservation?->pawn_amount_requested) }}" class="input-field" min="0">
+                            <label class="input-label">Jumlah Pinjaman (Rp) <span class="text-red-600">*</span></label>
+                            <input type="text" inputmode="numeric" name="pawn_loan_amount" id="pawn_loan_amount" value="{{ old('pawn_loan_amount', $selectedReservation?->pawn_amount_requested) }}" class="input-field format-rupiah">
+                        </div>
+                        <div>
+                            <label class="input-label">Durasi / Tempo Gadai <span class="text-red-600">*</span></label>
+                            <select name="pawn_tenure" id="pawn_tenure" class="input-field cursor-pointer font-bold text-amber-950 bg-amber-50/60 border-amber-300">
+                                <option value="1" {{ old('pawn_tenure') == 1 ? 'selected' : '' }}>1 Bulan</option>
+                                <option value="2" {{ old('pawn_tenure') == 2 ? 'selected' : '' }}>2 Bulan</option>
+                                <option value="3" {{ old('pawn_tenure') == 3 ? 'selected' : '' }}>3 Bulan</option>
+                                <option value="4" {{ old('pawn_tenure', 4) == 4 ? 'selected' : '' }}>4 Bulan (Standar)</option>
+                                <option value="6" {{ old('pawn_tenure') == 6 ? 'selected' : '' }}>6 Bulan</option>
+                                <option value="12" {{ old('pawn_tenure') == 12 ? 'selected' : '' }}>12 Bulan</option>
+                            </select>
                         </div>
                         <div>
                             <label class="input-label">Bunga Pinjaman (%)</label>
-                            <input type="number" step="0.1" name="pawn_interest_rate" value="{{ old('pawn_interest_rate', 1.5) }}" class="input-field" min="0">
+                            <input type="number" step="0.1" name="pawn_interest_rate" id="pawn_interest_rate" value="{{ old('pawn_interest_rate', 0) }}" class="input-field" min="0">
                         </div>
                         <div>
-                            <label class="input-label">Jatuh Tempo Gadai</label>
-                            <input type="date" name="pawn_due_date" value="{{ old('pawn_due_date', now()->addMonths(4)->toDateString()) }}" class="input-field">
+                            <label class="input-label">Jatuh Tempo Gadai <span class="text-xs text-slate-500 font-normal">(Otomatis)</span></label>
+                            <input type="date" name="pawn_due_date" id="pawn_due_date" value="{{ old('pawn_due_date', now()->addMonths(4)->toDateString()) }}" class="input-field font-bold bg-slate-50 border-slate-300">
+                        </div>
+                        <div class="col-span-2 sm:col-span-3 text-xs text-amber-950 bg-amber-50/80 p-3 rounded-xl border border-amber-200 font-bold flex items-center justify-between shadow-sm" id="pawn_installment_calc">
+                            <span>📅 Skema Angsuran Gadai:</span>
+                            <span id="pawn_monthly_display" class="text-emerald-800 text-sm font-black">Rp 0 / bulan</span>
                         </div>
                     </div>
                 </div>
@@ -220,7 +229,7 @@
                         </div>
                         <div class="col-span-4">
                             <label class="input-label">Harga Satuan (Rp) <span class="text-xs text-slate-500 font-normal">(Otomatis Produk)</span> <span class="text-red-600">*</span></label>
-                            <input type="number" name="items[0][unit_price]" value="{{ $initialUnitPrice }}"
+                            <input type="number" name="items[0][unit_price]" value="{{ round($initialUnitPrice) }}"
                                    class="input-field item-price font-extrabold text-slate-800 bg-slate-100 cursor-not-allowed border-slate-300" min="0" placeholder="0" readonly required tabindex="-1">
                         </div>
                         <div class="col-span-1 flex items-end pb-0.5">
@@ -231,14 +240,14 @@
             </div>
 
             {{-- Kalkulasi --}}
-            <div class="glass rounded-2xl p-6 shadow-md bg-white border border-[#e8e3d5]">
+            <div class="glass rounded-2xl p-6 shadow-md bg-white border border-[#e8e3d5]" id="kalkulasi-section">
                 <h3 class="font-bold text-slate-900 mb-4 flex items-center gap-2 text-base">
                     <span>🧮</span> Ringkasan Kalkulasi
                 </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div>
                         <label class="input-label">Biaya Admin (Rp)</label>
-                        <input type="number" name="admin_fee" value="{{ old('admin_fee',0) }}" class="input-field" min="0">
+                        <input type="text" inputmode="numeric" name="admin_fee" value="{{ old('admin_fee',0) }}" class="input-field format-rupiah">
                     </div>
                     <div>
                         <label class="input-label">Pilihan Diskon Otomatis <span class="text-xs font-normal text-emerald-700">(Persentase)</span></label>
@@ -292,9 +301,9 @@
         'product_id'     => $r->product_id,
         'quantity'       => $r->quantity,
         'agreed_price'   => $r->agreed_price ?? $r->priceNegotiation?->agreed_price,
-        'unit_price'     => ($r->agreed_price ?? $r->priceNegotiation?->agreed_price)
+        'unit_price'     => round(($r->agreed_price ?? $r->priceNegotiation?->agreed_price)
                               ? (($r->agreed_price ?? $r->priceNegotiation?->agreed_price) / max(1, $r->quantity))
-                              : ($r->product?->base_price ?? 0),
+                              : ($r->product?->base_price ?? 0)),
         'notes'          => $r->notes,
         'installment_tenure'       => $r->installment_tenure,
         'installment_down_payment' => $r->installment_down_payment,

@@ -49,9 +49,6 @@
                         <select name="type" required class="input-field font-bold cursor-pointer">
                             <option value="bank_transfer" {{ old('type') == 'bank_transfer' ? 'selected' : '' }}>🏦 Transfer Bank</option>
                             <option value="cash" {{ old('type') == 'cash' ? 'selected' : '' }}>💵 Tunai di Toko (Cash)</option>
-                            <option value="qris" {{ old('type') == 'qris' ? 'selected' : '' }}>📱 QRIS / E-Wallet</option>
-                            <option value="debit" {{ old('type') == 'debit' ? 'selected' : '' }}>💳 Kartu Debit</option>
-                            <option value="credit" {{ old('type') == 'credit' ? 'selected' : '' }}>💳 Kartu Kredit</option>
                         </select>
                     </div>
                     <div>

@@ -16,7 +16,8 @@ class InstallmentController extends Controller
 
     public function index(Request $request)
     {
-        $query = InstallmentPlan::with(['transaction.user', 'transaction.items.product', 'payments'])->latest();
+        $query = InstallmentPlan::whereHas('transaction', fn($q) => $q->where('type', 'installment'))
+            ->with(['transaction.user', 'transaction.items.product', 'payments'])->latest();
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -25,10 +26,10 @@ class InstallmentController extends Controller
         $installments = $query->paginate(20)->withQueryString();
 
         $stats = [
-            'active'    => InstallmentPlan::where('status', 'active')->count(),
-            'completed' => InstallmentPlan::where('status', 'completed')->count(),
-            'overdue'   => InstallmentPlan::where('status', 'overdue')->count(),
-            'revenue'   => InstallmentPayment::where('status', 'paid')->sum('amount_paid'),
+            'active'    => InstallmentPlan::whereHas('transaction', fn($q) => $q->where('type', 'installment'))->where('status', 'active')->count(),
+            'completed' => InstallmentPlan::whereHas('transaction', fn($q) => $q->where('type', 'installment'))->where('status', 'completed')->count(),
+            'overdue'   => InstallmentPlan::whereHas('transaction', fn($q) => $q->where('type', 'installment'))->where('status', 'overdue')->count(),
+            'revenue'   => InstallmentPayment::whereHas('installmentPlan.transaction', fn($q) => $q->where('type', 'installment'))->where('status', 'paid')->sum('amount_paid'),
         ];
 
         return view('admin.installments.index', compact('installments', 'stats'));
@@ -263,7 +264,26 @@ class InstallmentController extends Controller
 
                 // Issue certificate
                 $this->certificateService->generateForTransaction($transaction);
+
+                // Notifikasi cicilan lunas
+                \App\Models\Notification::create([
+                    'user_id' => $transaction->user_id,
+                    'type'    => 'installment.completed',
+                    'title'   => "🎉 Cicilan Emas LUNAS!",
+                    'message' => "Selamat! Cicilan emas Anda untuk transaksi {$transaction->transaction_code} telah LUNAS sepenuhnya.",
+                    'data'    => ['transaction_id' => $transaction->id],
+                ]);
             }
+
+            // Notifikasi pembayaran angsuran
+            $transaction = $installmentPlan->transaction;
+            \App\Models\Notification::create([
+                'user_id' => $transaction->user_id,
+                'type'    => 'installment.paid',
+                'title'   => "Pembayaran Angsuran Bulan ke-{$installmentPayment->installment_number} Lunas",
+                'message' => "Pembayaran angsuran ke-{$installmentPayment->installment_number} sebesar Rp " . number_format($request->amount_paid, 0, ',', '.') . " telah diterima.",
+                'data'    => ['installment_plan_id' => $installmentPlan->id, 'payment_id' => $installmentPayment->id],
+            ]);
         });
 
         return back()->with('success', 'Pembayaran angsuran ke-' . $installmentPayment->installment_number . ' berhasil dicatat.');

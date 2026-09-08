@@ -49,7 +49,7 @@
                 <span class="text-slate-600 font-bold">Tipe:</span>
                 <select name="type" onchange="this.form.submit()" class="bg-transparent text-slate-900 font-bold text-sm focus:outline-none cursor-pointer">
                     <option value="" class="text-slate-900">Semua</option>
-                    @foreach(['purchase'=>'Pembelian (Tunai)','buyback'=>'Jual Kembali (Buyback)','installment'=>'Cicilan Emas','pawn'=>'Gadai Emas'] as $val => $lbl)
+                    @foreach(['purchase'=>'Pembelian (Beli Lunas)','buyback'=>'Jual Kembali (Buyback)','installment'=>'Cicilan Emas','pawn'=>'Gadai Emas'] as $val => $lbl)
                     <option value="{{ $val }}" {{ request('type')==$val ? 'selected':'' }} class="text-slate-900">{{ $lbl }}</option>
                     @endforeach
                 </select>
@@ -80,13 +80,14 @@
             <table class="w-full text-sm text-left text-slate-800" style="min-width:750px;">
                 <thead>
                     <tr class="text-xs text-slate-700 uppercase tracking-wider font-bold bg-[#F4EDD9]/40 border-b border-[#e8e3d5]">
-                        <th class="py-3 px-4">Pelanggan</th>
-                        <th class="py-3 px-4">Tipe</th>
-                        <th class="py-3 px-4">Produk / Keterangan</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Kode</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Tgl Kunjungan</th>
-                        <th class="py-3 px-4 whitespace-nowrap">Dibuat</th>
-                        <th class="py-3 px-4 text-center whitespace-nowrap">Status</th>
+                        <th class="py-3 px-4 text-left">Pelanggan</th>
+                        <th class="py-3 px-4 text-left">Tipe</th>
+                        <th class="py-3 px-4 text-left">Detail Emas</th>
+                        <th class="py-3 px-4 text-left">Metode Bayar</th>
+                        <th class="py-3 px-4 text-left">Kode</th>
+                        <th class="py-3 px-4 text-left whitespace-nowrap">Rencana Kunjungan</th>
+                        <th class="py-3 px-4 text-left whitespace-nowrap">Dibuat</th>
+                        <th class="py-3 px-4 text-center">Status</th>
                         <th class="py-3 px-4 text-center whitespace-nowrap">Aksi</th>
                     </tr>
                 </thead>
@@ -113,22 +114,41 @@
                         </td>
                         <td class="py-3.5 px-4 font-semibold text-slate-800">
                             {{
-                                match($r->type) {
-                                    'purchase'    => 'Pembelian',
-                                    'buyback'     => 'Jual Emas',
-                                    'installment' => 'Cicilan',
-                                    'pawn'        => 'Gadai',
-                                    default       => ucfirst($r->type ?? 'Pembelian')
+                                match(true) {
+                                    str_starts_with($r->reservation_code, 'RSV-PKP-') => 'Pengambilan Fisik',
+                                    $r->type === 'purchase'    => 'Pembelian',
+                                    $r->type === 'buyback'     => 'Jual Emas',
+                                    $r->type === 'installment' => 'Cicilan',
+                                    $r->type === 'pawn'        => 'Gadai',
+                                    default                    => ucfirst($r->type ?? 'Pembelian')
                                 }
                             }}
                         </td>
                         <td class="py-3.5 px-4 font-bold text-[#085C54]">
-                            @if($r->type === 'buyback')
+                            @if(str_starts_with($r->reservation_code, 'RSV-PKP-'))
+                                📦 {{ $r->product->name ?? 'Pengambilan Emas' }} (Serah Terima Emas Fisik)
+                            @elseif($r->type === 'buyback')
                                 💰 {{ $r->pawn_gold_description ?? 'Jual Emas' }} ({{ $r->pawn_gold_purity }}, {{ number_format($r->pawn_weight_gram, 3) }}g)
                             @elseif($r->type === 'pawn')
-                                📦 {{ $r->pawn_gold_description ?? 'Gadai Emas' }} ({{ $r->pawn_gold_purity }}, {{ number_format($r->pawn_weight_gram, 2) }}g)
+                                🏦 {{ $r->pawn_gold_description ?? 'Gadai Emas' }} ({{ $r->pawn_gold_purity }}, {{ number_format($r->pawn_weight_gram, 2) }}g)
                             @else
                                 💍 {{ $r->product->name ?? 'Produk Dihapus' }} (Qty: {{ $r->quantity }})
+                            @endif
+                        </td>
+                        <td class="py-3.5 px-4 text-xs font-semibold">
+                            @if(str_starts_with($r->reservation_code, 'RSV-PKP-'))
+                                <span class="font-bold text-emerald-800 block">✅ Cicilan Lunas</span>
+                                <span class="text-[11px] text-emerald-700 font-semibold block">Serah Terima Emas</span>
+                            @elseif($r->payment_method)
+                                @php $pm = $r->paymentMethodDetail ?? $r->payment_method_model; @endphp
+                                <span class="font-bold text-slate-900 block">{{ $pm->name ?? strtoupper($r->payment_method) }}</span>
+                                @if($pm && $pm->account_number)
+                                    <span class="font-mono text-[11px] text-[#085C54] font-extrabold block">No. Rek: {{ $pm->account_number }}</span>
+                                @elseif($pm && $pm->isCash())
+                                    <span class="text-[11px] text-emerald-800 font-bold block">💵 Tunai Kasir</span>
+                                @endif
+                            @else
+                                <span class="text-slate-400 font-normal">-</span>
                             @endif
                         </td>
                         <td class="py-3.5 px-4 font-mono text-xs font-bold text-slate-600 whitespace-nowrap">{{ $r->reservation_code }}</td>
@@ -141,7 +161,16 @@
                             <span class="px-2.5 py-0.5 rounded-full text-xs font-bold border {{ $statusStyle }}">{{ $statusLabel }}</span>
                         </td>
                         <td class="py-3.5 px-4 text-center whitespace-nowrap">
-                            <a href="{{ route('admin.reservations.show', $r) }}" class="btn-edit text-xs">Detail & Aksi</a>
+                            <div class="flex items-center justify-center gap-1.5">
+                                <a href="{{ route('admin.reservations.show', $r) }}" class="btn-edit text-xs">Detail & Aksi</a>
+                                <form method="POST" action="{{ route('admin.reservations.destroy', $r) }}" onsubmit="return confirm('Hapus reservasi #{{ $r->reservation_code }}?');" class="inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded-lg transition border border-transparent hover:border-red-200" title="Hapus Reservasi">
+                                        🗑️
+                                    </button>
+                                </form>
+                            </div>
                         </td>
                     </tr>
                     @endforeach

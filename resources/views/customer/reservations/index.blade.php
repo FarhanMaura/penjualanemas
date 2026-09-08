@@ -63,7 +63,9 @@
                     </span>
                 </div>
                 <h3 class="font-bold text-slate-900 text-lg leading-tight mt-3">
-                    @if($r->type === 'buyback')
+                    @if(str_starts_with($r->reservation_code, 'RSV-PKP-'))
+                        📦 {{ $r->product->name ?? 'Pengambilan Emas Fisik' }}
+                    @elseif($r->type === 'buyback')
                         💰 {{ $r->pawn_gold_description ?? 'Jual Emas ke Toko' }}
                     @elseif($r->type === 'pawn')
                         🏦 {{ $r->pawn_gold_description ?? 'Gadai Emas' }}
@@ -75,12 +77,14 @@
                     Tipe: 
                     <span class="text-[#085C54] font-bold">
                         {{
-                            match($r->type) {
-                                'purchase'    => 'Pembelian (Tunai)',
-                                'buyback'     => 'Jual Emas (Buyback)',
-                                'installment' => 'Pembelian (Cicilan)',
-                                'pawn'        => 'Gadai Emas (Pinjaman)',
-                                default       => ucfirst($r->type ?? 'Pembelian')
+                            match(true) {
+                                str_starts_with($r->reservation_code, 'RSV-PKP-') => '📦 Pengambilan Emas Fisik (Cicilan Lunas)',
+                                $r->type === 'installment' && $r->transaction_id  => 'Pengajuan Cicilan (Sudah Aktif di Cicilan Saya)',
+                                $r->type === 'purchase'    => 'Pembelian Emas (Beli Lunas)',
+                                $r->type === 'buyback'     => 'Jual Emas (Buyback)',
+                                $r->type === 'installment' => 'Pembelian (Cicilan)',
+                                $r->type === 'pawn'        => 'Gadai Emas (Pinjaman)',
+                                default                    => ucfirst($r->type ?? 'Pembelian')
                             }
                         }}
                     </span>
@@ -105,29 +109,58 @@
                     <span class="text-slate-900 font-extrabold">Rp {{ number_format($r->product->base_price * $r->quantity, 0, ',', '.') }}</span>
                     @endif
                 </div>
-                @if($r->payment_method)
-                <div class="flex justify-between text-sm">
-                    <span class="text-slate-600 font-semibold">Metode Bayar</span>
-                    <span class="text-slate-900 font-bold uppercase">{{ $r->payment_method }}</span>
+
+                @if(str_starts_with($r->reservation_code, 'RSV-PKP-'))
+                <div class="pt-2 border-t border-slate-100 space-y-1.5">
+                    <div class="flex justify-between items-center text-xs sm:text-sm">
+                        <span class="text-slate-600 font-semibold">Metode Pembayaran:</span>
+                        <span class="text-emerald-800 font-extrabold bg-emerald-100 px-2.5 py-0.5 rounded-full border border-emerald-300">
+                            ✅ Cicilan Lunas
+                        </span>
+                    </div>
+                    <div class="px-2.5 py-1.5 rounded-lg bg-emerald-50 text-emerald-950 border border-emerald-200 text-xs font-semibold flex items-center gap-1.5">
+                        📦 <span>Emas Fisik Siap Diambil di Toko Tanpa Biaya Tambahan</span>
+                    </div>
+                </div>
+                @elseif($r->payment_method)
+                @php $pm = $r->paymentMethodDetail ?? $r->payment_method_model; @endphp
+                <div class="pt-2 border-t border-slate-100 space-y-1.5">
+                    <div class="flex justify-between items-center text-xs sm:text-sm">
+                        <span class="text-slate-600 font-semibold">Metode Bayar:</span>
+                        <span class="text-slate-900 font-bold">{{ $pm->name ?? strtoupper($r->payment_method) }}</span>
+                    </div>
+                    @if($pm && $pm->account_number)
+                    <div class="p-2.5 rounded-xl bg-amber-50/80 border border-amber-200 text-xs space-y-0.5">
+                        <div class="flex justify-between items-center">
+                            <span class="text-[10px] text-amber-900 font-extrabold uppercase">No. Rekening Toko ({{ $pm->bank_name ?? 'Bank' }}):</span>
+                            <span class="text-[10px] font-bold text-emerald-800 bg-emerald-100 px-1.5 py-0.5 rounded border border-emerald-300">Transfer</span>
+                        </div>
+                        <p class="font-mono text-sm font-extrabold text-[#085C54] tracking-wider">{{ $pm->account_number }}</p>
+                        @if($pm->account_name)
+                        <p class="text-[11px] text-slate-600 font-medium">a.n. {{ $pm->account_name }}</p>
+                        @endif
+                    </div>
+                    @elseif($pm && $pm->isCash())
+                    <div class="px-2.5 py-1 rounded-lg bg-emerald-50 text-emerald-900 border border-emerald-200 text-xs font-semibold flex items-center gap-1">
+                        💵 <span>Bayar Tunai di Kasir Toko</span>
+                    </div>
+                    @endif
                 </div>
                 @endif
                 @endif
 
                 @if($r->type === 'buyback')
                 <div class="flex justify-between text-sm">
-                    <span class="text-slate-600 font-semibold">Kadar Emas</span>
-                    <span class="text-slate-900 font-bold">{{ $r->pawn_gold_purity }}</span>
+                    <span class="text-slate-600 font-semibold">Barang yang Dijual</span>
+                    <span class="text-slate-900 font-bold">{{ $r->pawn_gold_description }}</span>
                 </div>
-                <div class="flex justify-between text-sm">
-                    <span class="text-slate-600 font-semibold">Berat Emas</span>
-                    <span class="text-slate-900 font-bold">{{ number_format($r->pawn_weight_gram, 3) }} gram</span>
+                {{-- Buyback: tidak ada harga & metode pembayaran di web, semua di toko --}}
+                <div class="mt-2 px-3 py-2.5 rounded-xl bg-emerald-50 border border-emerald-200 text-xs flex items-start gap-2">
+                    <span class="text-base shrink-0">🏪</span>
+                    <span class="text-emerald-900 font-semibold leading-relaxed">
+                        <strong>Murni O2O (Di Toko):</strong> Penilaian fisik emas, penimbangan berat, pengujian kadar, penentuan harga beli, dan pembayaran dana dilakukan langsung di toko saat kunjungan.
+                    </span>
                 </div>
-                @if($r->payment_method)
-                <div class="flex justify-between text-sm">
-                    <span class="text-slate-600 font-semibold">Metode Penerimaan</span>
-                    <span class="text-slate-900 font-bold uppercase">{{ $r->payment_method }}</span>
-                </div>
-                @endif
                 @endif
 
                 @if($r->type === 'pawn')
@@ -145,7 +178,7 @@
                 </div>
                 @endif
 
-                @if($r->type === 'installment')
+                @if($r->type === 'installment' && $r->installment_tenure)
                 <div class="flex justify-between text-sm">
                     <span class="text-slate-600 font-semibold">Tenor Cicilan</span>
                     <span class="text-slate-900 font-bold">{{ $r->installment_tenure }} Bulan</span>
@@ -153,6 +186,14 @@
                 <div class="flex justify-between text-sm">
                     <span class="text-slate-600 font-semibold">Uang Muka (DP)</span>
                     <span class="text-[#085C54] font-extrabold">Rp {{ number_format($r->installment_down_payment, 0, ',', '.') }}</span>
+                </div>
+                @endif
+
+                @if($r->type === 'installment' && $r->transaction_id && !str_starts_with($r->reservation_code, 'RSV-PKP-'))
+                <div class="pt-2">
+                    <a href="{{ route('customer.installments.index') }}" class="w-full inline-flex items-center justify-center gap-1 text-xs font-bold text-[#085C54] bg-[#F4EDD9] hover:bg-[#e8e0c8] py-2 px-3 rounded-xl border border-[#C6A443]/40 transition shadow-sm">
+                        <span>📅 Buka Menu Cicilan Saya →</span>
+                    </a>
                 </div>
                 @endif
 
@@ -171,7 +212,7 @@
                 </div>
                 @endif
                 <div class="pt-1">
-                    <p class="text-xs text-slate-500 font-medium">Batas Konfirmasi: <span class="text-red-700 font-semibold">{{ \Carbon\Carbon::parse($r->expired_at)->isoFormat('D MMM Y, H:i') }}</span></p>
+                    <p class="text-xs text-slate-500 font-medium">Batas Konfirmasi: <span class="text-red-700 font-semibold">{{ \Carbon\Carbon::parse($r->expired_at)->isoFormat('D MMM Y, HH:mm') }}</span></p>
                 </div>
             </div>
 

@@ -84,6 +84,26 @@ class PriceNegotiationController extends Controller
             'notes'            => $request->notes,
         ]);
 
+        // Notifikasi Customer
+        \App\Models\Notification::create([
+            'user_id' => auth()->id(),
+            'type'    => 'negotiation.created',
+            'title'   => "Pengajuan Tawar Harga Berhasil ({$negotiation->negotiation_code})",
+            'message' => "Penawaran harga Anda sebesar Rp " . number_format($negotiation->offered_price, 0, ',', '.') . " untuk {$product->name} berhasil dikirim.",
+            'data'    => ['negotiation_id' => $negotiation->id],
+        ]);
+
+        // Notifikasi Admin
+        foreach (\App\Models\User::where('role', 'admin')->get() as $adm) {
+            \App\Models\Notification::create([
+                'user_id' => $adm->id,
+                'type'    => 'negotiation.created',
+                'title'   => "Pengajuan Tawar Harga Baru (#{$negotiation->negotiation_code})",
+                'message' => auth()->user()->name . " menawar produk {$product->name} seharga Rp " . number_format($negotiation->offered_price, 0, ',', '.') . ".",
+                'data'    => ['negotiation_id' => $negotiation->id],
+            ]);
+        }
+
         return redirect()->route('customer.negotiations.index')
             ->with('success', "Pengajuan tawar harga {$negotiation->negotiation_code} berhasil dikirim! Menunggu konfirmasi admin.");
     }

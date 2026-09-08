@@ -59,21 +59,40 @@
                 <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-0.5">Tipe Pengajuan</p>
                 <p class="text-[#085C54] font-extrabold text-base">
                     {{
-                        match($reservation->type) {
-                            'purchase'    => 'Pembelian Emas (Tunai)',
-                            'buyback'     => 'Jual Emas ke Toko (Buyback)',
-                            'installment' => 'Pembelian Emas (Cicilan)',
-                            'pawn'        => 'Gadai Emas (Pinjaman)',
-                            default       => ucfirst($reservation->type ?? 'Pembelian Emas')
+                        match(true) {
+                            str_starts_with($reservation->reservation_code, 'RSV-PKP-') => '📦 Pengambilan Emas Fisik (Cicilan Lunas)',
+                            $reservation->type === 'purchase'    => 'Pembelian Emas (Beli Lunas)',
+                            $reservation->type === 'buyback'     => 'Jual Emas ke Toko (Buyback)',
+                            $reservation->type === 'installment' => 'Pembelian Emas (Cicilan)',
+                            $reservation->type === 'pawn'        => 'Gadai Emas (Pinjaman)',
+                            default                              => ucfirst($reservation->type ?? 'Pembelian Emas')
                         }
                     }}
                 </p>
             </div>
 
-            @if($reservation->payment_method)
+            @if(str_starts_with($reservation->reservation_code, 'RSV-PKP-'))
+            <div>
+                <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-0.5">Status Pembayaran</p>
+                <p class="text-emerald-800 font-bold text-base">✅ Cicilan Lunas (Bebas Biaya di Toko)</p>
+                <span class="inline-block mt-0.5 text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 border border-emerald-300">
+                    📦 Serah Terima Emas Fisik
+                </span>
+            </div>
+            @elseif($reservation->payment_method)
+            @php $pm = $reservation->paymentMethodDetail ?? $reservation->payment_method_model; @endphp
             <div>
                 <p class="text-slate-500 text-xs font-bold uppercase tracking-wider mb-0.5">Metode Bayar / Penerimaan</p>
-                <p class="text-slate-900 font-bold uppercase">{{ $reservation->payment_method }}</p>
+                <p class="text-slate-900 font-bold text-base">{{ $pm->name ?? strtoupper($reservation->payment_method) }}</p>
+                @if($pm && $pm->account_number)
+                <p class="text-xs font-mono font-bold text-[#085C54] mt-0.5">
+                    No. Rek: {{ $pm->account_number }} {{ $pm->account_name ? '(a.n. '.$pm->account_name.')' : '' }}
+                </p>
+                @elseif($pm && $pm->isCash())
+                <span class="inline-block mt-0.5 text-xs font-semibold px-2 py-0.5 rounded bg-emerald-100 text-emerald-900 border border-emerald-300">
+                    💵 Pembayaran Tunai (Cash di Toko)
+                </span>
+                @endif
             </div>
             @endif
 
@@ -91,20 +110,19 @@
 
             @if($reservation->type === 'buyback')
             <div class="col-span-1 sm:col-span-2 p-4 rounded-xl bg-emerald-50/80 border border-emerald-200">
-                <p class="font-bold text-emerald-950 mb-2">💰 Rincian Emas yang Dijual Pelanggan (Buyback)</p>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-xs">
-                    <div>
-                        <span class="text-slate-600 block">Deskripsi:</span>
-                        <span class="text-slate-900 font-bold">{{ $reservation->pawn_gold_description }}</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-600 block">Kadar Emas:</span>
-                        <span class="text-slate-900 font-bold">{{ $reservation->pawn_gold_purity }}</span>
-                    </div>
-                    <div>
-                        <span class="text-slate-600 block">Berat Emas:</span>
-                        <span class="text-slate-900 font-bold">{{ number_format($reservation->pawn_weight_gram, 3) }} gram</span>
-                    </div>
+                <p class="font-bold text-emerald-950 mb-2">💰 Rincian Emas yang Ingin Dijual Pelanggan (Buyback O2O)</p>
+                <div class="mb-3 text-xs">
+                    <span class="text-slate-600 block mb-1 font-semibold">Jenis / Deskripsi Perhiasan yang Dibawa:</span>
+                    <span class="text-slate-900 font-bold text-sm bg-white px-3 py-2 rounded-lg border border-emerald-200 inline-block">
+                        💍 {{ $reservation->pawn_gold_description ?? 'Perhiasan Emas' }}
+                    </span>
+                </div>
+                {{-- Info: Murni O2O, tidak ada transaksi web --}}
+                <div class="flex items-start gap-2 px-3.5 py-3 rounded-xl bg-white border border-emerald-300 text-xs shadow-sm">
+                    <span class="text-base shrink-0">🏪</span>
+                    <span class="text-emerald-900 font-semibold leading-relaxed">
+                        <strong>Murni Reservasi Online-to-Offline (O2O):</strong> Penilaian fisik barang, penimbangan berat riil, pengujian kadar, penentuan harga beli, dan pembayaran dana diselesaikan langsung di Toko Sinar Baru II saat pelanggan datang berkunjung. <em>Reservasi buyback tidak menghasilkan transaksi kasir di website.</em>
+                    </span>
                 </div>
             </div>
             @endif
@@ -173,35 +191,102 @@
         </div>
     </div>
 
-    @if($reservation->status === 'pending')
-    <div class="flex flex-col sm:flex-row gap-3 w-full">
-        <form method="POST" action="{{ route('admin.reservations.confirm', $reservation) }}" class="flex-1">
-            @csrf
-            <input type="hidden" name="process_transaction" value="1">
-            <button type="submit" class="btn-orange w-full py-3 text-sm font-bold shadow-lg">
-                ⚡ Konfirmasi & Langsung Transaksi →
-            </button>
-        </form>
-        <form method="POST" action="{{ route('admin.reservations.confirm', $reservation) }}" class="flex-1">
-            @csrf
-            <button type="submit" class="btn-confirm w-full py-3 text-sm font-bold">
-                ✓ Konfirmasi Saja
-            </button>
-        </form>
-        <form method="POST" action="{{ route('admin.reservations.reject', $reservation) }}" class="flex-1">
-            @csrf
-            <button type="submit" class="btn-danger w-full py-3 text-sm font-bold" onclick="return confirm('Yakin ingin menolak reservasi ini?');">
-                ✗ Tolak Reservasi
-            </button>
-        </form>
-    </div>
-    @elseif($reservation->status === 'confirmed')
-    <div class="w-full">
-        <a href="{{ route('admin.transactions.create', ['reservation_id'=>$reservation->id]) }}" class="btn-orange w-full text-center block py-3.5 text-sm font-extrabold shadow-lg">
-            ⚡ Proses Jadi Transaksi Kasir (Otomatis Terisi) →
-        </a>
-    </div>
+    @php
+        $isPickupReservation = str_starts_with($reservation->reservation_code, 'RSV-PKP-');
+    @endphp
+
+    @if($isPickupReservation)
+        {{-- Khusus Reservasi Pengambilan Emas Fisik Cicilan (Transaksi Utama Sudah Ada) --}}
+        @if(in_array($reservation->status, ['pending', 'confirmed']))
+        <div class="flex flex-col sm:flex-row gap-3 w-full">
+            @if($reservation->status === 'pending')
+            <form method="POST" action="{{ route('admin.reservations.confirm', $reservation) }}" class="flex-1">
+                @csrf
+                <button type="submit" class="btn-confirm w-full py-3.5 text-sm font-bold shadow-md">
+                    ✓ Konfirmasi Jadwal Kunjungan
+                </button>
+            </form>
+            @endif
+
+            <form method="POST" action="{{ route('admin.reservations.complete', $reservation) }}" class="flex-1" onsubmit="return confirm('Apakah Anda yakin serah terima perhiasan emas fisik telah selesai dilakukan?');">
+                @csrf
+                <button type="submit" class="w-full py-3.5 px-4 rounded-xl font-extrabold text-sm text-[#042623] gold-gradient border border-[#C6A443] shadow-lg hover:brightness-110 transition flex items-center justify-center gap-2">
+                    <span>🎉</span> <span>Tandai Selesai (Serah Terima Emas Fisik)</span>
+                </button>
+            </form>
+
+            @if($reservation->status === 'pending')
+            <form method="POST" action="{{ route('admin.reservations.reject', $reservation) }}" class="flex-1">
+                @csrf
+                <button type="submit" class="btn-danger w-full py-3.5 text-sm font-bold shadow-sm" onclick="return confirm('Yakin ingin menolak reservasi ini?');">
+                    ✗ Tolak Reservasi
+                </button>
+            </form>
+            @endif
+        </div>
+        @elseif($reservation->status === 'completed')
+        <div class="w-full p-4 rounded-2xl bg-blue-50 border border-blue-300 text-blue-950 text-center font-bold text-sm shadow-sm flex items-center justify-center gap-2">
+            <span>🎉</span> <span>Reservasi & Serah Terima Perhiasan Emas Fisik Telah Selesai sepenuhnya.</span>
+        </div>
+        @endif
+    @else
+        {{-- Pengajuan Cicilan Baru / Pembelian Biasa / Buyback / Gadai --}}
+        @if($reservation->status === 'pending')
+        <div class="flex flex-col sm:flex-row gap-3 w-full">
+            <form method="POST" action="{{ route('admin.reservations.confirm', $reservation) }}" class="flex-1">
+                @csrf
+                <input type="hidden" name="process_transaction" value="1">
+                <button type="submit" class="btn-orange w-full py-3 text-sm font-bold shadow-lg">
+                    ⚡ Konfirmasi & Langsung Transaksi →
+                </button>
+            </form>
+            <form method="POST" action="{{ route('admin.reservations.confirm', $reservation) }}" class="flex-1">
+                @csrf
+                <button type="submit" class="btn-confirm w-full py-3 text-sm font-bold">
+                    ✓ Konfirmasi Saja
+                </button>
+            </form>
+            <form method="POST" action="{{ route('admin.reservations.reject', $reservation) }}" class="flex-1">
+                @csrf
+                <button type="submit" class="btn-danger w-full py-3 text-sm font-bold" onclick="return confirm('Yakin ingin menolak reservasi ini?');">
+                    ✗ Tolak Reservasi
+                </button>
+            </form>
+        </div>
+        @elseif($reservation->status === 'confirmed')
+        <div class="flex flex-col sm:flex-row gap-3 w-full">
+            <a href="{{ route('admin.transactions.create', ['reservation_id'=>$reservation->id]) }}" class="btn-orange flex-1 text-center block py-3.5 text-sm font-extrabold shadow-lg">
+                ⚡ Proses Jadi Transaksi Kasir (Otomatis Terisi) →
+            </a>
+            <form method="POST" action="{{ route('admin.reservations.complete', $reservation) }}" class="flex-1" onsubmit="return confirm('Apakah Anda yakin transaksi / reservasi ini telah selesai?');">
+                @csrf
+                <button type="submit" class="w-full py-3.5 px-4 rounded-xl font-extrabold text-sm text-[#042623] gold-gradient border border-[#C6A443] shadow-lg hover:brightness-110 transition flex items-center justify-center gap-2">
+                    <span>🎉</span> <span>Tandai Selesai</span>
+                </button>
+            </form>
+        </div>
+        @elseif($reservation->status === 'completed')
+        <div class="w-full p-4 rounded-2xl bg-blue-50 border border-blue-300 text-blue-950 text-center font-bold text-sm shadow-sm flex items-center justify-center gap-2">
+            <span>🎉</span> <span>Reservasi ini telah Selesai diproses.</span>
+        </div>
+        @elseif(in_array($reservation->status, ['cancelled', 'expired']))
+        <div class="w-full p-4 rounded-2xl bg-red-50 border border-red-300 text-red-950 text-center font-bold text-sm shadow-sm flex items-center justify-center gap-2">
+            <span>❌</span> <span>Reservasi ini berstatus {{ ucfirst($reservation->status) }}.</span>
+        </div>
+        @endif
     @endif
+
+    {{-- Opsi Hapus Reservasi (Admin) --}}
+    <div class="pt-6 border-t border-slate-200 mt-6 flex justify-between items-center w-full">
+        <span class="text-xs text-slate-500 font-medium">Hapus riwayat reservasi yang dibatalkan / selesai / data uji coba</span>
+        <form method="POST" action="{{ route('admin.reservations.destroy', $reservation) }}" onsubmit="return confirm('Apakah Anda yakin ingin menghapus reservasi #{{ $reservation->reservation_code }} secara permanen?');">
+            @csrf
+            @method('DELETE')
+            <button type="submit" class="px-4 py-2.5 rounded-xl text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 hover:text-red-700 border border-red-200 transition flex items-center gap-1.5 shadow-sm">
+                <span>🗑️</span> <span>Hapus Reservasi</span>
+            </button>
+        </form>
+    </div>
 </div>
 
 <x-slot name="scripts">

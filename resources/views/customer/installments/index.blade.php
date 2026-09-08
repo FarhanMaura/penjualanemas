@@ -24,16 +24,50 @@
         </div>
     </div>
 
-    @if($installments->isEmpty())
+    {{-- Banner Pengajuan Cicilan Menunggu Konfirmasi Toko --}}
+    @if(isset($pendingReservations) && $pendingReservations->isNotEmpty())
+    <div class="space-y-4 mb-8">
+        @foreach($pendingReservations as $pendingRes)
+        <div class="glass rounded-2xl p-6 bg-gradient-to-r from-amber-50/90 via-orange-50/80 to-amber-50/90 border-2 border-amber-300 shadow-md">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div class="flex items-start gap-4">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-100 border border-amber-300 flex items-center justify-center text-2xl shrink-0 shadow-sm">⏳</div>
+                    <div>
+                        <div class="flex items-center gap-2 flex-wrap mb-1">
+                            <span class="px-3 py-0.5 rounded-full text-xs font-black uppercase bg-amber-500 text-slate-950 shadow-sm">
+                                ⏳ Pengajuan Cicilan Menunggu Konfirmasi Toko
+                            </span>
+                            <span class="text-xs font-mono font-bold text-[#085C54]">{{ $pendingRes->reservation_code }}</span>
+                        </div>
+                        <h3 class="font-bold text-slate-900 text-lg font-playfair">{{ $pendingRes->product->name ?? 'Perhiasan Emas' }}</h3>
+                        <p class="text-xs text-slate-600 font-semibold mt-1">
+                            Tenor Diajukan: <strong class="text-amber-900">{{ $pendingRes->installment_tenure ?? 12 }} Bulan</strong> • 
+                            Rencana Kunjungan: <strong>{{ \Carbon\Carbon::parse($pendingRes->preferred_date)->isoFormat('D MMM Y') }} ({{ $pendingRes->preferred_time ?? '09:00' }} WIB)</strong>
+                        </p>
+                    </div>
+                </div>
+                <div class="text-right bg-white p-3 rounded-xl border border-amber-200 shadow-sm w-full md:w-auto">
+                    <span class="text-[11px] text-amber-800 font-bold uppercase block">Status Pengajuan</span>
+                    <span class="text-xs font-extrabold text-amber-900 flex items-center gap-1 mt-0.5 justify-end">
+                        <span>⏳</span> <span>Sedang Diproses Admin Toko</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+        @endforeach
+    </div>
+    @endif
+
+    @if($installments->isEmpty() && (!isset($pendingReservations) || $pendingReservations->isEmpty()))
     <div class="glass rounded-3xl p-12 text-center bg-white border border-[#e8e3d5]">
         <span class="text-6xl">📭</span>
         <p class="text-slate-800 text-lg mt-4 font-bold">Belum Ada Data Cicilan</p>
-        <p class="text-slate-600 text-sm mt-2">Data cicilan akan muncul setelah Admin mencatat transaksi cicilan untuk Anda.</p>
+        <p class="text-slate-600 text-sm mt-2">Data cicilan akan aktif setelah Admin mengonfirmasi pengajuan reservasi cicilan Anda.</p>
         <a href="{{ route('customer.reservations.create') }}" class="mt-6 inline-block font-bold text-[#085C54] hover:underline">
-            Buat Reservasi →
+            Buat Reservasi Cicilan Baru →
         </a>
     </div>
-    @else
+    @elseif($installments->isNotEmpty())
     <div class="space-y-5">
         @foreach($installments as $plan)
         @php
@@ -60,6 +94,11 @@
                             <span class="text-xs px-2.5 py-0.5 rounded-full font-bold uppercase border tracking-wider {{ $statusStyles['class'] }}">
                                 {{ $statusStyles['label'] }}
                             </span>
+                            @if($plan->waitingVerificationCount() > 0)
+                            <span class="text-[10px] px-2 py-0.5 rounded-full font-extrabold bg-amber-100 text-amber-900 border border-amber-300">
+                                ⏳ {{ $plan->waitingVerificationCount() }} Menunggu Verifikasi
+                            </span>
+                            @endif
                         </div>
                         <p class="text-xs font-medium text-slate-600">Mulai: <span class="font-bold text-slate-800">{{ $plan->start_date?->isoFormat('D MMM Y') }}</span> • Selesai: <span class="font-bold text-slate-800">{{ $plan->end_date?->isoFormat('D MMM Y') }}</span></p>
                         <p class="text-xs font-semibold text-slate-700 mt-1">

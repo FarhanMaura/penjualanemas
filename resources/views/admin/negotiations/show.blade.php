@@ -126,8 +126,8 @@
                             <label class="block text-xs font-bold text-slate-700 mb-1">
                                 Tentukan Harga Disetujui (Rp) <span class="text-red-600">*</span>
                             </label>
-                            <input type="number" name="agreed_price" value="{{ old('agreed_price', $negotiation->offered_price) }}" required step="1000" min="10000"
-                                   class="input-field font-extrabold text-slate-900">
+                            <input type="text" inputmode="numeric" name="agreed_price" value="{{ old('agreed_price', $negotiation->offered_price) }}" required
+                                   class="input-field format-rupiah font-extrabold text-slate-900">
                             <p class="text-xs text-slate-500 font-medium mt-1">Bisa disetujui di Rp {{ number_format($negotiation->offered_price, 0, ',', '.') }} atau tawar balik.</p>
                         </div>
 

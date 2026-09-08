@@ -81,8 +81,8 @@
                         <p class="font-extrabold text-[#C6A443] text-sm">Rp {{ number_format($pawn->loan_amount, 0, ',', '.') }}</p>
                     </div>
                     <div class="p-3 rounded-xl bg-slate-50 border border-slate-200">
-                        <p class="text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Bunga / Bulan</p>
-                        <p class="font-extrabold text-slate-900 text-sm">{{ $pawn->interest_rate }}%</p>
+                        <p class="text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Suku Bunga</p>
+                        <p class="font-extrabold text-slate-900 text-sm">Tanpa Bunga (0%)</p>
                     </div>
                     <div class="p-3 rounded-xl border {{ $isExpired ? 'bg-red-50 border-red-200' : ($isWarning ? 'bg-amber-50 border-amber-200' : 'bg-slate-50 border-slate-200') }}">
                         <p class="text-xs font-bold text-slate-500 mb-1 uppercase tracking-wider">Jatuh Tempo</p>
@@ -105,9 +105,14 @@
                 @endif
             </div>
 
-            <div class="p-4 bg-slate-50 border-t border-slate-100 flex justify-between items-center">
-                <span class="text-xs text-slate-500 font-semibold">Estimasi Tebus Sekarang:</span>
-                <span class="text-sm font-extrabold text-[#085C54]">Rp {{ number_format($pawn->calculateRedemptionAmount(), 0, ',', '.') }}</span>
+            <div class="p-4 bg-slate-50 border-t border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+                <div>
+                    <span class="text-xs text-slate-500 font-semibold">Estimasi Pelunasan / Tebus:</span>
+                    <p class="text-sm font-extrabold text-[#085C54]">Rp {{ number_format($pawn->calculateRedemptionAmount(), 0, ',', '.') }}</p>
+                </div>
+                <a href="{{ route('customer.pawns.show', $pawn) }}" class="w-full sm:w-auto px-4 py-2 rounded-xl text-xs font-extrabold text-[#042623] gold-gradient border border-[#C6A443] shadow-sm hover:brightness-110 transition text-center">
+                    Lihat Rincian & Tebus →
+                </a>
             </div>
         </div>
         @endforeach

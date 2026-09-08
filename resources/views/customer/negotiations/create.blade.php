@@ -79,10 +79,10 @@
                     <label for="offered_price" class="input-label">
                         Harga Penawaran Anda (Rp) <span class="text-red-600">*</span>
                     </label>
-                    <input type="number" name="offered_price" id="offered_price" value="{{ old('offered_price') }}" required step="1000" min="10000"
-                           placeholder="Contoh: 3900000"
+                    <input type="text" inputmode="numeric" name="offered_price" id="offered_price" value="{{ old('offered_price') }}" required
+                           placeholder="Contoh: 3.900.000"
                            oninput="calculateDiscount()"
-                           class="input-field font-extrabold text-slate-900">
+                           class="input-field format-rupiah font-extrabold text-slate-900">
                 </div>
             </div>
 
@@ -100,18 +100,18 @@
                     Catatan Pembeli (Opsional)
                 </label>
                 <textarea name="notes" id="notes" rows="3"
-                          placeholder="Alasan penawaran atau keterangan tambahan..."
-                          class="input-field">{{ old('notes') }}</textarea>
+                          placeholder="Tambahkan catatan jika ada..."
+                          class="input-field text-sm">{{ old('notes') }}</textarea>
             </div>
 
-            {{-- Action Submit --}}
-            <div class="pt-4 border-t border-slate-200 flex justify-end gap-3">
-                <a href="{{ route('customer.negotiations.index') }}" class="px-5 py-2.5 rounded-xl text-sm font-bold text-slate-700 bg-white border border-slate-300 hover:bg-slate-50 transition shadow-sm">
+            {{-- Action Buttons --}}
+            <div class="flex flex-col sm:flex-row gap-4 pt-4 border-t border-slate-200">
+                <button type="submit" class="flex-1 py-3 px-6 rounded-xl font-bold text-[#042623] gold-gradient border border-[#C6A443] shadow-md hover:brightness-110 transition text-center text-sm">
+                    🤝 Kirim Penawaran Harga
+                </button>
+                <a href="{{ route('customer.negotiations.index') }}" class="px-6 py-3 rounded-xl font-semibold text-slate-600 bg-slate-100 hover:bg-slate-200 transition text-center text-sm">
                     Batal
                 </a>
-                <button type="submit" class="px-6 py-2.5 rounded-xl text-sm font-extrabold text-[#042623] gold-gradient border border-[#C6A443] shadow-md hover:brightness-110 transition">
-                    🚀 Kirim Penawaran →
-                </button>
             </div>
         </form>
     </div>
@@ -125,7 +125,7 @@
 
             if (price > 0) {
                 document.getElementById('display_normal_price').innerText = 'Rp ' + new Intl.NumberFormat('id-ID').format(price);
-                document.getElementById('display_purity').innerText = purity + ' Murni (' + weight + 'g)';
+                document.getElementById('display_purity').innerText = 'Kadar: ' + purity;
             } else {
                 document.getElementById('display_normal_price').innerText = 'Rp 0';
             }
@@ -139,7 +139,8 @@
             const qty = parseInt(document.getElementById('quantity').value || 1);
             const totalNormalPrice = unitPrice * qty;
 
-            const offeredPrice = parseFloat(document.getElementById('offered_price').value || 0);
+            const parseR = window.parseRupiah || function(v){ return parseFloat(v.replace(/\./g, ''))||0; };
+            const offeredPrice = parseR(document.getElementById('offered_price').value);
             const summaryBox = document.getElementById('discount_summary');
             const diffAmountSpan = document.getElementById('diff_amount');
 

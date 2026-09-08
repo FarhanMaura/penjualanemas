@@ -209,29 +209,17 @@ class RevisiFeaturesTest extends TestCase
     }
 
     /**
-     * Test Poin 1 & 6: Customer Reservasi Cicilan dengan Tenor 3, 6, 12 Bulan & Preselect Produk
+     * Test Poin 1 & 6: Customer Reservasi Cicilan (Tanpa Jadwal Kunjungan & Tanpa DP)
      */
-    public function test_customer_can_create_installment_reservation_with_tenure(): void
+    public function test_customer_can_create_installment_reservation_without_visit_schedule(): void
     {
-        // Akses form dengan parameter product_id
-        $formRes = $this->actingAs($this->customer)->get(route('customer.reservations.create', [
-            'product_id' => $this->product->id,
-            'type'       => 'installment',
-        ]));
-        $formRes->assertOk();
-        $formRes->assertSee($this->product->name);
-
-        // Submit reservasi cicilan dengan tenor 3 bulan
         $res = $this->actingAs($this->customer)->post(route('customer.reservations.store'), [
-            'type'                     => 'installment',
-            'product_id'               => $this->product->id,
-            'quantity'                 => 1,
-            'preferred_date'           => today()->addDays(3)->toDateString(),
-            'preferred_time'           => '11:00',
-            'payment_method'           => 'transfer',
-            'installment_tenure'       => 3,
-            'installment_down_payment' => 500000,
-            'notes'                    => 'Rencana cicilan 3 bulan',
+            'type'               => 'installment',
+            'product_id'         => $this->product->id,
+            'quantity'           => 1,
+            'payment_method'     => 'transfer',
+            'installment_tenure' => 3,
+            'notes'              => 'Pengajuan cicilan emas 3 bulan',
         ]);
 
         $res->assertSessionHasNoErrors();
@@ -385,10 +373,10 @@ class RevisiFeaturesTest extends TestCase
         $payment2->update(['status' => 'paid', 'paid_date' => now()]);
         $this->assertTrue($plan->fresh()->canSchedulePickup()); // canSchedulePickup() kini TRUE!
 
-        // Halaman detail cicilan sekarang menampilkan jadwal terbuka
+        // Halaman detail cicilan sekarang menampilkan jadwal pengambilan emas
         $viewRes = $this->actingAs($this->customer)->get(route('customer.installments.show', $plan));
         $viewRes->assertOk();
-        $viewRes->assertSee('Jadwal Pengambilan Emas Terbuka!');
+        $viewRes->assertSee('Jadwal Pengambilan Emas Fisik di Toko');
 
         // Customer sekarang berhasil menjadwalkan pengambilan emas fisik
         $successScheduleRes = $this->actingAs($this->customer)->post(route('customer.installments.schedule-pickup', $plan), [

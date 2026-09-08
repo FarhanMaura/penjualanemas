@@ -59,7 +59,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/reservations',             [Admin\ReservationController::class, 'index'])->name('reservations.index');
         Route::get('/reservations/{reservation}',[Admin\ReservationController::class,'show'])->name('reservations.show');
         Route::post('/reservations/{reservation}/confirm', [Admin\ReservationController::class, 'confirm'])->name('reservations.confirm');
+        Route::post('/reservations/{reservation}/complete', [Admin\ReservationController::class, 'complete'])->name('reservations.complete');
         Route::post('/reservations/{reservation}/reject',  [Admin\ReservationController::class, 'reject'])->name('reservations.reject');
+        Route::delete('/reservations/{reservation}',       [Admin\ReservationController::class, 'destroy'])->name('reservations.destroy');
 
         // Transactions
         Route::get('/transactions',             [Admin\TransactionController::class, 'index'])->name('transactions.index');
@@ -86,6 +88,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::get('/pawns',                    [Admin\PawnController::class, 'index'])->name('pawns.index');
         Route::get('/pawns/{pawn}',             [Admin\PawnController::class, 'show'])->name('pawns.show');
         Route::post('/pawns/{pawn}/redeem',     [Admin\PawnController::class, 'redeem'])->name('pawns.redeem');
+        Route::post('/pawns/{pawn}/verify-payment/{installmentTransaction}', [Admin\PawnController::class, 'verifyPayment'])->name('pawns.verify-payment');
+        Route::post('/pawns/{pawn}/reject-payment/{installmentTransaction}', [Admin\PawnController::class, 'rejectPayment'])->name('pawns.reject-payment');
 
         // Price Negotiations
         Route::get('/negotiations',             [Admin\PriceNegotiationController::class, 'index'])->name('negotiations.index');
@@ -148,6 +152,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
         // Pawns
         Route::get('/pawns',                    [Customer\PawnController::class, 'index'])->name('pawns.index');
         Route::get('/pawns/{pawn}',             [Customer\PawnController::class, 'show'])->name('pawns.show');
+        Route::post('/pawns/{pawn}/pay',        [Customer\PawnController::class, 'pay'])->name('pawns.pay');
 
         // Notifications
         Route::get('/notifications',                           [Customer\NotificationController::class, 'index'])->name('notifications.index');

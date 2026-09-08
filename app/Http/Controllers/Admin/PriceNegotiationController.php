@@ -64,6 +64,15 @@ class PriceNegotiationController extends Controller
             'responded_at' => now(),
         ]);
 
+        // Notifikasi Customer
+        \App\Models\Notification::create([
+            'user_id' => $negotiation->user_id,
+            'type'    => 'negotiation.approved',
+            'title'   => "Tawar Harga Disetujui (#{$negotiation->negotiation_code})",
+            'message' => "Penawaran harga Anda untuk " . ($negotiation->product->name ?? 'produk') . " telah disetujui seharga Rp " . number_format($request->agreed_price, 0, ',', '.') . ".",
+            'data'    => ['negotiation_id' => $negotiation->id],
+        ]);
+
         return back()->with('success', "Pengajuan tawar harga #{$negotiation->negotiation_code} berhasil disetujui pada harga Rp " . number_format($request->agreed_price, 0, ',', '.') . ".");
     }
 
@@ -82,6 +91,15 @@ class PriceNegotiationController extends Controller
             'admin_notes'  => $request->admin_notes,
             'responded_by' => auth()->id(),
             'responded_at' => now(),
+        ]);
+
+        // Notifikasi Customer
+        \App\Models\Notification::create([
+            'user_id' => $negotiation->user_id,
+            'type'    => 'negotiation.rejected',
+            'title'   => "Tawar Harga Ditolak (#{$negotiation->negotiation_code})",
+            'message' => "Penawaran harga Anda untuk " . ($negotiation->product->name ?? 'produk') . " telah ditolak.",
+            'data'    => ['negotiation_id' => $negotiation->id],
         ]);
 
         return back()->with('success', "Pengajuan tawar harga #{$negotiation->negotiation_code} telah ditolak.");

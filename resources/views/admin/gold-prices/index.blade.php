@@ -21,13 +21,13 @@
                 </div>
                 <div>
                     <label class="input-label">Harga Beli /gram (Rp) *</label>
-                    <input type="number" name="buy_price_per_gram" value="{{ old('buy_price_per_gram', $today?->buy_price_per_gram) }}"
-                           class="input-field" min="100000" placeholder="cth: 1580000" required>
+                    <input type="text" inputmode="numeric" name="buy_price_per_gram" value="{{ old('buy_price_per_gram', $today?->buy_price_per_gram) }}"
+                           class="input-field format-rupiah" placeholder="cth: 1.580.000" required>
                 </div>
                 <div>
                     <label class="input-label">Harga Jual /gram (Rp) *</label>
-                    <input type="number" name="sell_price_per_gram" value="{{ old('sell_price_per_gram', $today?->sell_price_per_gram) }}"
-                           class="input-field" min="100000" placeholder="cth: 1620000" required>
+                    <input type="text" inputmode="numeric" name="sell_price_per_gram" value="{{ old('sell_price_per_gram', $today?->sell_price_per_gram) }}"
+                           class="input-field format-rupiah" placeholder="cth: 1.620.000" required>
                 </div>
                 <div>
                     <label class="input-label">Sumber</label>

@@ -51,7 +51,7 @@ class InstallmentPlan extends Model
 
     public function remainingMonths(): int
     {
-        return max(0, $this->tenure_months - $this->settledOrSubmittedCount());
+        return max(0, $this->tenure_months - $this->paidCount());
     }
 
     /**

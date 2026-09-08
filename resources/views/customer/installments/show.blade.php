@@ -96,17 +96,13 @@
                 </div>
 
                 {{-- Detail Keuangan --}}
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                    <div class="p-3.5 rounded-xl bg-white border border-[#e8e3d5] shadow-sm">
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Uang Muka (DP)</p>
-                        <p class="font-extrabold text-slate-900 text-sm sm:text-base">Rp {{ number_format($installmentPlan->down_payment, 0, ',', '.') }}</p>
-                    </div>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div class="p-3.5 rounded-xl bg-white border border-[#e8e3d5] shadow-sm">
                         <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Angsuran / Bulan</p>
                         <p class="font-extrabold text-[#085C54] text-sm sm:text-base">Rp {{ number_format($installmentPlan->monthly_amount, 0, ',', '.') }}</p>
                     </div>
                     <div class="p-3.5 rounded-xl bg-white border border-[#e8e3d5] shadow-sm">
-                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Total Cicilan</p>
+                        <p class="text-[10px] text-slate-500 font-bold uppercase tracking-wider mb-0.5">Total Nilai Emas</p>
                         <p class="font-extrabold text-slate-900 text-sm sm:text-base">Rp {{ number_format($installmentPlan->total_installment, 0, ',', '.') }}</p>
                     </div>
                     <div class="p-3.5 rounded-xl bg-white border border-[#e8e3d5] shadow-sm">
@@ -334,6 +330,38 @@
                     </div>
                 </div>
 
+                {{-- 5. Combined Section: Jadwal Pengambilan Emas Fisik di Toko (Bulan Terakhir) --}}
+                @if($installmentPlan->canSchedulePickup() && ! $installmentPlan->pickupReservation)
+                <div class="space-y-4 pt-4 border-t border-slate-200" id="pickup-schedule-combined">
+                    <div class="p-5 rounded-2xl bg-gradient-to-br from-amber-50 to-emerald-50 border-2 border-emerald-400 shadow-md">
+                        <div class="flex items-start gap-3 mb-3">
+                            <span class="text-3xl">📦</span>
+                            <div>
+                                <h4 class="font-bold text-emerald-950 text-base font-playfair">Jadwal Pengambilan Emas Fisik di Toko (Bulan Terakhir)</h4>
+                                <p class="text-xs text-emerald-800 mt-1 leading-relaxed">
+                                    Selamat! Anda telah memasuki pembayaran bulan terakhir. Tentukan jadwal kunjungan Anda ke Toko Emas Sinar Baru II sekaligus saat mengirimkan bukti pembayaran ini.
+                                </p>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                            <div>
+                                <label class="input-label text-xs">Tanggal Pengambilan Emas <span class="text-red-600">*</span></label>
+                                <input type="date" name="preferred_date" min="{{ date('Y-m-d') }}" value="{{ old('preferred_date', date('Y-m-d', strtotime('+1 day'))) }}" required class="input-field font-bold">
+                            </div>
+                            <div>
+                                <label class="input-label text-xs">Jam Kunjungan (08:00 - 17:00) <span class="text-red-600">*</span></label>
+                                <input type="time" name="preferred_time" value="{{ old('preferred_time', '10:00') }}" required class="input-field font-bold">
+                            </div>
+                            <div class="sm:col-span-2">
+                                <label class="input-label text-xs">Catatan Tambahan Pengambilan (Opsional)</label>
+                                <input type="text" name="pickup_notes" value="{{ old('pickup_notes') }}" placeholder="cth: Pengambilan fisik membawa KTP..." class="input-field text-xs">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @endif
+
                 {{-- Submit Button --}}
                 <div class="pt-4 border-t border-slate-200">
                     <button type="submit"
@@ -360,7 +388,7 @@
         </div>
         @endif
 
-        {{-- JADWAL RESERVASI PENGAMBILAN EMAS FISIK (POIN 7) --}}
+        {{-- JADWAL RESERVASI PENGAMBILAN EMAS FISIK --}}
         <div class="glass rounded-3xl p-6 bg-white border border-[#e8e3d5] shadow-lg">
             <h3 class="font-bold text-slate-900 mb-4 text-base flex items-center gap-2">
                 <span>📦</span> Jadwal Pengambilan Emas Fisik di Toko
@@ -396,18 +424,19 @@
                 </div>
             </div>
             @elseif($installmentPlan->canSchedulePickup())
-            {{-- Memasuki Bulan Terakhir: Buka Jadwal Pengambilan --}}
+            {{-- Memasuki Bulan Terakhir --}}
             <div class="p-6 rounded-2xl bg-gradient-to-br from-amber-50 to-emerald-50 border-2 border-emerald-400 shadow-md">
                 <div class="flex items-start gap-3 mb-4">
                     <span class="text-3xl">🎉</span>
                     <div>
-                        <h4 class="font-bold text-emerald-950 text-base font-playfair">Jadwal Pengambilan Emas Terbuka!</h4>
+                        <h4 class="font-bold text-emerald-950 text-base font-playfair">Form Pengambilan Emas Berada di Form Pembayaran</h4>
                         <p class="text-xs text-emerald-800 mt-1 leading-relaxed">
-                            Selamat! Anda telah memasuki pembayaran bulan terakhir (angsuran bulan ke-1 s/d ke-{{ $installmentPlan->requiredPaidForPickup() }} telah selesai). Anda kini dapat menentukan jadwal kunjungan untuk serah terima perhiasan emas fisik.
+                            Formulir penentuan jadwal pengambilan emas fisik telah **digabungkan secara otomatis ke dalam Formulir Pembayaran Angsuran di atas**. Silakan tentukan tanggal dan jam kunjungan Anda pada form pembayaran saat mengunggah bukti transfer.
                         </p>
                     </div>
                 </div>
 
+                @if($unpaidPayments->isEmpty())
                 <form action="{{ route('customer.installments.schedule-pickup', $installmentPlan) }}" method="POST" class="space-y-4 pt-2">
                     @csrf
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -428,6 +457,7 @@
                         📅 Konfirmasi Jadwal Pengambilan Emas
                     </button>
                 </form>
+                @endif
             </div>
             @else
             {{-- Belum Masuk Bulan Terakhir: Terkunci --}}

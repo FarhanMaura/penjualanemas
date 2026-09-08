@@ -14,6 +14,7 @@ class DatabaseSeeder extends Seeder
             CategorySeeder::class,
             ProductSeeder::class,
             GoldPriceSeeder::class,
+            PaymentMethodSeeder::class,
             RewardProgramSeeder::class,
             TransactionAndCertificateSeeder::class,
             NotificationSeeder::class,
